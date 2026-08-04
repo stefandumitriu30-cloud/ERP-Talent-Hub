@@ -127,6 +127,25 @@ button{font-family:'Inter',sans-serif;cursor:pointer;font-size:14px;border-radiu
 .btn-submit:hover{background:var(--blue-dark)}
 .btn-submit:disabled{opacity:.65;cursor:wait}
 
+/* PHONE PREFIX */
+.phone-wrapper{display:flex;gap:0}
+.phone-prefix-select{
+  width:auto;min-width:110px;max-width:140px;flex-shrink:0;
+  border-right:none;border-radius:var(--radius) 0 0 var(--radius);
+  background:var(--gray-50);color:var(--gray-700);
+  font-size:13px;padding:9px 8px;
+  appearance:none;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748B' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 8px center;
+  padding-right:24px;cursor:pointer;
+  border:1.5px solid var(--gray-300);
+}
+.phone-prefix-select:focus{border-color:var(--blue);z-index:1;position:relative}
+.phone-number-input{border-radius:0 var(--radius) var(--radius) 0;border-left:none;flex:1}
+.phone-number-input:focus{border-color:var(--blue);z-index:1;position:relative}
+.phone-wrapper:focus-within .phone-prefix-select,
+.phone-wrapper:focus-within .phone-number-input{border-color:var(--blue)}
+
 /* SUCCESS */
 #success-view{max-width:480px;margin:0 auto;padding:80px 24px;text-align:center}
 .success-icon{width:72px;height:72px;border-radius:50%;background:#ECFDF5;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:32px;color:#059669}
@@ -134,8 +153,9 @@ button{font-family:'Inter',sans-serif;cursor:pointer;font-size:14px;border-radiu
 #success-view p{color:var(--gray-500);margin-bottom:28px;line-height:1.7}
 
 /* FOOTER */
-footer{background:var(--gray-900);padding:32px 24px;text-align:center;color:rgba(255,255,255,.45);font-size:13px}
+footer{background:var(--gray-900);padding:28px 24px;text-align:center;color:rgba(255,255,255,.4);font-size:13px;line-height:1.8}
 footer strong{color:rgba(255,255,255,.75)}
+#footer-ownership{display:block;margin-top:4px;font-size:12px;color:rgba(255,255,255,.3)}
 
 /* RECRUITER PLACEHOLDER */
 #recruiter-view{max-width:600px;margin:0 auto;padding:80px 24px;text-align:center}
@@ -147,7 +167,119 @@ footer strong{color:rgba(255,255,255,.75)}
   .grid-2,.grid-3{grid-template-columns:1fr}
   .nav-right{gap:4px}
   #hero{padding:52px 16px 40px}
+  .portal-layout{flex-direction:column}
+  .portal-sidebar{width:100%;max-width:100%;border-right:none;border-bottom:1px solid var(--gray-100);max-height:260px}
+  .portal-main{height:calc(100vh - 60px - 260px)}
 }
+
+/* ─── PORTAL LAYOUT ─── */
+.portal-view{height:calc(100vh - 60px);overflow:hidden;display:none;flex-direction:column}
+.portal-view.active{display:flex}
+.portal-layout{display:flex;flex:1;overflow:hidden}
+.portal-sidebar{width:300px;min-width:260px;max-width:320px;flex-shrink:0;border-right:1px solid var(--gray-100);display:flex;flex-direction:column;height:100%;background:var(--gray-50)}
+.portal-sidebar-header{padding:20px 16px 12px;border-bottom:1px solid var(--gray-100);flex-shrink:0}
+.portal-logo-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.portal-role-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600}
+.recruiter-badge{background:#EFF6FF;color:#1D4ED8;border:1px solid #BFDBFE}
+.candidate-badge{background:#F0FDF4;color:#15803D;border:1px solid #BBF7D0}
+.portal-title{font-size:16px;font-weight:600;margin-bottom:10px}
+.portal-search-wrap{display:flex;align-items:center;gap:8px;background:var(--white);border:1.5px solid var(--gray-300);border-radius:var(--radius);padding:0 10px;margin-bottom:10px}
+.portal-search-wrap i{color:var(--gray-400);font-size:13px;flex-shrink:0}
+.portal-search{border:none;background:transparent;padding:8px 0;font-size:13px;width:100%;outline:none}
+.portal-hint-box{display:flex;align-items:flex-start;gap:8px;background:#FFF7ED;border:1px solid #FED7AA;border-radius:var(--radius);padding:9px 11px;font-size:12px;color:#92400E;line-height:1.5}
+.portal-hint-box i{color:#F97316;margin-top:1px;flex-shrink:0}
+.portal-tabs{display:flex;gap:4px}
+.ptab{background:none;border:none;font-size:12px;color:var(--gray-500);padding:5px 10px;border-radius:6px;cursor:pointer;font-weight:500;transition:all .12s}
+.ptab:hover{background:var(--gray-100);color:var(--gray-700)}
+.ptab.active{background:var(--blue-light);color:var(--blue)}
+
+/* ─── CANDIDATE LIST (sidebar) ─── */
+.candidate-list{flex:1;overflow-y:auto;padding:8px 8px}
+.cand-card{display:flex;align-items:center;gap:10px;padding:10px 10px;border-radius:var(--radius);cursor:pointer;transition:background .12s;border:1.5px solid transparent;margin-bottom:4px}
+.cand-card:hover{background:var(--white)}
+.cand-card.active{background:var(--white);border-color:var(--blue-mid)}
+.cand-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px;flex-shrink:0;color:#fff}
+.cand-info{flex:1;min-width:0}
+.cand-name{font-size:13px;font-weight:600;color:var(--gray-900);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cand-meta{font-size:11px;color:var(--gray-500);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cand-badge-dot{width:8px;height:8px;border-radius:50%;background:var(--blue);flex-shrink:0}
+.cand-badge-dot.grey{background:var(--gray-300)}
+.cand-unread{background:var(--blue);color:#fff;font-size:10px;font-weight:700;border-radius:10px;padding:1px 6px;min-width:18px;text-align:center}
+
+/* ─── CHAT MAIN AREA ─── */
+.portal-main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.chat-empty-state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--gray-400);padding:40px 24px;gap:12px}
+.chat-empty-state i{font-size:48px;color:var(--gray-300)}
+.chat-empty-state p{font-size:15px;font-weight:500;color:var(--gray-500);margin:0}
+.chat-empty-state span{font-size:13px;color:var(--gray-400)}
+
+/* ─── CHAT WINDOW ─── */
+.chat-window{display:flex;flex-direction:column;height:100%}
+.chat-topbar{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--gray-100);background:var(--white);flex-shrink:0}
+.chat-topbar-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#fff;flex-shrink:0}
+.chat-topbar-info{flex:1}
+.chat-topbar-name{font-size:14px;font-weight:600}
+.chat-topbar-sub{font-size:12px;color:var(--gray-500)}
+.chat-topbar-status{display:flex;align-items:center;gap:5px;font-size:12px}
+.status-dot{width:8px;height:8px;border-radius:50%}
+.status-dot.online{background:#22C55E}
+.status-dot.offline{background:var(--gray-300)}
+.chat-messages{flex:1;overflow-y:auto;padding:20px 20px;display:flex;flex-direction:column;gap:12px;background:var(--gray-50)}
+.msg-row{display:flex;gap:10px;align-items:flex-end}
+.msg-row.mine{flex-direction:row-reverse}
+.msg-bubble{max-width:65%;padding:10px 14px;border-radius:14px;font-size:14px;line-height:1.55;word-break:break-word}
+.msg-bubble.them{background:var(--white);border:1px solid var(--gray-100);border-bottom-left-radius:4px;color:var(--gray-900)}
+.msg-bubble.mine{background:var(--blue);color:#fff;border-bottom-right-radius:4px}
+.msg-time{font-size:11px;color:var(--gray-400);flex-shrink:0;padding-bottom:2px}
+.msg-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;color:#fff;flex-shrink:0}
+.chat-input-area{padding:14px 16px;border-top:1px solid var(--gray-100);background:var(--white);flex-shrink:0}
+.chat-input-row{display:flex;gap:8px;align-items:flex-end}
+.chat-textarea{flex:1;resize:none;border-radius:var(--radius);font-size:14px;padding:10px 12px;min-height:42px;max-height:120px;line-height:1.5;border:1.5px solid var(--gray-300)}
+.chat-textarea:focus{border-color:var(--blue)}
+.chat-send-btn{width:42px;height:42px;border-radius:var(--radius);background:var(--blue);border:none;color:#fff;font-size:16px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:background .12s}
+.chat-send-btn:hover{background:var(--blue-dark)}
+.chat-send-btn:disabled{background:var(--gray-300);cursor:not-allowed}
+.chat-locked-notice{display:flex;align-items:center;gap:10px;padding:14px 20px;background:#FFF7ED;border-top:1px solid #FED7AA;color:#92400E;font-size:13px}
+.chat-locked-notice i{color:#F97316;font-size:16px}
+.chat-date-divider{text-align:center;font-size:11px;color:var(--gray-400);margin:4px 0;position:relative}
+.chat-date-divider::before,.chat-date-divider::after{content:'';display:inline-block;width:60px;height:1px;background:var(--gray-200);vertical-align:middle;margin:0 8px}
+.msg-status{font-size:10px;color:rgba(255,255,255,.7);text-align:right;margin-top:2px}
+
+/* ─── RECRUITER ACCREDITATION GATE ─── */
+.rec-gate-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:32px 16px;background:linear-gradient(135deg,var(--gray-50) 0%,var(--blue-light) 100%);overflow-y:auto}
+.rec-gate-card{background:var(--white);border:1px solid var(--gray-100);border-radius:18px;box-shadow:var(--shadow-md);padding:40px 36px;width:100%;max-width:480px;text-align:center}
+.gate-step{display:none}
+.gate-step.active{display:block}
+.gate-icon-wrap{margin-bottom:20px}
+.gate-icon{width:64px;height:64px;border-radius:50%;background:var(--blue-light);display:flex;align-items:center;justify-content:center;font-size:28px;color:var(--blue);margin:0 auto;border:2px solid var(--blue-mid)}
+.gate-icon.li-icon{background:#E8F0FE;color:#0A66C2;border-color:#BFDBFE}
+.gate-icon.verifying-icon{background:#FFF7ED;color:#F97316;border-color:#FED7AA;animation:pulse-border 1.5s infinite}
+.gate-icon.reject-icon{background:#FEF2F2;color:#DC2626;border-color:#FECACA}
+.gate-icon.approve-icon{background:#ECFDF5;color:#16A34A;border-color:#BBF7D0}
+@keyframes pulse-border{0%,100%{box-shadow:0 0 0 0 rgba(37,99,235,.3)}50%{box-shadow:0 0 0 8px rgba(37,99,235,0)}}
+.gate-title{font-size:20px;font-weight:600;margin-bottom:10px;color:var(--gray-900)}
+.gate-sub{font-size:14px;color:var(--gray-500);line-height:1.65;margin-bottom:24px}
+.gate-btn{width:100%;padding:13px;font-size:15px}
+.gate-steps-list{text-align:left;background:var(--gray-50);border:1px solid var(--gray-100);border-radius:var(--radius-lg);padding:16px 18px;margin-bottom:24px;display:flex;flex-direction:column;gap:14px}
+.gate-step-item{display:flex;align-items:flex-start;gap:12px;font-size:13px;color:var(--gray-600);line-height:1.5}
+.gate-step-num{width:24px;height:24px;border-radius:50%;background:var(--blue);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.gate-li-hint{display:flex;align-items:flex-start;gap:8px;background:#EFF6FF;border:1px solid var(--blue-mid);border-radius:var(--radius);padding:10px 12px;font-size:12px;color:#1E40AF;text-align:left;line-height:1.5;margin-top:8px}
+.gate-li-hint i{color:var(--blue);margin-top:1px;flex-shrink:0}
+.gate-li-hint code{background:rgba(37,99,235,.1);padding:1px 5px;border-radius:3px;font-family:monospace}
+.gate-back-btn{background:none;border:none;font-size:13px;color:var(--gray-500);cursor:pointer;padding:0;margin-bottom:20px;display:flex;align-items:center;gap:6px}
+.gate-back-btn:hover{color:var(--blue)}
+.verify-progress-wrap{display:flex;flex-direction:column;gap:14px;margin:24px 0;text-align:left;background:var(--gray-50);border:1px solid var(--gray-100);border-radius:var(--radius-lg);padding:18px 20px}
+.verify-step-row{display:flex;align-items:center;gap:12px;font-size:14px;color:var(--gray-600);transition:color .3s}
+.verify-step-row.done-row{color:var(--gray-900);font-weight:500}
+.vcheck-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;transition:all .3s}
+.vcheck-icon.idle{background:var(--gray-100);color:var(--gray-300)}
+.vcheck-icon.pending{background:var(--blue-light);color:var(--blue)}
+.vcheck-icon.done{background:#ECFDF5;color:#16A34A}
+.vcheck-icon.fail{background:#FEF2F2;color:#DC2626}
+.gate-reject-info{display:flex;align-items:flex-start;gap:10px;background:#FFF7ED;border:1px solid #FED7AA;border-radius:var(--radius);padding:14px;font-size:13px;color:#92400E;text-align:left;line-height:1.6;margin-top:8px}
+.gate-reject-info i{color:#F97316;font-size:16px;flex-shrink:0;margin-top:1px}
+.gate-approved-card{display:flex;align-items:center;gap:14px;background:var(--gray-50);border:1px solid var(--gray-100);border-radius:var(--radius-lg);padding:14px 16px;text-align:left;margin-top:12px}
+.gate-approved-avatar{width:44px;height:44px;border-radius:50%;background:var(--blue);color:#fff;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 </style>
 </head>
 <body>
@@ -156,7 +288,7 @@ footer strong{color:rgba(255,255,255,.75)}
 <nav id="nav" role="navigation" aria-label="Main navigation">
   <div class="nav-inner">
     <a href="#" class="nav-logo" onclick="showView('home');return false">
-      <div class="nav-logo-icon"><i class="fa-solid fa-microchip"></i></div>
+      <div class="nav-logo-icon"></div>
       <span>ERP Talent Hub</span>
     </a>
     <div class="nav-right">
@@ -165,9 +297,11 @@ footer strong{color:rgba(255,255,255,.75)}
         <button class="lang-btn" onclick="setLang('it')" id="btn-lang-it">IT</button>
         <button class="lang-btn" onclick="setLang('es')" id="btn-lang-es">ES</button>
         <button class="lang-btn" onclick="setLang('de')" id="btn-lang-de">DE</button>
+        <button class="lang-btn" onclick="setLang('fr')" id="btn-lang-fr">FR</button>
       </div>
-      <button class="btn-ghost btn-sm" onclick="showView('recruiter')" data-i18n="nav.recruiters">For recruiters</button>
-      <button class="btn-primary btn-sm" onclick="showView('form')" data-i18n="nav.submit">Submit your CV</button>
+      <button class="btn-ghost btn-sm" onclick="showView('candidate')" id="nav-btn-candidates" data-i18n="candidates">My messages</button>
+      <button class="btn-ghost btn-sm" onclick="showView('recruiter')" id="nav-btn-recruiters" data-i18n="recruiters">For recruiters</button>
+      <button class="btn-primary btn-sm" onclick="showView('form')" id="nav-btn-submit" data-i18n="submit">Submit your CV</button>
     </div>
   </div>
 </nav>
@@ -203,17 +337,17 @@ footer strong{color:rgba(255,255,255,.75)}
     <p class="section-sub" data-i18n="features.sub">No generalist noise. Every recruiter on this platform is actively hiring for ERP roles.</p>
     <div class="features-grid">
       <div class="feature-card">
-        <div class="feature-icon"><i class="fa-solid fa-shield-halved"></i></div>
+        <div class="feature-icon"></div>
         <div class="feature-title" data-i18n="feat1.t">Privacy first</div>
         <p class="feature-desc" data-i18n="feat1.d">Your contact details are hidden until a verified recruiter requests access.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
+        <div class="feature-icon"></div>
         <div class="feature-title" data-i18n="feat2.t">ERP-specific search</div>
         <p class="feature-desc" data-i18n="feat2.d">Recruiters filter by system, module, industry, and seniority — only relevant leads reach you.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon"><i class="fa-solid fa-bell"></i></div>
+        <div class="feature-icon"></div>
         <div class="feature-title" data-i18n="feat3.t">Instant alerts</div>
         <p class="feature-desc" data-i18n="feat3.d">Get notified the moment a recruiter views your profile or sends a connection request.</p>
       </div>
@@ -263,7 +397,13 @@ footer strong{color:rgba(255,255,255,.75)}
       <div class="section-header"><i class="fa-solid fa-address-book"></i><h3 data-i18n="sec.contact">Contact details</h3></div>
       <div class="grid-2">
         <div class="field"><label><span data-i18n="f.email">Email address</span><span class="req">*</span></label><input type="email" id="f-email" /></div>
-        <div class="field"><label data-i18n="f.phone">Phone number</label><input type="tel" id="f-phone" /></div>
+        <div class="field">
+          <label data-i18n="f.phone">Phone number</label>
+          <div class="phone-wrapper">
+            <select class="phone-prefix-select" id="f-phone-prefix" aria-label="Country prefix"></select>
+            <input type="tel" class="phone-number-input" id="f-phone" placeholder="123 456 7890" />
+          </div>
+        </div>
       </div>
       <div class="field"><label data-i18n="f.linkedin">LinkedIn profile URL</label><input type="url" id="f-linkedin" placeholder="https://linkedin.com/in/yourname" /></div>
     </div>
@@ -324,17 +464,185 @@ footer strong{color:rgba(255,255,255,.75)}
   <button class="btn-primary" onclick="showView('home')" data-i18n="success.back">Back to homepage</button>
 </div>
 
-<!-- ═══════════════════ RECRUITER VIEW ═══════════════════ -->
-<div id="recruiter-view" class="view">
-  <div class="rec-icon"><i class="fa-solid fa-users"></i></div>
-  <h2 data-i18n="rec.title">Access the ERP talent pool</h2>
-  <p data-i18n="rec.sub">Request verified recruiter access to search, filter, and connect with thousands of ERP professionals across all major systems and industries.</p>
-  <button class="btn-primary" onclick="showView('home')" data-i18n="rec.back">Back to homepage</button>
+<!-- ═══════════════════ RECRUITER PORTAL ═══════════════════ -->
+<div id="recruiter-view" class="view portal-view">
+
+  <!-- ── ACCREDITATION GATE (shown when not verified) ── -->
+  <div id="rec-gate" class="rec-gate-wrap">
+    <div class="rec-gate-card">
+
+      <!-- Step 1: Landing -->
+      <div id="gate-step-1" class="gate-step active">
+        <div class="gate-icon-wrap">
+          <div class="gate-icon"><i class="fa-solid fa-user-tie"></i></div>
+        </div>
+        <h2 class="gate-title">Recruiter Access</h2>
+        <p class="gate-sub">ERP Talent Hub is exclusively open to <strong>verified LinkedIn Recruiter</strong> account holders. We verify your professional identity before granting access to the talent pool.</p>
+        <div class="gate-steps-list">
+          <div class="gate-step-item"><div class="gate-step-num">1</div><div><strong>Connect LinkedIn</strong><br><span>Enter your LinkedIn Recruiter profile URL</span></div></div>
+          <div class="gate-step-item"><div class="gate-step-num">2</div><div><strong>Verify account type</strong><br><span>We check your account holds a LinkedIn Recruiter licence</span></div></div>
+          <div class="gate-step-item"><div class="gate-step-num">3</div><div><strong>Access the pool</strong><br><span>Browse and contact ERP professionals instantly</span></div></div>
+        </div>
+        <button class="btn-primary gate-btn" onclick="gotoStep(2)"><i class="fa-brands fa-linkedin" style="margin-right:8px"></i>Connect with LinkedIn Recruiter</button>
+        <button class="btn-ghost" style="margin-top:8px;width:100%;font-size:13px" onclick="showView('home')">← Back to homepage</button>
+      </div>
+
+      <!-- Step 2: LinkedIn URL input -->
+      <div id="gate-step-2" class="gate-step">
+        <button class="gate-back-btn" onclick="gotoStep(1)"><i class="fa-solid fa-arrow-left"></i> Back</button>
+        <div class="gate-icon-wrap">
+          <div class="gate-icon li-icon"><i class="fa-brands fa-linkedin"></i></div>
+        </div>
+        <h2 class="gate-title">Enter your LinkedIn Recruiter URL</h2>
+        <p class="gate-sub">Paste the URL of your LinkedIn Recruiter profile. It must be a <strong>LinkedIn Recruiter</strong> account — standard LinkedIn profiles will not be accepted.</p>
+        <div class="field" style="text-align:left;margin-bottom:8px">
+          <label style="font-size:13px;font-weight:500;color:#334155;display:block;margin-bottom:6px">LinkedIn Recruiter profile URL <span style="color:#DC2626">*</span></label>
+          <div style="display:flex;gap:8px;align-items:center">
+            <span style="font-size:13px;color:#64748B;white-space:nowrap">linkedin.com/in/</span>
+            <input type="text" id="gate-li-url" placeholder="yourname" style="flex:1" oninput="validateGateUrl()" />
+          </div>
+          <div id="gate-url-error" style="display:none;font-size:12px;color:#DC2626;margin-top:5px"><i class="fa-solid fa-triangle-exclamation"></i> Please enter a valid LinkedIn profile username.</div>
+        </div>
+        <div class="gate-li-hint">
+          <i class="fa-solid fa-circle-info"></i>
+          <span>Your username is the part after <code>linkedin.com/in/</code> in your browser address bar.</span>
+        </div>
+        <div class="field" style="text-align:left;margin:16px 0 8px">
+          <label style="font-size:13px;font-weight:500;color:#334155;display:block;margin-bottom:6px">Full name (as on LinkedIn) <span style="color:#DC2626">*</span></label>
+          <input type="text" id="gate-li-name" placeholder="e.g. Sarah Johnson" />
+        </div>
+        <div class="field" style="text-align:left;margin-bottom:20px">
+          <label style="font-size:13px;font-weight:500;color:#334155;display:block;margin-bottom:6px">Company / Agency <span style="color:#DC2626">*</span></label>
+          <input type="text" id="gate-li-company" placeholder="e.g. Korn Ferry" />
+        </div>
+        <button class="btn-primary gate-btn" id="gate-verify-btn" onclick="startVerification()"><i class="fa-solid fa-shield-halved" style="margin-right:8px"></i>Verify LinkedIn Recruiter account</button>
+        <button class="btn-ghost" style="margin-top:8px;width:100%;font-size:13px" onclick="gotoStep(1)">← Back</button>
+      </div>
+
+      <!-- Step 3: Verifying (animated) -->
+      <div id="gate-step-3" class="gate-step">
+        <div class="gate-icon-wrap">
+          <div class="gate-icon verifying-icon"><i class="fa-brands fa-linkedin"></i></div>
+        </div>
+        <h2 class="gate-title">Verifying your account…</h2>
+        <p class="gate-sub">We are checking your LinkedIn profile for a valid <strong>LinkedIn Recruiter</strong> licence. This usually takes a few seconds.</p>
+        <div class="verify-progress-wrap">
+          <div class="verify-step-row" id="vcheck-1"><div class="vcheck-icon pending"><i class="fa-solid fa-circle-notch fa-spin"></i></div><span>Connecting to LinkedIn</span></div>
+          <div class="verify-step-row" id="vcheck-2"><div class="vcheck-icon idle"><i class="fa-solid fa-circle"></i></div><span>Reading account type</span></div>
+          <div class="verify-step-row" id="vcheck-3"><div class="vcheck-icon idle"><i class="fa-solid fa-circle"></i></div><span>Confirming Recruiter licence</span></div>
+          <div class="verify-step-row" id="vcheck-4"><div class="vcheck-icon idle"><i class="fa-solid fa-circle"></i></div><span>Granting access</span></div>
+        </div>
+      </div>
+
+      <!-- Step 4: Rejected -->
+      <div id="gate-step-4" class="gate-step">
+        <div class="gate-icon-wrap">
+          <div class="gate-icon reject-icon"><i class="fa-solid fa-xmark"></i></div>
+        </div>
+        <h2 class="gate-title">Verification failed</h2>
+        <p class="gate-sub" id="gate-reject-reason">The LinkedIn profile provided does not appear to hold an active <strong>LinkedIn Recruiter</strong> licence. Only verified LinkedIn Recruiter account holders can access the ERP Talent Hub.</p>
+        <div class="gate-reject-info">
+          <i class="fa-solid fa-circle-info"></i>
+          <div>
+            <strong>What is LinkedIn Recruiter?</strong><br>
+            LinkedIn Recruiter is a premium paid subscription for talent acquisition professionals. If you believe this is an error, ensure you are using the URL of your LinkedIn Recruiter account, not a standard LinkedIn profile.
+          </div>
+        </div>
+        <button class="btn-primary gate-btn" onclick="gotoStep(2)" style="margin-top:20px"><i class="fa-solid fa-rotate-left" style="margin-right:8px"></i>Try a different profile</button>
+        <button class="btn-ghost" style="margin-top:8px;width:100%;font-size:13px" onclick="showView('home')">← Back to homepage</button>
+      </div>
+
+      <!-- Step 5: Approved -->
+      <div id="gate-step-5" class="gate-step">
+        <div class="gate-icon-wrap">
+          <div class="gate-icon approve-icon"><i class="fa-solid fa-check"></i></div>
+        </div>
+        <h2 class="gate-title">Access granted!</h2>
+        <p class="gate-sub">Your LinkedIn Recruiter account has been verified. Welcome to the ERP Talent Hub.</p>
+        <div class="gate-approved-card" id="gate-approved-card">
+          <div class="gate-approved-avatar" id="gate-approved-avatar"></div>
+          <div>
+            <div id="gate-approved-name" style="font-weight:600;font-size:15px"></div>
+            <div id="gate-approved-company" style="font-size:13px;color:#64748B"></div>
+            <div style="display:flex;align-items:center;gap:5px;margin-top:4px">
+              <i class="fa-brands fa-linkedin" style="color:#0A66C2;font-size:14px"></i>
+              <span id="gate-approved-url" style="font-size:12px;color:#0A66C2"></span>
+              <span style="font-size:11px;background:#ECFDF5;color:#15803D;border:1px solid #BBF7D0;border-radius:10px;padding:1px 8px;font-weight:600;margin-left:4px"><i class="fa-solid fa-circle-check"></i> Verified Recruiter</span>
+            </div>
+          </div>
+        </div>
+        <button class="btn-primary gate-btn" onclick="enterRecruiterPortal()" style="margin-top:24px"><i class="fa-solid fa-arrow-right" style="margin-right:8px"></i>Enter the Talent Pool</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── PORTAL (shown after verification) ── -->
+  <div id="rec-portal" style="display:none;flex:1;overflow:hidden">
+    <div class="portal-layout" style="height:100%">
+      <aside class="portal-sidebar">
+        <div class="portal-sidebar-header">
+          <div class="portal-logo-row">
+            <div class="portal-role-badge recruiter-badge"><i class="fa-solid fa-circle-check"></i> <span id="rec-verified-name">Verified Recruiter</span></div>
+            <button class="btn-ghost btn-sm" onclick="showView('home')" title="Back to home"><i class="fa-solid fa-arrow-left"></i></button>
+          </div>
+          <h2 class="portal-title">ERP Talent Pool</h2>
+          <div class="portal-search-wrap">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" class="portal-search" id="rec-search" placeholder="Search candidates…" oninput="filterCandidates(this.value)" />
+          </div>
+          <div class="portal-tabs">
+            <button class="ptab active" onclick="setRecTab('all',this)">All</button>
+            <button class="ptab" onclick="setRecTab('contacted',this)">Contacted</button>
+            <button class="ptab" onclick="setRecTab('new',this)">Not yet contacted</button>
+          </div>
+        </div>
+        <div class="candidate-list" id="rec-candidate-list"></div>
+      </aside>
+      <main class="portal-main" id="rec-chat-area">
+        <div class="chat-empty-state" id="rec-empty">
+          <i class="fa-solid fa-comments"></i>
+          <p>Select a candidate to start a conversation.</p>
+          <span>Only you — the recruiter — can open a new chat.</span>
+        </div>
+      </main>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════ CANDIDATE INBOX ═══════════════════ -->
+<div id="candidate-view" class="view portal-view">
+  <div class="portal-layout">
+    <aside class="portal-sidebar">
+      <div class="portal-sidebar-header">
+        <div class="portal-logo-row">
+          <div class="portal-role-badge candidate-badge"><i class="fa-solid fa-user"></i> Candidate</div>
+          <button class="btn-ghost btn-sm" onclick="showView('home')" title="Back to home"><i class="fa-solid fa-arrow-left"></i></button>
+        </div>
+        <h2 class="portal-title">My messages</h2>
+        <div class="portal-hint-box">
+          <i class="fa-solid fa-lock"></i>
+          <span>Recruiters contact you first. You can reply only after they open the conversation.</span>
+        </div>
+      </div>
+      <div class="candidate-list" id="cand-convo-list"></div>
+    </aside>
+    <main class="portal-main" id="cand-chat-area">
+      <div class="chat-empty-state" id="cand-empty">
+        <i class="fa-solid fa-inbox"></i>
+        <p>No messages yet.</p>
+        <span>When a recruiter contacts you, the conversation will appear here.</span>
+      </div>
+    </main>
+  </div>
 </div>
 
 <!-- FOOTER -->
 <footer>
-  <strong>ERP Talent Hub</strong> &nbsp;·&nbsp; EN · IT · ES · DE &nbsp;·&nbsp; © 2026
+  <strong>ERP Talent Hub</strong> &nbsp;·&nbsp; EN · IT · ES · DE · FR
+  <br style="margin-bottom:6px">
+  <span id="footer-ownership"></span>
 </footer>
 
 <script>
@@ -343,7 +651,8 @@ footer strong{color:rgba(255,255,255,.75)}
 // ─────────────────────────────────────────
 const TRANSLATIONS = {
   en:{
-    "nav.recruiters":"For recruiters","nav.submit":"Submit your CV",
+    "candidates":"My messages","recruiters":"For recruiters","submit":"Submit your CV",
+    "footer.owned":"Owned by © 2026 Vantage Finance & Tech · VAT 13449530016",
     "hero.badge":"Dedicated ERP recruitment platform",
     "hero.title":"Your ERP expertise,<br><span>visible to the world.</span>",
     "hero.sub":"Join the dedicated platform where SAP, Oracle, Microsoft Dynamics, and other ERP professionals showcase their careers to leading recruiters.",
@@ -374,7 +683,8 @@ const TRANSLATIONS = {
     "countries":["Austria","Belgium","Canada","Denmark","Finland","France","Germany","Italy","Netherlands","Norway","Poland","Portugal","Spain","Sweden","Switzerland","United Kingdom","United States","Other"]
   },
   it:{
-    "nav.recruiters":"Per recruiter","nav.submit":"Invia il tuo CV",
+    "candidates":"I miei messaggi","recruiters":"Per recruiter","submit":"Invia il tuo CV",
+    "footer.owned":"Di proprietà di © 2026 Vantage Finance & Tech · P.IVA 13449530016",
     "hero.badge":"Piattaforma dedicata al recruiting ERP",
     "hero.title":"La tua competenza ERP,<br><span>visibile al mondo.</span>",
     "hero.sub":"Unisciti alla piattaforma dedicata dove i professionisti di SAP, Oracle, Microsoft Dynamics e altri ERP mettono in mostra la propria carriera ai recruiter più qualificati.",
@@ -405,7 +715,8 @@ const TRANSLATIONS = {
     "countries":["Austria","Belgio","Canada","Danimarca","Finlandia","Francia","Germania","Italia","Paesi Bassi","Norvegia","Polonia","Portogallo","Spagna","Svezia","Svizzera","Regno Unito","Stati Uniti","Altro"]
   },
   es:{
-    "nav.recruiters":"Para recruiters","nav.submit":"Envía tu CV",
+    "candidates":"Mis mensajes","recruiters":"Para recruiters","submit":"Envía tu CV",
+    "footer.owned":"Propiedad de © 2026 Vantage Finance & Tech · NIF 13449530016",
     "hero.badge":"Plataforma dedicada al reclutamiento ERP",
     "hero.title":"Tu experiencia ERP,<br><span>visible para el mundo.</span>",
     "hero.sub":"Únete a la plataforma dedicada donde los profesionales de SAP, Oracle, Microsoft Dynamics y otros ERP muestran su carrera a los mejores recruiters.",
@@ -436,7 +747,8 @@ const TRANSLATIONS = {
     "countries":["Austria","Bélgica","Canadá","Dinamarca","Finlandia","Francia","Alemania","Italia","Países Bajos","Noruega","Polonia","Portugal","España","Suecia","Suiza","Reino Unido","Estados Unidos","Otro"]
   },
   de:{
-    "nav.recruiters":"Für Recruiter","nav.submit":"Lebenslauf einreichen",
+    "candidates":"Meine Nachrichten","recruiters":"Für Recruiter","submit":"Lebenslauf einreichen",
+    "footer.owned":"Eigentum von © 2026 Vantage Finance & Tech · USt-IdNr. 13449530016",
     "hero.badge":"Dedizierte ERP-Recruiting-Plattform",
     "hero.title":"Ihr ERP-Know-how,<br><span>sichtbar für die Welt.</span>",
     "hero.sub":"Treten Sie der dedizierten Plattform bei, auf der SAP-, Oracle-, Microsoft-Dynamics- und andere ERP-Fachleute ihre Karriere führenden Recruitern präsentieren.",
@@ -465,6 +777,38 @@ const TRANSLATIONS = {
     "success.title":"Ihr Profil wurde veröffentlicht!","success.sub":"Recruiter können Ihr Profil jetzt entdecken. Sie erhalten in Kürze eine E-Mail-Bestätigung.","success.back":"Zurück zur Startseite",
     "rec.title":"Auf den ERP-Talentpool zugreifen","rec.sub":"Fordern Sie verifizierten Recruiter-Zugang an, um Tausende von ERP-Fachleuten zu suchen, filtern und zu kontaktieren.","rec.back":"Zurück zur Startseite",
     "countries":["Österreich","Belgien","Kanada","Dänemark","Finnland","Frankreich","Deutschland","Italien","Niederlande","Norwegen","Polen","Portugal","Spanien","Schweden","Schweiz","Vereinigtes Königreich","Vereinigte Staaten","Sonstiges"]
+  },
+  fr:{
+    "candidates":"Mes messages","recruiters":"Pour les recruteurs","submit":"Déposer mon CV",
+    "footer.owned":"Propriété de © 2026 Vantage Finance & Tech · TVA 13449530016",
+    "hero.badge":"Plateforme dédiée au recrutement ERP",
+    "hero.title":"Votre expertise ERP,<br><span>visible dans le monde entier.</span>",
+    "hero.sub":"Rejoignez la plateforme dédiée où les professionnels SAP, Oracle, Microsoft Dynamics et autres ERP présentent leur carrière aux meilleurs recruteurs.",
+    "hero.cta":"Créer mon profil","hero.secondary":"Je suis recruteur",
+    "stats.professionals":"Professionnels ERP","stats.recruiters":"Recruteurs actifs","stats.systems":"Systèmes ERP couverts","stats.response":"Délai de réponse moy.",
+    "features.title":"Conçue pour les professionnels ERP","features.sub":"Pas de bruit généraliste. Chaque recruteur sur cette plateforme recrute activement pour des postes ERP.",
+    "feat1.t":"Confidentialité avant tout","feat1.d":"Vos coordonnées restent masquées jusqu'à ce qu'un recruteur vérifié en fasse la demande.",
+    "feat2.t":"Recherche spécifique ERP","feat2.d":"Les recruteurs filtrent par système, module, secteur et séniorité — seules les opportunités pertinentes vous parviennent.",
+    "feat3.t":"Alertes instantanées","feat3.d":"Soyez notifié dès qu'un recruteur consulte votre profil ou envoie une demande de mise en relation.",
+    "erp.covered":"Systèmes couverts","erp.title":"Toutes les grandes plateformes ERP",
+    "cta.title":"Prêt à être découvert ?","cta.sub":"5 minutes suffisent pour créer un profil qui travaille pour vous 24h/24.",
+    "form.title":"Créez votre profil ERP","form.sub":"Votre profil est visible uniquement par les recruteurs vérifiés. Pas de spam, pas d'appels non sollicités.",
+    "sec.personal":"Informations personnelles","sec.contact":"Coordonnées","sec.summary":"Résumé professionnel",
+    "sec.erp":"Systèmes ERP (sélectionnez tous ceux qui s'appliquent)","sec.experience":"Expériences professionnelles",
+    "sec.education":"Formation","sec.certs":"Certifications & licences","sec.awards":"Prix & distinctions",
+    "f.firstName":"Prénom","f.lastName":"Nom","f.city":"Ville","f.country":"Pays",
+    "f.email":"Adresse e-mail","f.phone":"Numéro de téléphone","f.linkedin":"URL du profil LinkedIn",
+    "f.summary":"Résumé","f.summaryPh":"Décrivez votre expertise ERP, les systèmes dans lesquels vous êtes spécialisé, votre secteur de prédilection et ce qui vous distingue...",
+    "words":"mots",
+    "f.jobTitle":"Intitulé du poste","f.company":"Entreprise","f.startDate":"Début","f.endDate":"Fin","f.current":"Poste actuel","f.description":"Responsabilités & réalisations",
+    "f.addExp":"+ Ajouter un autre poste",
+    "f.degree":"Diplôme / qualification","f.institution":"Établissement","f.gradYear":"Année","f.addEdu":"+ Ajouter une formation",
+    "f.certName":"Nom de la certification","f.issuer":"Organisme émetteur","f.certYear":"Année","f.addCert":"+ Ajouter une certification",
+    "f.awardName":"Prix / distinction","f.awardOrg":"Organisation","f.awardYear":"Année","f.addAward":"+ Ajouter un prix",
+    "form.submit":"Publier le profil","form.submitting":"Publication en cours...",
+    "success.title":"Votre profil a été publié !","success.sub":"Les recruteurs peuvent désormais découvrir votre profil. Vous recevrez bientôt un e-mail de confirmation.","success.back":"Retour à l'accueil",
+    "rec.title":"Accéder au vivier de talents ERP","rec.sub":"Demandez un accès recruteur vérifié pour rechercher, filtrer et contacter des milliers de professionnels ERP.","rec.back":"Retour à l'accueil",
+    "countries":["Autriche","Belgique","Canada","Danemark","Finlande","France","Allemagne","Italie","Pays-Bas","Norvège","Pologne","Portugal","Espagne","Suède","Suisse","Royaume-Uni","États-Unis","Autre"]
   }
 };
 
@@ -475,13 +819,8 @@ let expCount = 0, eduCount = 0, certCount = 0, awardCount = 0;
 let selectedErp = new Set();
 
 // ─────────────────────────────────────────
-// VIEW MANAGEMENT
+// VIEW MANAGEMENT — defined after chat engine below
 // ─────────────────────────────────────────
-function showView(name) {
-  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  document.getElementById(name + '-view').classList.add('active');
-  window.scrollTo(0, 0);
-}
 
 // ─────────────────────────────────────────
 // I18N
@@ -519,6 +858,9 @@ function applyTranslations() {
       sel.appendChild(o);
     });
   }
+  // Footer ownership
+  const footerEl = document.getElementById('footer-ownership');
+  if (footerEl) footerEl.textContent = t('footer.owned');
 }
 
 function rebuildDynamicParts() {
@@ -674,10 +1016,653 @@ function handleSubmit() {
 }
 
 // ─────────────────────────────────────────
+// PHONE PREFIXES
+// ─────────────────────────────────────────
+const PHONE_PREFIXES = [
+  {c:"AF",flag:"🇦🇫",dial:"+93",name:"Afghanistan"},
+  {c:"AL",flag:"🇦🇱",dial:"+355",name:"Albania"},
+  {c:"DZ",flag:"🇩🇿",dial:"+213",name:"Algeria"},
+  {c:"AD",flag:"🇦🇩",dial:"+376",name:"Andorra"},
+  {c:"AO",flag:"🇦🇴",dial:"+244",name:"Angola"},
+  {c:"AR",flag:"🇦🇷",dial:"+54",name:"Argentina"},
+  {c:"AM",flag:"🇦🇲",dial:"+374",name:"Armenia"},
+  {c:"AU",flag:"🇦🇺",dial:"+61",name:"Australia"},
+  {c:"AT",flag:"🇦🇹",dial:"+43",name:"Austria"},
+  {c:"AZ",flag:"🇦🇿",dial:"+994",name:"Azerbaijan"},
+  {c:"BH",flag:"🇧🇭",dial:"+973",name:"Bahrain"},
+  {c:"BD",flag:"🇧🇩",dial:"+880",name:"Bangladesh"},
+  {c:"BY",flag:"🇧🇾",dial:"+375",name:"Belarus"},
+  {c:"BE",flag:"🇧🇪",dial:"+32",name:"Belgium"},
+  {c:"BZ",flag:"🇧🇿",dial:"+501",name:"Belize"},
+  {c:"BJ",flag:"🇧🇯",dial:"+229",name:"Benin"},
+  {c:"BO",flag:"🇧🇴",dial:"+591",name:"Bolivia"},
+  {c:"BA",flag:"🇧🇦",dial:"+387",name:"Bosnia"},
+  {c:"BW",flag:"🇧🇼",dial:"+267",name:"Botswana"},
+  {c:"BR",flag:"🇧🇷",dial:"+55",name:"Brazil"},
+  {c:"BN",flag:"🇧🇳",dial:"+673",name:"Brunei"},
+  {c:"BG",flag:"🇧🇬",dial:"+359",name:"Bulgaria"},
+  {c:"BF",flag:"🇧🇫",dial:"+226",name:"Burkina Faso"},
+  {c:"KH",flag:"🇰🇭",dial:"+855",name:"Cambodia"},
+  {c:"CM",flag:"🇨🇲",dial:"+237",name:"Cameroon"},
+  {c:"CA",flag:"🇨🇦",dial:"+1",name:"Canada"},
+  {c:"CL",flag:"🇨🇱",dial:"+56",name:"Chile"},
+  {c:"CN",flag:"🇨🇳",dial:"+86",name:"China"},
+  {c:"CO",flag:"🇨🇴",dial:"+57",name:"Colombia"},
+  {c:"CR",flag:"🇨🇷",dial:"+506",name:"Costa Rica"},
+  {c:"HR",flag:"🇭🇷",dial:"+385",name:"Croatia"},
+  {c:"CU",flag:"🇨🇺",dial:"+53",name:"Cuba"},
+  {c:"CY",flag:"🇨🇾",dial:"+357",name:"Cyprus"},
+  {c:"CZ",flag:"🇨🇿",dial:"+420",name:"Czech Republic"},
+  {c:"DK",flag:"🇩🇰",dial:"+45",name:"Denmark"},
+  {c:"DO",flag:"🇩🇴",dial:"+1809",name:"Dominican Republic"},
+  {c:"EC",flag:"🇪🇨",dial:"+593",name:"Ecuador"},
+  {c:"EG",flag:"🇪🇬",dial:"+20",name:"Egypt"},
+  {c:"SV",flag:"🇸🇻",dial:"+503",name:"El Salvador"},
+  {c:"EE",flag:"🇪🇪",dial:"+372",name:"Estonia"},
+  {c:"ET",flag:"🇪🇹",dial:"+251",name:"Ethiopia"},
+  {c:"FI",flag:"🇫🇮",dial:"+358",name:"Finland"},
+  {c:"FR",flag:"🇫🇷",dial:"+33",name:"France"},
+  {c:"GE",flag:"🇬🇪",dial:"+995",name:"Georgia"},
+  {c:"DE",flag:"🇩🇪",dial:"+49",name:"Germany"},
+  {c:"GH",flag:"🇬🇭",dial:"+233",name:"Ghana"},
+  {c:"GR",flag:"🇬🇷",dial:"+30",name:"Greece"},
+  {c:"GT",flag:"🇬🇹",dial:"+502",name:"Guatemala"},
+  {c:"HN",flag:"🇭🇳",dial:"+504",name:"Honduras"},
+  {c:"HK",flag:"🇭🇰",dial:"+852",name:"Hong Kong"},
+  {c:"HU",flag:"🇭🇺",dial:"+36",name:"Hungary"},
+  {c:"IS",flag:"🇮🇸",dial:"+354",name:"Iceland"},
+  {c:"IN",flag:"🇮🇳",dial:"+91",name:"India"},
+  {c:"ID",flag:"🇮🇩",dial:"+62",name:"Indonesia"},
+  {c:"IR",flag:"🇮🇷",dial:"+98",name:"Iran"},
+  {c:"IQ",flag:"🇮🇶",dial:"+964",name:"Iraq"},
+  {c:"IE",flag:"🇮🇪",dial:"+353",name:"Ireland"},
+  {c:"IL",flag:"🇮🇱",dial:"+972",name:"Israel"},
+  {c:"IT",flag:"🇮🇹",dial:"+39",name:"Italy"},
+  {c:"JP",flag:"🇯🇵",dial:"+81",name:"Japan"},
+  {c:"JO",flag:"🇯🇴",dial:"+962",name:"Jordan"},
+  {c:"KZ",flag:"🇰🇿",dial:"+7",name:"Kazakhstan"},
+  {c:"KE",flag:"🇰🇪",dial:"+254",name:"Kenya"},
+  {c:"KW",flag:"🇰🇼",dial:"+965",name:"Kuwait"},
+  {c:"KG",flag:"🇰🇬",dial:"+996",name:"Kyrgyzstan"},
+  {c:"LV",flag:"🇱🇻",dial:"+371",name:"Latvia"},
+  {c:"LB",flag:"🇱🇧",dial:"+961",name:"Lebanon"},
+  {c:"LY",flag:"🇱🇾",dial:"+218",name:"Libya"},
+  {c:"LI",flag:"🇱🇮",dial:"+423",name:"Liechtenstein"},
+  {c:"LT",flag:"🇱🇹",dial:"+370",name:"Lithuania"},
+  {c:"LU",flag:"🇱🇺",dial:"+352",name:"Luxembourg"},
+  {c:"MK",flag:"🇲🇰",dial:"+389",name:"Macedonia"},
+  {c:"MY",flag:"🇲🇾",dial:"+60",name:"Malaysia"},
+  {c:"MV",flag:"🇲🇻",dial:"+960",name:"Maldives"},
+  {c:"MT",flag:"🇲🇹",dial:"+356",name:"Malta"},
+  {c:"MX",flag:"🇲🇽",dial:"+52",name:"Mexico"},
+  {c:"MD",flag:"🇲🇩",dial:"+373",name:"Moldova"},
+  {c:"MC",flag:"🇲🇨",dial:"+377",name:"Monaco"},
+  {c:"MN",flag:"🇲🇳",dial:"+976",name:"Mongolia"},
+  {c:"ME",flag:"🇲🇪",dial:"+382",name:"Montenegro"},
+  {c:"MA",flag:"🇲🇦",dial:"+212",name:"Morocco"},
+  {c:"MZ",flag:"🇲🇿",dial:"+258",name:"Mozambique"},
+  {c:"MM",flag:"🇲🇲",dial:"+95",name:"Myanmar"},
+  {c:"NA",flag:"🇳🇦",dial:"+264",name:"Namibia"},
+  {c:"NP",flag:"🇳🇵",dial:"+977",name:"Nepal"},
+  {c:"NL",flag:"🇳🇱",dial:"+31",name:"Netherlands"},
+  {c:"NZ",flag:"🇳🇿",dial:"+64",name:"New Zealand"},
+  {c:"NI",flag:"🇳🇮",dial:"+505",name:"Nicaragua"},
+  {c:"NG",flag:"🇳🇬",dial:"+234",name:"Nigeria"},
+  {c:"NO",flag:"🇳🇴",dial:"+47",name:"Norway"},
+  {c:"OM",flag:"🇴🇲",dial:"+968",name:"Oman"},
+  {c:"PK",flag:"🇵🇰",dial:"+92",name:"Pakistan"},
+  {c:"PA",flag:"🇵🇦",dial:"+507",name:"Panama"},
+  {c:"PY",flag:"🇵🇾",dial:"+595",name:"Paraguay"},
+  {c:"PE",flag:"🇵🇪",dial:"+51",name:"Peru"},
+  {c:"PH",flag:"🇵🇭",dial:"+63",name:"Philippines"},
+  {c:"PL",flag:"🇵🇱",dial:"+48",name:"Poland"},
+  {c:"PT",flag:"🇵🇹",dial:"+351",name:"Portugal"},
+  {c:"QA",flag:"🇶🇦",dial:"+974",name:"Qatar"},
+  {c:"RO",flag:"🇷🇴",dial:"+40",name:"Romania"},
+  {c:"RU",flag:"🇷🇺",dial:"+7",name:"Russia"},
+  {c:"SA",flag:"🇸🇦",dial:"+966",name:"Saudi Arabia"},
+  {c:"SN",flag:"🇸🇳",dial:"+221",name:"Senegal"},
+  {c:"RS",flag:"🇷🇸",dial:"+381",name:"Serbia"},
+  {c:"SG",flag:"🇸🇬",dial:"+65",name:"Singapore"},
+  {c:"SK",flag:"🇸🇰",dial:"+421",name:"Slovakia"},
+  {c:"SI",flag:"🇸🇮",dial:"+386",name:"Slovenia"},
+  {c:"ZA",flag:"🇿🇦",dial:"+27",name:"South Africa"},
+  {c:"KR",flag:"🇰🇷",dial:"+82",name:"South Korea"},
+  {c:"ES",flag:"🇪🇸",dial:"+34",name:"Spain"},
+  {c:"LK",flag:"🇱🇰",dial:"+94",name:"Sri Lanka"},
+  {c:"SE",flag:"🇸🇪",dial:"+46",name:"Sweden"},
+  {c:"CH",flag:"🇨🇭",dial:"+41",name:"Switzerland"},
+  {c:"TW",flag:"🇹🇼",dial:"+886",name:"Taiwan"},
+  {c:"TJ",flag:"🇹🇯",dial:"+992",name:"Tajikistan"},
+  {c:"TZ",flag:"🇹🇿",dial:"+255",name:"Tanzania"},
+  {c:"TH",flag:"🇹🇭",dial:"+66",name:"Thailand"},
+  {c:"TN",flag:"🇹🇳",dial:"+216",name:"Tunisia"},
+  {c:"TR",flag:"🇹🇷",dial:"+90",name:"Turkey"},
+  {c:"TM",flag:"🇹🇲",dial:"+993",name:"Turkmenistan"},
+  {c:"UG",flag:"🇺🇬",dial:"+256",name:"Uganda"},
+  {c:"UA",flag:"🇺🇦",dial:"+380",name:"Ukraine"},
+  {c:"AE",flag:"🇦🇪",dial:"+971",name:"UAE"},
+  {c:"GB",flag:"🇬🇧",dial:"+44",name:"United Kingdom"},
+  {c:"US",flag:"🇺🇸",dial:"+1",name:"United States"},
+  {c:"UY",flag:"🇺🇾",dial:"+598",name:"Uruguay"},
+  {c:"UZ",flag:"🇺🇿",dial:"+998",name:"Uzbekistan"},
+  {c:"VE",flag:"🇻🇪",dial:"+58",name:"Venezuela"},
+  {c:"VN",flag:"🇻🇳",dial:"+84",name:"Vietnam"},
+  {c:"YE",flag:"🇾🇪",dial:"+967",name:"Yemen"},
+  {c:"ZM",flag:"🇿🇲",dial:"+260",name:"Zambia"},
+  {c:"ZW",flag:"🇿🇼",dial:"+263",name:"Zimbabwe"},
+];
+
+function buildPhonePrefix() {
+  const sel = document.getElementById('f-phone-prefix');
+  if (!sel) return;
+  const current = sel.value;
+  sel.innerHTML = '';
+  PHONE_PREFIXES.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p.dial;
+    opt.textContent = p.flag + ' ' + p.dial;
+    opt.title = p.name;
+    if (p.c === 'IT') opt.selected = true;
+    sel.appendChild(opt);
+  });
+  if (current) sel.value = current;
+}
+
+// ─────────────────────────────────────────
+// RECRUITER ACCREDITATION GATE
+// ─────────────────────────────────────────
+
+let recruiterVerified = false;
+let recruiterProfile = {};
+
+// Simulate profiles that PASS (have LinkedIn Recruiter) vs FAIL
+// In a real app this would call LinkedIn's OAuth + API
+const VERIFIED_RECRUITER_HANDLES = ['sarah.johnson.rec','michael.smith.rec','anna.recruiter','john.doe.lir','talent.scout','hr.erp','korn.ferry.rec','heidrick.rec'];
+
+function gotoStep(n) {
+  document.querySelectorAll('.gate-step').forEach(s => s.classList.remove('active'));
+  const target = document.getElementById('gate-step-' + n);
+  if (target) target.classList.add('active');
+}
+
+function validateGateUrl() {
+  const val = document.getElementById('gate-li-url').value.trim();
+  const err = document.getElementById('gate-url-error');
+  const valid = val.length >= 3 && /^[a-zA-Z0-9\-_.]+$/.test(val);
+  err.style.display = valid || !val ? 'none' : 'block';
+  return valid;
+}
+
+function startVerification() {
+  const url = document.getElementById('gate-li-url').value.trim();
+  const name = document.getElementById('gate-li-name').value.trim();
+  const company = document.getElementById('gate-li-company').value.trim();
+
+  if (!url || url.length < 3) {
+    document.getElementById('gate-url-error').style.display = 'block';
+    return;
+  }
+  if (!name) { alert('Please enter your full name.'); return; }
+  if (!company) { alert('Please enter your company or agency.'); return; }
+
+  recruiterProfile = { url, name, company };
+  gotoStep(3);
+  runVerificationAnimation(url);
+}
+
+function runVerificationAnimation(handle) {
+  const steps = ['vcheck-1','vcheck-2','vcheck-3','vcheck-4'];
+  const delays = [0, 900, 1700, 2500];
+  const doneTimes = [700, 1600, 2400, 3300];
+
+  // Reset all to idle
+  steps.forEach(id => {
+    const row = document.getElementById(id);
+    const icon = row.querySelector('.vcheck-icon');
+    icon.className = 'vcheck-icon idle';
+    icon.innerHTML = '<i class="fa-solid fa-circle"></i>';
+    row.classList.remove('done-row');
+  });
+
+  const isApproved = VERIFIED_RECRUITER_HANDLES.includes(handle.toLowerCase()) ||
+                     handle.toLowerCase().includes('rec') ||
+                     handle.toLowerCase().includes('hr') ||
+                     handle.toLowerCase().includes('talent');
+
+  steps.forEach((id, i) => {
+    setTimeout(() => {
+      const row = document.getElementById(id);
+      const icon = row.querySelector('.vcheck-icon');
+      icon.className = 'vcheck-icon pending';
+      icon.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>';
+    }, delays[i]);
+
+    setTimeout(() => {
+      const row = document.getElementById(id);
+      const icon = row.querySelector('.vcheck-icon');
+      const isLastStep = i === steps.length - 1;
+      const fail = isLastStep && !isApproved;
+      if (fail) {
+        icon.className = 'vcheck-icon fail';
+        icon.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+      } else {
+        icon.className = 'vcheck-icon done';
+        icon.innerHTML = '<i class="fa-solid fa-check"></i>';
+        row.classList.add('done-row');
+      }
+      if (isLastStep) {
+        setTimeout(() => isApproved ? showApproved() : showRejected(), 600);
+      }
+    }, doneTimes[i]);
+  });
+}
+
+function showApproved() {
+  const ini = recruiterProfile.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
+  document.getElementById('gate-approved-avatar').textContent = ini;
+  document.getElementById('gate-approved-name').textContent = recruiterProfile.name;
+  document.getElementById('gate-approved-company').textContent = recruiterProfile.company;
+  document.getElementById('gate-approved-url').textContent = 'linkedin.com/in/' + recruiterProfile.url;
+  gotoStep(5);
+}
+
+function showRejected() {
+  gotoStep(4);
+}
+
+function enterRecruiterPortal() {
+  recruiterVerified = true;
+  document.getElementById('rec-gate').style.display = 'none';
+  const portal = document.getElementById('rec-portal');
+  portal.style.display = 'flex';
+  // Show recruiter's first name in badge
+  const firstName = recruiterProfile.name.split(' ')[0];
+  document.getElementById('rec-verified-name').textContent = firstName + ' · Verified';
+  initRecruiterPortal();
+}
+
+// ─────────────────────────────────────────
+// CHAT ENGINE
+// ─────────────────────────────────────────
+
+// Palette for avatars
+const AVATAR_COLORS = ['#2563EB','#7C3AED','#DB2777','#D97706','#059669','#0891B2','#DC2626','#65A30D'];
+function avatarColor(name){ let h=0; for(let c of name) h=(h*31+c.charCodeAt(0))%AVATAR_COLORS.length; return AVATAR_COLORS[h]; }
+function initials(name){ return name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2); }
+
+// ── Sample candidate data ──
+const CANDIDATES = [
+  {id:1, name:'Marco Rossi',       role:'SAP S/4HANA Consultant',     location:'Milan, Italy',       systems:['SAP S/4HANA','SAP ECC'],   online:true},
+  {id:2, name:'Laura Müller',      role:'Oracle Fusion Architect',     location:'Munich, Germany',    systems:['Oracle Fusion','Oracle EBS'],online:false},
+  {id:3, name:'Carlos García',     role:'MS Dynamics 365 Specialist',  location:'Madrid, Spain',      systems:['Microsoft Dynamics 365'],  online:true},
+  {id:4, name:'Sophie Dubois',     role:'SAP FI/CO Lead',              location:'Paris, France',      systems:['SAP ECC','SAP S/4HANA'],   online:false},
+  {id:5, name:'Lena Andersson',    role:'Workday HCM Consultant',      location:'Stockholm, Sweden',  systems:['Workday'],                 online:true},
+  {id:6, name:'James O\'Brien',    role:'NetSuite ERP Developer',      location:'Dublin, Ireland',    systems:['NetSuite'],                online:false},
+  {id:7, name:'Fatima Al-Hassan',  role:'Infor LN Functional Expert',  location:'Dubai, UAE',         systems:['Infor LN'],                online:true},
+  {id:8, name:'Piotr Kowalski',    role:'SAP MM/WM Consultant',        location:'Warsaw, Poland',     systems:['SAP ECC','SAP S/4HANA'],   online:false},
+];
+
+// ── Shared conversation store ──
+// conversations[candidateId] = { opened: bool, messages: [{from:'rec'|'cand', text, time}] }
+const conversations = {};
+
+// ── State ──
+let recActiveCandidateId = null;
+let candActiveCandidateId = null; // candidate views their own conversation with a recruiter
+let recTabFilter = 'all';
+
+// ─── RECRUITER PORTAL ───────────────────────────────────
+
+function initRecruiterPortal() {
+  renderRecCandidateList();
+}
+
+function setRecTab(tab, el) {
+  recTabFilter = tab;
+  document.querySelectorAll('.ptab').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderRecCandidateList();
+}
+
+function filterCandidates(q) {
+  renderRecCandidateList(q);
+}
+
+function renderRecCandidateList(q) {
+  const search = (q || document.getElementById('rec-search')?.value || '').toLowerCase();
+  const list = document.getElementById('rec-candidate-list');
+  if (!list) return;
+  list.innerHTML = '';
+  CANDIDATES
+    .filter(c => {
+      const matchSearch = !search || c.name.toLowerCase().includes(search) || c.role.toLowerCase().includes(search);
+      const conv = conversations[c.id];
+      const contacted = conv && conv.opened;
+      const matchTab = recTabFilter === 'all' || (recTabFilter === 'contacted' && contacted) || (recTabFilter === 'new' && !contacted);
+      return matchSearch && matchTab;
+    })
+    .forEach(c => {
+      const conv = conversations[c.id];
+      const contacted = conv && conv.opened;
+      const unread = conv ? conv.messages.filter(m => m.from === 'cand' && !m.read).length : 0;
+      const div = document.createElement('div');
+      div.className = 'cand-card' + (recActiveCandidateId === c.id ? ' active' : '');
+      div.onclick = () => openRecChat(c.id);
+      div.innerHTML = `
+        <div class="cand-avatar" style="background:${avatarColor(c.name)}">${initials(c.name)}</div>
+        <div class="cand-info">
+          <div class="cand-name">${c.name}</div>
+          <div class="cand-meta">${c.role}</div>
+          <div class="cand-meta" style="margin-top:2px">${c.systems.slice(0,2).join(' · ')}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+          <div class="cand-badge-dot ${contacted ? '' : 'grey'}" title="${contacted ? 'Contacted' : 'Not contacted'}"></div>
+          ${unread ? `<div class="cand-unread">${unread}</div>` : ''}
+        </div>`;
+      list.appendChild(div);
+    });
+}
+
+function openRecChat(candidateId) {
+  recActiveCandidateId = candidateId;
+  if (!conversations[candidateId]) {
+    conversations[candidateId] = { opened: false, messages: [] };
+  }
+  // Mark cand messages as read
+  conversations[candidateId].messages.forEach(m => { if(m.from==='cand') m.read = true; });
+  renderRecCandidateList();
+  renderRecChatWindow(candidateId);
+}
+
+function renderRecChatWindow(candidateId) {
+  const area = document.getElementById('rec-chat-area');
+  const cand = CANDIDATES.find(c => c.id === candidateId);
+  const conv = conversations[candidateId];
+  const color = avatarColor(cand.name);
+  const ini = initials(cand.name);
+
+  area.innerHTML = `
+    <div class="chat-window">
+      <div class="chat-topbar">
+        <div class="chat-topbar-avatar" style="background:${color}">${ini}</div>
+        <div class="chat-topbar-info">
+          <div class="chat-topbar-name">${cand.name}</div>
+          <div class="chat-topbar-sub">${cand.role} · ${cand.location}</div>
+        </div>
+        <div class="chat-topbar-status">
+          <div class="status-dot ${cand.online ? 'online' : 'offline'}"></div>
+          <span style="color:var(--gray-500)">${cand.online ? 'Online' : 'Offline'}</span>
+        </div>
+      </div>
+      <div class="chat-messages" id="rec-messages"></div>
+      <div class="chat-input-area">
+        <div class="chat-input-row">
+          <textarea class="chat-textarea" id="rec-input" rows="1" placeholder="Write a message…" onkeydown="recInputKey(event,${candidateId})"></textarea>
+          <button class="chat-send-btn" onclick="recSendMessage(${candidateId})" title="Send"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+        ${!conv.opened ? `<div style="font-size:11px;color:var(--gray-400);margin-top:6px;text-align:center"><i class="fa-solid fa-info-circle"></i> You are opening this conversation for the first time. The candidate will be able to reply after you send your first message.</div>` : ''}
+      </div>
+    </div>`;
+
+  renderRecMessages(candidateId);
+  autoResizeTextarea(document.getElementById('rec-input'));
+}
+
+function renderRecMessages(candidateId) {
+  const conv = conversations[candidateId];
+  const box = document.getElementById('rec-messages');
+  if (!box) return;
+  if (conv.messages.length === 0) {
+    box.innerHTML = `<div style="text-align:center;font-size:13px;color:var(--gray-400);margin:auto;padding:40px 20px">No messages yet. Say hello to start the conversation!</div>`;
+    return;
+  }
+  box.innerHTML = '';
+  let lastDate = '';
+  conv.messages.forEach(m => {
+    const d = m.time ? new Date(m.time).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : '';
+    if (d !== lastDate) {
+      const div = document.createElement('div');
+      div.className = 'chat-date-divider';
+      div.textContent = d;
+      box.appendChild(div);
+      lastDate = d;
+    }
+    const isMe = m.from === 'rec';
+    const cand = CANDIDATES.find(c => c.id === candidateId);
+    const color = avatarColor(isMe ? 'Recruiter' : cand.name);
+    const ini = initials(isMe ? 'RE' : cand.name);
+    const timeStr = m.time ? new Date(m.time).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}) : '';
+    const row = document.createElement('div');
+    row.className = 'msg-row' + (isMe ? ' mine' : '');
+    row.innerHTML = `
+      <div class="msg-avatar" style="background:${color}">${ini}</div>
+      <div>
+        <div class="msg-bubble ${isMe ? 'mine' : 'them'}">${escHtml(m.text)}${isMe ? `<div class="msg-status">✓ Sent</div>` : ''}</div>
+        <div style="font-size:11px;color:var(--gray-400);margin-top:3px;${isMe?'text-align:right':''}">${timeStr}</div>
+      </div>
+      <div class="msg-time" style="display:none"></div>`;
+    box.appendChild(row);
+  });
+  box.scrollTop = box.scrollHeight;
+}
+
+function recInputKey(e, candidateId) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); recSendMessage(candidateId); }
+}
+
+function recSendMessage(candidateId) {
+  const input = document.getElementById('rec-input');
+  const text = input.value.trim();
+  if (!text) return;
+  const conv = conversations[candidateId];
+  conv.opened = true;
+  conv.messages.push({ from: 'rec', text, time: new Date().toISOString(), read: true });
+  input.value = '';
+  input.style.height = 'auto';
+  renderRecCandidateList();
+  renderRecChatWindow(candidateId);
+  // Simulate candidate reply after 2–4 s
+  simulateCandidateReply(candidateId);
+}
+
+const SAMPLE_REPLIES = [
+  "Thank you for reaching out! I'd be happy to discuss this opportunity.",
+  "Hello! Yes, I'm currently open to new opportunities. Could you tell me more about the role?",
+  "Hi, thanks for contacting me. I'm very interested — when would you be available for a call?",
+  "Thanks for getting in touch. I have experience in exactly the systems you've mentioned.",
+  "Hello! I appreciate you reaching out. I'm available for an interview next week if that works for you.",
+  "Great to hear from you! I've been looking for exactly this kind of role. Let's connect!",
+];
+
+function simulateCandidateReply(candidateId) {
+  const delay = 2000 + Math.random() * 2500;
+  setTimeout(() => {
+    const conv = conversations[candidateId];
+    if (!conv) return;
+    const reply = SAMPLE_REPLIES[Math.floor(Math.random() * SAMPLE_REPLIES.length)];
+    conv.messages.push({ from: 'cand', text: reply, time: new Date().toISOString(), read: recActiveCandidateId === candidateId });
+    if (recActiveCandidateId === candidateId) {
+      renderRecMessages(candidateId);
+    }
+    renderRecCandidateList();
+    // Also update candidate inbox if open
+    if (document.getElementById('candidate-view').classList.contains('active') && candActiveCandidateId === candidateId) {
+      renderCandMessages(candidateId);
+    }
+    renderCandConvoList();
+  }, delay);
+}
+
+// ─── CANDIDATE PORTAL ───────────────────────────────────
+
+function initCandidatePortal() {
+  renderCandConvoList();
+}
+
+function renderCandConvoList() {
+  const list = document.getElementById('cand-convo-list');
+  if (!list) return;
+  list.innerHTML = '';
+  const contacted = CANDIDATES.filter(c => conversations[c.id] && conversations[c.id].opened);
+  if (contacted.length === 0) {
+    list.innerHTML = `<div style="padding:24px 16px;text-align:center;font-size:13px;color:var(--gray-400)">No conversations yet.</div>`;
+    return;
+  }
+  contacted.forEach(c => {
+    const conv = conversations[c.id];
+    const lastMsg = conv.messages[conv.messages.length - 1];
+    const unread = conv.messages.filter(m => m.from === 'rec' && !m.candRead).length;
+    const div = document.createElement('div');
+    div.className = 'cand-card' + (candActiveCandidateId === c.id ? ' active' : '');
+    div.onclick = () => openCandChat(c.id);
+    div.innerHTML = `
+      <div class="cand-avatar" style="background:${avatarColor('Recruiter REC')}">HR</div>
+      <div class="cand-info">
+        <div class="cand-name">Recruiter</div>
+        <div class="cand-meta" style="font-size:12px">${lastMsg ? escHtml(lastMsg.text.slice(0,42)) + (lastMsg.text.length > 42 ? '…' : '') : ''}</div>
+      </div>
+      ${unread ? `<div class="cand-unread">${unread}</div>` : ''}`;
+    list.appendChild(div);
+  });
+}
+
+function openCandChat(candidateId) {
+  candActiveCandidateId = candidateId;
+  const conv = conversations[candidateId];
+  if (conv) conv.messages.forEach(m => { if (m.from === 'rec') m.candRead = true; });
+  renderCandConvoList();
+  renderCandChatWindow(candidateId);
+}
+
+function renderCandChatWindow(candidateId) {
+  const area = document.getElementById('cand-chat-area');
+  const cand = CANDIDATES.find(c => c.id === candidateId);
+  const conv = conversations[candidateId];
+  const canReply = conv && conv.opened && conv.messages.some(m => m.from === 'rec');
+
+  area.innerHTML = `
+    <div class="chat-window">
+      <div class="chat-topbar">
+        <div class="chat-topbar-avatar" style="background:${avatarColor('Recruiter REC')}">HR</div>
+        <div class="chat-topbar-info">
+          <div class="chat-topbar-name">Recruiter</div>
+          <div class="chat-topbar-sub">ERP Talent Hub · Verified</div>
+        </div>
+        <div class="chat-topbar-status">
+          <div class="status-dot online"></div>
+          <span style="color:var(--gray-500)">Online</span>
+        </div>
+      </div>
+      <div class="chat-messages" id="cand-messages"></div>
+      ${canReply
+        ? `<div class="chat-input-area">
+            <div class="chat-input-row">
+              <textarea class="chat-textarea" id="cand-input" rows="1" placeholder="Write a reply…" onkeydown="candInputKey(event,${candidateId})"></textarea>
+              <button class="chat-send-btn" onclick="candSendMessage(${candidateId})" title="Send"><i class="fa-solid fa-paper-plane"></i></button>
+            </div>
+           </div>`
+        : `<div class="chat-locked-notice"><i class="fa-solid fa-lock"></i> You can reply once the recruiter sends you the first message.</div>`
+      }
+    </div>`;
+
+  renderCandMessages(candidateId);
+  if (canReply) autoResizeTextarea(document.getElementById('cand-input'));
+}
+
+function renderCandMessages(candidateId) {
+  const conv = conversations[candidateId];
+  const box = document.getElementById('cand-messages');
+  if (!box || !conv) return;
+  box.innerHTML = '';
+  let lastDate = '';
+  conv.messages.forEach(m => {
+    const d = m.time ? new Date(m.time).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : '';
+    if (d !== lastDate) {
+      const dDiv = document.createElement('div');
+      dDiv.className = 'chat-date-divider';
+      dDiv.textContent = d;
+      box.appendChild(dDiv);
+      lastDate = d;
+    }
+    const isMe = m.from === 'cand';
+    const color = isMe ? avatarColor('cand self') : avatarColor('Recruiter REC');
+    const ini = isMe ? initials('ME') : 'HR';
+    const timeStr = m.time ? new Date(m.time).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}) : '';
+    const row = document.createElement('div');
+    row.className = 'msg-row' + (isMe ? ' mine' : '');
+    row.innerHTML = `
+      <div class="msg-avatar" style="background:${color}">${ini}</div>
+      <div>
+        <div class="msg-bubble ${isMe ? 'mine' : 'them'}">${escHtml(m.text)}${isMe ? `<div class="msg-status">✓ Sent</div>` : ''}</div>
+        <div style="font-size:11px;color:var(--gray-400);margin-top:3px;${isMe?'text-align:right':''}">${timeStr}</div>
+      </div>`;
+    box.appendChild(row);
+  });
+  box.scrollTop = box.scrollHeight;
+}
+
+function candInputKey(e, candidateId) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); candSendMessage(candidateId); }
+}
+
+function candSendMessage(candidateId) {
+  const input = document.getElementById('cand-input');
+  const text = input.value.trim();
+  if (!text) return;
+  const conv = conversations[candidateId];
+  if (!conv || !conv.opened) return; // safety guard
+  conv.messages.push({ from: 'cand', text, time: new Date().toISOString(), read: true, candRead: true });
+  input.value = '';
+  input.style.height = 'auto';
+  renderCandMessages(candidateId);
+  renderCandConvoList();
+  // Update recruiter view if open
+  if (document.getElementById('recruiter-view').classList.contains('active') && recActiveCandidateId === candidateId) {
+    renderRecMessages(candidateId);
+    renderRecCandidateList();
+  }
+}
+
+// ─── UTILITIES ───────────────────────────────────────────
+
+function escHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
+
+function autoResizeTextarea(el) {
+  if (!el) return;
+  el.addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+  });
+}
+
+// ─── View management + portal init ───────────────────────
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  const target = document.getElementById(name + '-view');
+  if (target) target.classList.add('active');
+  window.scrollTo(0, 0);
+  if (name === 'recruiter') {
+    // If not yet verified, show gate at step 1; if verified, show portal
+    if (!recruiterVerified) {
+      document.getElementById('rec-gate').style.display = 'flex';
+      document.getElementById('rec-portal').style.display = 'none';
+      gotoStep(1);
+    } else {
+      initRecruiterPortal();
+    }
+  }
+  if (name === 'candidate') initCandidatePortal();
+}
+
+// ─────────────────────────────────────────
 // INIT
 // ─────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   applyTranslations();
+  buildPhonePrefix();
   buildErpToggles();
   buildHomeErpTags();
   // Add one entry per section by default
