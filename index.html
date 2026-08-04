@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ERP Talent Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#2563EB;--blue-light:#EFF6FF;--blue-mid:#BFDBFE;--blue-dark:#1E40AF;
+  --teal:#0F766E;--teal-light:#F0FDFA;
+  --gray-900:#0F172A;--gray-700:#334155;--gray-500:#64748B;--gray-300:#CBD5E1;--gray-100:#F1F5F9;--gray-50:#F8FAFC;
+  --white:#FFFFFF;
+  --radius:8px;--radius-lg:14px;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.08);
+  --shadow-md:0 4px 16px rgba(0,0,0,.10);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;font-size:15px;color:var(--gray-900);background:var(--white);line-height:1.6}
+h1,h2,h3,h4{font-weight:600;line-height:1.25}
+a{color:var(--blue);text-decoration:none}
+input,select,textarea{
+  font-family:'Inter',sans-serif;font-size:14px;
+  width:100%;padding:9px 12px;
+  border:1.5px solid var(--gray-300);border-radius:var(--radius);
+  background:var(--white);color:var(--gray-900);
+  transition:border-color .15s;outline:none;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--blue);}
+textarea{resize:vertical}
+button{font-family:'Inter',sans-serif;cursor:pointer;font-size:14px;border-radius:var(--radius);transition:all .15s;border:1.5px solid transparent}
+.btn-primary{background:var(--blue);color:#fff;border-color:var(--blue);padding:10px 24px;font-weight:500}
+.btn-primary:hover{background:var(--blue-dark);border-color:var(--blue-dark)}
+.btn-outline{background:transparent;color:var(--gray-700);border-color:var(--gray-300);padding:10px 20px}
+.btn-outline:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-light)}
+.btn-ghost{background:transparent;color:var(--gray-500);border:none;padding:8px 14px}
+.btn-ghost:hover{color:var(--gray-900);background:var(--gray-100)}
+.btn-sm{padding:6px 14px;font-size:13px}
+.btn-add{background:transparent;color:var(--blue);border:1.5px dashed var(--blue-mid);padding:7px 16px;font-size:13px;border-radius:var(--radius)}
+.btn-add:hover{background:var(--blue-light)}
+.btn-remove{background:transparent;border:none;color:var(--gray-300);padding:4px 6px;font-size:18px;line-height:1;border-radius:4px}
+.btn-remove:hover{color:#DC2626;background:#FEF2F2}
+
+/* NAV */
+#nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.95);backdrop-filter:blur(8px);border-bottom:1px solid var(--gray-100);padding:0 24px}
+.nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:60px;gap:16px}
+.nav-logo{display:flex;align-items:center;gap:10px;font-weight:600;font-size:16px;color:var(--gray-900);text-decoration:none}
+.nav-logo-icon{width:32px;height:32px;border-radius:8px;background:var(--blue);display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;flex-shrink:0}
+.nav-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.lang-switcher{display:flex;gap:2px;border:1px solid var(--gray-300);border-radius:var(--radius);padding:2px}
+.lang-btn{background:none;border:none;font-size:12px;font-weight:500;padding:4px 9px;border-radius:6px;color:var(--gray-500);cursor:pointer;transition:all .12s}
+.lang-btn.active{background:var(--blue);color:#fff}
+
+/* VIEWS */
+.view{display:none}
+.view.active{display:block}
+
+/* HERO */
+#hero{background:linear-gradient(135deg,var(--gray-50) 0%,var(--blue-light) 100%);padding:80px 24px 64px;text-align:center}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:var(--white);border:1px solid var(--blue-mid);border-radius:20px;padding:5px 14px;font-size:12px;font-weight:500;color:var(--blue);margin-bottom:28px;box-shadow:var(--shadow-sm)}
+.hero-title{font-size:clamp(28px,5vw,52px);font-weight:600;line-height:1.15;margin-bottom:18px;color:var(--gray-900);max-width:700px;margin-left:auto;margin-right:auto}
+.hero-title span{color:var(--blue)}
+.hero-subtitle{font-size:17px;color:var(--gray-500);max-width:580px;margin:0 auto 36px;line-height:1.7}
+.hero-ctas{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+
+/* STATS */
+.stats-section{padding:48px 24px;background:var(--white)}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;max-width:900px;margin:0 auto}
+.stat-card{text-align:center;padding:20px 16px;border:1px solid var(--gray-100);border-radius:var(--radius-lg);background:var(--gray-50)}
+.stat-num{font-size:28px;font-weight:600;color:var(--blue);margin-bottom:4px}
+.stat-label{font-size:13px;color:var(--gray-500)}
+
+/* FEATURES */
+.features-section{background:var(--gray-50);padding:64px 24px;border-top:1px solid var(--gray-100)}
+.section-label{text-align:center;font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);margin-bottom:12px}
+.section-title{text-align:center;font-size:clamp(20px,3vw,30px);margin-bottom:8px}
+.section-sub{text-align:center;color:var(--gray-500);font-size:15px;margin-bottom:48px}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px;max-width:900px;margin:0 auto}
+.feature-card{background:var(--white);border:1px solid var(--gray-100);border-radius:var(--radius-lg);padding:28px 24px;box-shadow:var(--shadow-sm)}
+.feature-icon{width:44px;height:44px;border-radius:10px;background:var(--blue-light);display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--blue);margin-bottom:16px}
+.feature-title{font-size:15px;font-weight:600;margin-bottom:6px}
+.feature-desc{font-size:13px;color:var(--gray-500);line-height:1.65}
+
+/* ERP TAGS */
+.erp-section{padding:56px 24px;text-align:center;background:var(--white)}
+.tag-cloud{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:760px;margin:24px auto 0}
+.erp-tag{font-size:13px;padding:6px 14px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:20px;color:var(--gray-700)}
+
+/* CTA BANNER */
+.cta-banner{background:var(--blue);padding:56px 24px;text-align:center}
+.cta-banner h2{color:#fff;font-size:clamp(20px,3vw,28px);margin-bottom:10px}
+.cta-banner p{color:rgba(255,255,255,.75);margin-bottom:28px;font-size:15px}
+.btn-white{background:#fff;color:var(--blue);border-color:#fff;padding:12px 28px;font-weight:500;font-size:15px}
+.btn-white:hover{background:var(--blue-light)}
+
+/* FORM VIEW */
+#form-view{max-width:740px;margin:0 auto;padding:36px 24px 80px}
+.back-btn{display:inline-flex;align-items:center;gap:6px;background:none;border:none;color:var(--gray-500);font-size:13px;cursor:pointer;padding:0;margin-bottom:28px}
+.back-btn:hover{color:var(--blue)}
+.form-header{margin-bottom:32px}
+.form-header h1{font-size:24px;margin-bottom:6px}
+.form-header p{color:var(--gray-500);font-size:14px}
+.form-card{background:var(--white);border:1px solid var(--gray-100);border-radius:var(--radius-lg);padding:28px;margin-bottom:20px;box-shadow:var(--shadow-sm)}
+.section-header{display:flex;align-items:center;gap:10px;margin-bottom:22px;padding-bottom:14px;border-bottom:1px solid var(--gray-100)}
+.section-header i{font-size:17px;color:var(--blue)}
+.section-header h3{font-size:15px;font-weight:600;color:var(--gray-900)}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
+.grid-3{display:grid;grid-template-columns:2fr 2fr 1fr;gap:0 12px}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:13px;font-weight:500;color:var(--gray-700);margin-bottom:5px}
+.field label .req{color:#DC2626;margin-left:2px}
+.entry-block{padding-bottom:20px;margin-bottom:20px;border-bottom:1px solid var(--gray-100)}
+.entry-block:last-of-type{border-bottom:none;padding-bottom:0;margin-bottom:0}
+.entry-header{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.entry-body{flex:1}
+.checkbox-row{display:flex;align-items:center;gap:8px;margin-bottom:14px;cursor:pointer;font-size:13px;color:var(--gray-600)}
+.checkbox-row input[type=checkbox]{width:auto;cursor:pointer}
+.erp-toggle-grid{display:flex;flex-wrap:wrap;gap:8px}
+.erp-toggle{font-size:13px;padding:6px 14px;border-radius:20px;border:1.5px solid var(--gray-300);background:var(--white);color:var(--gray-600);cursor:pointer;transition:all .12s;font-family:'Inter',sans-serif}
+.erp-toggle.selected{border-color:var(--blue);background:var(--blue-light);color:var(--blue);font-weight:500}
+.form-submit{display:flex;justify-content:flex-end;margin-top:8px}
+.btn-submit{background:var(--blue);color:#fff;border-color:var(--blue);padding:13px 36px;font-weight:500;font-size:15px;border-radius:var(--radius)}
+.btn-submit:hover{background:var(--blue-dark)}
+.btn-submit:disabled{opacity:.65;cursor:wait}
+
+/* SUCCESS */
+#success-view{max-width:480px;margin:0 auto;padding:80px 24px;text-align:center}
+.success-icon{width:72px;height:72px;border-radius:50%;background:#ECFDF5;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:32px;color:#059669}
+#success-view h2{font-size:24px;margin-bottom:10px}
+#success-view p{color:var(--gray-500);margin-bottom:28px;line-height:1.7}
+
+/* FOOTER */
+footer{background:var(--gray-900);padding:32px 24px;text-align:center;color:rgba(255,255,255,.45);font-size:13px}
+footer strong{color:rgba(255,255,255,.75)}
+
+/* RECRUITER PLACEHOLDER */
+#recruiter-view{max-width:600px;margin:0 auto;padding:80px 24px;text-align:center}
+#recruiter-view .rec-icon{font-size:48px;color:var(--blue);margin-bottom:20px}
+#recruiter-view h2{font-size:24px;margin-bottom:10px}
+#recruiter-view p{color:var(--gray-500);margin-bottom:28px;line-height:1.7}
+
+@media(max-width:600px){
+  .grid-2,.grid-3{grid-template-columns:1fr}
+  .nav-right{gap:4px}
+  #hero{padding:52px 16px 40px}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ NAV ═══════════════════ -->
+<nav id="nav" role="navigation" aria-label="Main navigation">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo" onclick="showView('home');return false">
+      <div class="nav-logo-icon"><i class="fa-solid fa-microchip"></i></div>
+      <span>ERP Talent Hub</span>
+    </a>
+    <div class="nav-right">
+      <div class="lang-switcher" role="group" aria-label="Language selector">
+        <button class="lang-btn active" onclick="setLang('en')" id="btn-lang-en">EN</button>
+        <button class="lang-btn" onclick="setLang('it')" id="btn-lang-it">IT</button>
+        <button class="lang-btn" onclick="setLang('es')" id="btn-lang-es">ES</button>
+        <button class="lang-btn" onclick="setLang('de')" id="btn-lang-de">DE</button>
+      </div>
+      <button class="btn-ghost btn-sm" onclick="showView('recruiter')" data-i18n="nav.recruiters">For recruiters</button>
+      <button class="btn-primary btn-sm" onclick="showView('form')" data-i18n="nav.submit">Submit your CV</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════════════ HOME VIEW ═══════════════════ -->
+<div id="home-view" class="view active">
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-badge"><i class="fa-solid fa-bolt"></i> <span data-i18n="hero.badge">Dedicated ERP recruitment platform</span></div>
+    <h1 class="hero-title" data-i18n="hero.title">Your ERP expertise,<br><span>visible to the world.</span></h1>
+    <p class="hero-subtitle" data-i18n="hero.sub">Join the dedicated platform where SAP, Oracle, Microsoft Dynamics, and other ERP professionals showcase their careers to leading recruiters.</p>
+    <div class="hero-ctas">
+      <button class="btn-primary" style="padding:13px 30px;font-size:15px" onclick="showView('form')" data-i18n="hero.cta">Build your profile</button>
+      <button class="btn-outline" style="padding:13px 24px;font-size:15px" onclick="showView('recruiter')" data-i18n="hero.secondary">I'm a recruiter</button>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section class="stats-section">
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-num">4,200+</div><div class="stat-label" data-i18n="stats.professionals">ERP professionals</div></div>
+      <div class="stat-card"><div class="stat-num">380+</div><div class="stat-label" data-i18n="stats.recruiters">Active recruiters</div></div>
+      <div class="stat-card"><div class="stat-num">12</div><div class="stat-label" data-i18n="stats.systems">ERP systems covered</div></div>
+      <div class="stat-card"><div class="stat-num">48h</div><div class="stat-label" data-i18n="stats.response">Avg. response time</div></div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features-section">
+    <p class="section-label">Why ERP Talent Hub</p>
+    <h2 class="section-title" data-i18n="features.title">Built for ERP professionals</h2>
+    <p class="section-sub" data-i18n="features.sub">No generalist noise. Every recruiter on this platform is actively hiring for ERP roles.</p>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fa-solid fa-shield-halved"></i></div>
+        <div class="feature-title" data-i18n="feat1.t">Privacy first</div>
+        <p class="feature-desc" data-i18n="feat1.d">Your contact details are hidden until a verified recruiter requests access.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
+        <div class="feature-title" data-i18n="feat2.t">ERP-specific search</div>
+        <p class="feature-desc" data-i18n="feat2.d">Recruiters filter by system, module, industry, and seniority — only relevant leads reach you.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fa-solid fa-bell"></i></div>
+        <div class="feature-title" data-i18n="feat3.t">Instant alerts</div>
+        <p class="feature-desc" data-i18n="feat3.d">Get notified the moment a recruiter views your profile or sends a connection request.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ERP SYSTEMS -->
+  <section class="erp-section">
+    <p class="section-label" data-i18n="erp.covered">Covered systems</p>
+    <h2 class="section-title" style="margin-bottom:0" data-i18n="erp.title">All major ERP platforms</h2>
+    <div class="tag-cloud" id="home-erp-tags"></div>
+  </section>
+
+  <!-- CTA BANNER -->
+  <section class="cta-banner">
+    <h2 data-i18n="cta.title">Ready to be discovered?</h2>
+    <p data-i18n="cta.sub">It takes 5 minutes to build a profile that works for you around the clock.</p>
+    <button class="btn-white" onclick="showView('form')" data-i18n="hero.cta">Build your profile</button>
+  </section>
+
+</div><!-- /home-view -->
+
+<!-- ═══════════════════ FORM VIEW ═══════════════════ -->
+<div id="form-view" class="view">
+  <div id="form-inner">
+    <button class="back-btn" onclick="showView('home')"><i class="fa-solid fa-arrow-left"></i> <span>ERP Talent Hub</span></button>
+    <div class="form-header">
+      <h1 data-i18n="form.title">Create your ERP profile</h1>
+      <p data-i18n="form.sub">Your profile is visible to verified recruiters only. No spam, no cold calls.</p>
+    </div>
+
+    <!-- PERSONAL -->
+    <div class="form-card">
+      <div class="section-header"><i class="fa-solid fa-user"></i><h3 data-i18n="sec.personal">Personal information</h3></div>
+      <div class="grid-2">
+        <div class="field"><label><span data-i18n="f.firstName">First name</span><span class="req">*</span></label><input type="text" id="f-firstName" /></div>
+        <div class="field"><label><span data-i18n="f.lastName">Last name</span><span class="req">*</span></label><input type="text" id="f-lastName" /></div>
+        <div class="field"><label><span data-i18n="f.city">City</span><span class="req">*</span></label><input type="text" id="f-city" /></div>
+        <div class="field"><label><span data-i18n="f.country">Country</span><span class="req">*</span></label>
+          <select id="f-country"><option value="">—</option></select>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTACT -->
+    <div class="form-card">
+      <div class="section-header"><i class="fa-solid fa-address-book"></i><h3 data-i18n="sec.contact">Contact details</h3></div>
+      <div class="grid-2">
+        <div class="field"><label><span data-i18n="f.email">Email address</span><span class="req">*</span></label><input type="email" id="f-email" /></div>
+        <div class="field"><label data-i18n="f.phone">Phone number</label><input type="tel" id="f-phone" /></div>
+      </div>
+      <div class="field"><label data-i18n="f.linkedin">LinkedIn profile URL</label><input type="url" id="f-linkedin" placeholder="https://linkedin.com/in/yourname" /></div>
+    </div>
+
+    <!-- SUMMARY -->
+    <div class="form-card">
+      <div class="section-header"><i class="fa-solid fa-id-card"></i><h3 data-i18n="sec.summary">Professional summary</h3></div>
+      <div class="field"><label><span data-i18n="f.summary">Summary</span><span class="req">*</span> <span style="font-weight:400;color:var(--gray-500)">(200–500 <span data-i18n="words">words</span>)</span></label>
+        <textarea id="f-summary" rows="6" data-i18n-ph="f.summaryPh"></textarea>
+      </div>
+    </div>
+
+    <!-- ERP SYSTEMS -->
+    <div class="form-card">
+      <div class="section-header"><i class="fa-solid fa-microchip"></i><h3 data-i18n="sec.erp">ERP systems</h3></div>
+      <div class="erp-toggle-grid" id="erp-toggles"></div>
+    </div>
+
+    <!-- EXPERIENCE -->
+    <div class="form-card">
+      <div class="section-header"><i class="fa-solid fa-briefcase"></i><h3 data-i18n="sec.experience">Work experience</h3></div>
+      <div id="exp-list"></div>
+      <button class="btn-add" onclick="addEntry('exp')" data-i18n="f.addExp">+ Add another role</button>
+    </div>
+
+    <!-- EDUCATION -->
+    <div class="form-card">
+      <div class="section-header"><i class="fa-solid fa-graduation-cap"></i><h3 data-i18n="sec.education">Education</h3></div>
+      <div id="edu-list"></div>
+      <button class="btn-add" onclick="addEntry('edu')" data-i18n="f.addEdu">+ Add education</button>
+    </div>
+
+    <!-- CERTIFICATIONS -->
+    <div class="form-card">
+      <div class="section-header"><i class="fa-solid fa-certificate"></i><h3 data-i18n="sec.certs">Certifications &amp; licences</h3></div>
+      <div id="cert-list"></div>
+      <button class="btn-add" onclick="addEntry('cert')" data-i18n="f.addCert">+ Add certification</button>
+    </div>
+
+    <!-- AWARDS -->
+    <div class="form-card">
+      <div class="section-header"><i class="fa-solid fa-trophy"></i><h3 data-i18n="sec.awards">Awards &amp; recognition</h3></div>
+      <div id="award-list"></div>
+      <button class="btn-add" onclick="addEntry('award')" data-i18n="f.addAward">+ Add award</button>
+    </div>
+
+    <div class="form-submit">
+      <button class="btn-submit" id="submit-btn" onclick="handleSubmit()"><span data-i18n="form.submit">Publish profile</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ SUCCESS VIEW ═══════════════════ -->
+<div id="success-view" class="view">
+  <div class="success-icon"><i class="fa-solid fa-check"></i></div>
+  <h2 data-i18n="success.title">Your profile has been published!</h2>
+  <p data-i18n="success.sub">Recruiters can now discover your profile. You'll receive an email confirmation shortly.</p>
+  <button class="btn-primary" onclick="showView('home')" data-i18n="success.back">Back to homepage</button>
+</div>
+
+<!-- ═══════════════════ RECRUITER VIEW ═══════════════════ -->
+<div id="recruiter-view" class="view">
+  <div class="rec-icon"><i class="fa-solid fa-users"></i></div>
+  <h2 data-i18n="rec.title">Access the ERP talent pool</h2>
+  <p data-i18n="rec.sub">Request verified recruiter access to search, filter, and connect with thousands of ERP professionals across all major systems and industries.</p>
+  <button class="btn-primary" onclick="showView('home')" data-i18n="rec.back">Back to homepage</button>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <strong>ERP Talent Hub</strong> &nbsp;·&nbsp; EN · IT · ES · DE &nbsp;·&nbsp; © 2026
+</footer>
+
+<script>
+// ─────────────────────────────────────────
+// I18N DATA
+// ─────────────────────────────────────────
+const TRANSLATIONS = {
+  en:{
+    "nav.recruiters":"For recruiters","nav.submit":"Submit your CV",
+    "hero.badge":"Dedicated ERP recruitment platform",
+    "hero.title":"Your ERP expertise,<br><span>visible to the world.</span>",
+    "hero.sub":"Join the dedicated platform where SAP, Oracle, Microsoft Dynamics, and other ERP professionals showcase their careers to leading recruiters.",
+    "hero.cta":"Build your profile","hero.secondary":"I'm a recruiter",
+    "stats.professionals":"ERP professionals","stats.recruiters":"Active recruiters","stats.systems":"ERP systems covered","stats.response":"Avg. response time",
+    "features.title":"Built for ERP professionals","features.sub":"No generalist noise. Every recruiter on this platform is actively hiring for ERP roles.",
+    "feat1.t":"Privacy first","feat1.d":"Your contact details are hidden until a verified recruiter requests access.",
+    "feat2.t":"ERP-specific search","feat2.d":"Recruiters filter by system, module, industry, and seniority — only relevant leads reach you.",
+    "feat3.t":"Instant alerts","feat3.d":"Get notified the moment a recruiter views your profile or sends a connection request.",
+    "erp.covered":"Covered systems","erp.title":"All major ERP platforms",
+    "cta.title":"Ready to be discovered?","cta.sub":"It takes 5 minutes to build a profile that works for you around the clock.",
+    "form.title":"Create your ERP profile","form.sub":"Your profile is visible to verified recruiters only. No spam, no cold calls.",
+    "sec.personal":"Personal information","sec.contact":"Contact details","sec.summary":"Professional summary",
+    "sec.erp":"ERP systems (select all that apply)","sec.experience":"Work experience",
+    "sec.education":"Education","sec.certs":"Certifications & licences","sec.awards":"Awards & recognition",
+    "f.firstName":"First name","f.lastName":"Last name","f.city":"City","f.country":"Country",
+    "f.email":"Email address","f.phone":"Phone number","f.linkedin":"LinkedIn profile URL",
+    "f.summary":"Summary","f.summaryPh":"Describe your ERP expertise, the systems you specialise in, your industry focus, and what makes you stand out...",
+    "words":"words",
+    "f.jobTitle":"Job title","f.company":"Company","f.startDate":"Start","f.endDate":"End","f.current":"Current position","f.description":"Responsibilities & achievements",
+    "f.addExp":"+ Add another role",
+    "f.degree":"Degree / qualification","f.institution":"Institution","f.gradYear":"Year","f.addEdu":"+ Add education",
+    "f.certName":"Certification name","f.issuer":"Issuing body","f.certYear":"Year","f.addCert":"+ Add certification",
+    "f.awardName":"Award / recognition","f.awardOrg":"Organisation","f.awardYear":"Year","f.addAward":"+ Add award",
+    "form.submit":"Publish profile","form.submitting":"Publishing...",
+    "success.title":"Your profile has been published!","success.sub":"Recruiters can now discover your profile. You'll receive an email confirmation shortly.","success.back":"Back to homepage",
+    "rec.title":"Access the ERP talent pool","rec.sub":"Request verified recruiter access to search, filter, and connect with thousands of ERP professionals across all major systems and industries.","rec.back":"Back to homepage",
+    "countries":["Austria","Belgium","Canada","Denmark","Finland","France","Germany","Italy","Netherlands","Norway","Poland","Portugal","Spain","Sweden","Switzerland","United Kingdom","United States","Other"]
+  },
+  it:{
+    "nav.recruiters":"Per recruiter","nav.submit":"Invia il tuo CV",
+    "hero.badge":"Piattaforma dedicata al recruiting ERP",
+    "hero.title":"La tua competenza ERP,<br><span>visibile al mondo.</span>",
+    "hero.sub":"Unisciti alla piattaforma dedicata dove i professionisti di SAP, Oracle, Microsoft Dynamics e altri ERP mettono in mostra la propria carriera ai recruiter più qualificati.",
+    "hero.cta":"Crea il tuo profilo","hero.secondary":"Sono un recruiter",
+    "stats.professionals":"Professionisti ERP","stats.recruiters":"Recruiter attivi","stats.systems":"Sistemi ERP coperti","stats.response":"Tempo di risposta medio",
+    "features.title":"Costruita per i professionisti ERP","features.sub":"Niente rumore generalista. Ogni recruiter sulla piattaforma assume attivamente per ruoli ERP.",
+    "feat1.t":"Privacy prima di tutto","feat1.d":"I tuoi recapiti sono nascosti finché un recruiter verificato non ne richiede l'accesso.",
+    "feat2.t":"Ricerca specifica ERP","feat2.d":"I recruiter filtrano per sistema, modulo, settore e seniority — ricevi solo opportunità pertinenti.",
+    "feat3.t":"Notifiche istantanee","feat3.d":"Vieni avvisato non appena un recruiter visualizza il tuo profilo o invia una richiesta di contatto.",
+    "erp.covered":"Sistemi coperti","erp.title":"Tutte le principali piattaforme ERP",
+    "cta.title":"Pronto a farti trovare?","cta.sub":"Bastano 5 minuti per creare un profilo che lavora per te 24 ore su 24.",
+    "form.title":"Crea il tuo profilo ERP","form.sub":"Il tuo profilo è visibile solo ai recruiter verificati. Niente spam, niente telefonate indesiderate.",
+    "sec.personal":"Informazioni personali","sec.contact":"Recapiti","sec.summary":"Sommario professionale",
+    "sec.erp":"Sistemi ERP (seleziona tutti quelli applicabili)","sec.experience":"Esperienze lavorative",
+    "sec.education":"Formazione","sec.certs":"Certificazioni e licenze","sec.awards":"Premi e riconoscimenti",
+    "f.firstName":"Nome","f.lastName":"Cognome","f.city":"Città","f.country":"Paese",
+    "f.email":"Indirizzo email","f.phone":"Numero di telefono","f.linkedin":"URL profilo LinkedIn",
+    "f.summary":"Sommario","f.summaryPh":"Descrivi la tua esperienza ERP, i sistemi in cui sei specializzato, il settore di riferimento e ciò che ti distingue...",
+    "words":"parole",
+    "f.jobTitle":"Titolo professionale","f.company":"Azienda","f.startDate":"Inizio","f.endDate":"Fine","f.current":"Posizione attuale","f.description":"Responsabilità e risultati",
+    "f.addExp":"+ Aggiungi un'altra posizione",
+    "f.degree":"Titolo di studio","f.institution":"Istituto","f.gradYear":"Anno","f.addEdu":"+ Aggiungi formazione",
+    "f.certName":"Nome certificazione","f.issuer":"Ente rilasciante","f.certYear":"Anno","f.addCert":"+ Aggiungi certificazione",
+    "f.awardName":"Premio / riconoscimento","f.awardOrg":"Organizzazione","f.awardYear":"Anno","f.addAward":"+ Aggiungi premio",
+    "form.submit":"Pubblica profilo","form.submitting":"Pubblicazione in corso...",
+    "success.title":"Il tuo profilo è stato pubblicato!","success.sub":"I recruiter possono ora scoprire il tuo profilo. Riceverai a breve una conferma via email.","success.back":"Torna alla homepage",
+    "rec.title":"Accedi al pool di talenti ERP","rec.sub":"Richiedi l'accesso come recruiter verificato per cercare, filtrare e connetterti con migliaia di professionisti ERP.","rec.back":"Torna alla homepage",
+    "countries":["Austria","Belgio","Canada","Danimarca","Finlandia","Francia","Germania","Italia","Paesi Bassi","Norvegia","Polonia","Portogallo","Spagna","Svezia","Svizzera","Regno Unito","Stati Uniti","Altro"]
+  },
+  es:{
+    "nav.recruiters":"Para recruiters","nav.submit":"Envía tu CV",
+    "hero.badge":"Plataforma dedicada al reclutamiento ERP",
+    "hero.title":"Tu experiencia ERP,<br><span>visible para el mundo.</span>",
+    "hero.sub":"Únete a la plataforma dedicada donde los profesionales de SAP, Oracle, Microsoft Dynamics y otros ERP muestran su carrera a los mejores recruiters.",
+    "hero.cta":"Crea tu perfil","hero.secondary":"Soy recruiter",
+    "stats.professionals":"Profesionales ERP","stats.recruiters":"Recruiters activos","stats.systems":"Sistemas ERP cubiertos","stats.response":"Tiempo de respuesta medio",
+    "features.title":"Creada para profesionales ERP","features.sub":"Sin ruido generalista. Cada recruiter en la plataforma contrata activamente para roles ERP.",
+    "feat1.t":"Privacidad primero","feat1.d":"Tus datos de contacto están ocultos hasta que un recruiter verificado solicite acceso.",
+    "feat2.t":"Búsqueda específica ERP","feat2.d":"Los recruiters filtran por sistema, módulo, sector y seniority — solo recibes oportunidades relevantes.",
+    "feat3.t":"Alertas instantáneas","feat3.d":"Recibe una notificación en cuanto un recruiter vea tu perfil o envíe una solicitud de conexión.",
+    "erp.covered":"Sistemas cubiertos","erp.title":"Todas las plataformas ERP principales",
+    "cta.title":"¿Listo para ser descubierto?","cta.sub":"Solo 5 minutos para crear un perfil que trabaja por ti las 24 horas.",
+    "form.title":"Crea tu perfil ERP","form.sub":"Tu perfil es visible únicamente para recruiters verificados. Sin spam, sin llamadas no deseadas.",
+    "sec.personal":"Información personal","sec.contact":"Datos de contacto","sec.summary":"Resumen profesional",
+    "sec.erp":"Sistemas ERP (selecciona todos los que apliquen)","sec.experience":"Experiencia laboral",
+    "sec.education":"Educación","sec.certs":"Certificaciones y licencias","sec.awards":"Premios y reconocimientos",
+    "f.firstName":"Nombre","f.lastName":"Apellidos","f.city":"Ciudad","f.country":"País",
+    "f.email":"Correo electrónico","f.phone":"Número de teléfono","f.linkedin":"URL de perfil LinkedIn",
+    "f.summary":"Resumen","f.summaryPh":"Describe tu experiencia en ERP, los sistemas en los que te especializas, tu sector de enfoque y qué te diferencia...",
+    "words":"palabras",
+    "f.jobTitle":"Cargo","f.company":"Empresa","f.startDate":"Inicio","f.endDate":"Fin","f.current":"Posición actual","f.description":"Responsabilidades y logros",
+    "f.addExp":"+ Añadir otro puesto",
+    "f.degree":"Título / calificación","f.institution":"Institución","f.gradYear":"Año","f.addEdu":"+ Añadir educación",
+    "f.certName":"Nombre de la certificación","f.issuer":"Organismo emisor","f.certYear":"Año","f.addCert":"+ Añadir certificación",
+    "f.awardName":"Premio / reconocimiento","f.awardOrg":"Organización","f.awardYear":"Año","f.addAward":"+ Añadir premio",
+    "form.submit":"Publicar perfil","form.submitting":"Publicando...",
+    "success.title":"¡Tu perfil ha sido publicado!","success.sub":"Los recruiters ya pueden descubrir tu perfil. Recibirás un correo de confirmación en breve.","success.back":"Volver a la página principal",
+    "rec.title":"Accede al banco de talento ERP","rec.sub":"Solicita acceso como recruiter verificado para buscar, filtrar y conectar con miles de profesionales ERP.","rec.back":"Volver a la página principal",
+    "countries":["Austria","Bélgica","Canadá","Dinamarca","Finlandia","Francia","Alemania","Italia","Países Bajos","Noruega","Polonia","Portugal","España","Suecia","Suiza","Reino Unido","Estados Unidos","Otro"]
+  },
+  de:{
+    "nav.recruiters":"Für Recruiter","nav.submit":"Lebenslauf einreichen",
+    "hero.badge":"Dedizierte ERP-Recruiting-Plattform",
+    "hero.title":"Ihr ERP-Know-how,<br><span>sichtbar für die Welt.</span>",
+    "hero.sub":"Treten Sie der dedizierten Plattform bei, auf der SAP-, Oracle-, Microsoft-Dynamics- und andere ERP-Fachleute ihre Karriere führenden Recruitern präsentieren.",
+    "hero.cta":"Profil erstellen","hero.secondary":"Ich bin Recruiter",
+    "stats.professionals":"ERP-Fachleute","stats.recruiters":"Aktive Recruiter","stats.systems":"Abgedeckte ERP-Systeme","stats.response":"Durchschn. Antwortzeit",
+    "features.title":"Gebaut für ERP-Fachleute","features.sub":"Kein generalistisches Rauschen. Jeder Recruiter auf dieser Plattform stellt aktiv für ERP-Rollen ein.",
+    "feat1.t":"Datenschutz zuerst","feat1.d":"Ihre Kontaktdaten bleiben verborgen, bis ein verifizierter Recruiter Zugang anfordert.",
+    "feat2.t":"ERP-spezifische Suche","feat2.d":"Recruiter filtern nach System, Modul, Branche und Seniorität — nur relevante Anfragen erreichen Sie.",
+    "feat3.t":"Sofortige Benachrichtigungen","feat3.d":"Sie werden benachrichtigt, sobald ein Recruiter Ihr Profil ansieht oder eine Kontaktanfrage sendet.",
+    "erp.covered":"Abgedeckte Systeme","erp.title":"Alle wichtigen ERP-Plattformen",
+    "cta.title":"Bereit, entdeckt zu werden?","cta.sub":"In 5 Minuten ein Profil erstellen, das rund um die Uhr für Sie arbeitet.",
+    "form.title":"Ihr ERP-Profil erstellen","form.sub":"Ihr Profil ist nur für verifizierte Recruiter sichtbar. Kein Spam, keine unerwünschten Anrufe.",
+    "sec.personal":"Persönliche Angaben","sec.contact":"Kontaktdaten","sec.summary":"Berufliches Kurzprofil",
+    "sec.erp":"ERP-Systeme (alle zutreffenden auswählen)","sec.experience":"Berufserfahrung",
+    "sec.education":"Ausbildung","sec.certs":"Zertifizierungen & Lizenzen","sec.awards":"Auszeichnungen & Anerkennungen",
+    "f.firstName":"Vorname","f.lastName":"Nachname","f.city":"Stadt","f.country":"Land",
+    "f.email":"E-Mail-Adresse","f.phone":"Telefonnummer","f.linkedin":"LinkedIn-Profil-URL",
+    "f.summary":"Kurzprofil","f.summaryPh":"Beschreiben Sie Ihre ERP-Expertise, die Systeme, auf die Sie spezialisiert sind, Ihren Branchenfokus und was Sie auszeichnet...",
+    "words":"Wörter",
+    "f.jobTitle":"Berufsbezeichnung","f.company":"Unternehmen","f.startDate":"Beginn","f.endDate":"Ende","f.current":"Aktuelle Position","f.description":"Aufgaben & Leistungen",
+    "f.addExp":"+ Weitere Stelle hinzufügen",
+    "f.degree":"Abschluss / Qualifikation","f.institution":"Institution","f.gradYear":"Jahr","f.addEdu":"+ Ausbildung hinzufügen",
+    "f.certName":"Zertifizierungsname","f.issuer":"Ausstellende Organisation","f.certYear":"Jahr","f.addCert":"+ Zertifizierung hinzufügen",
+    "f.awardName":"Auszeichnung / Anerkennung","f.awardOrg":"Organisation","f.awardYear":"Jahr","f.addAward":"+ Auszeichnung hinzufügen",
+    "form.submit":"Profil veröffentlichen","form.submitting":"Wird veröffentlicht...",
+    "success.title":"Ihr Profil wurde veröffentlicht!","success.sub":"Recruiter können Ihr Profil jetzt entdecken. Sie erhalten in Kürze eine E-Mail-Bestätigung.","success.back":"Zurück zur Startseite",
+    "rec.title":"Auf den ERP-Talentpool zugreifen","rec.sub":"Fordern Sie verifizierten Recruiter-Zugang an, um Tausende von ERP-Fachleuten zu suchen, filtern und zu kontaktieren.","rec.back":"Zurück zur Startseite",
+    "countries":["Österreich","Belgien","Kanada","Dänemark","Finnland","Frankreich","Deutschland","Italien","Niederlande","Norwegen","Polen","Portugal","Spanien","Schweden","Schweiz","Vereinigtes Königreich","Vereinigte Staaten","Sonstiges"]
+  }
+};
+
+const ERP_SYSTEMS = ["SAP S/4HANA","SAP ECC","Oracle EBS","Oracle Fusion","Microsoft Dynamics 365","Microsoft AX","Infor LN","Infor M3","Sage X3","Workday","NetSuite","IFS"];
+
+let currentLang = 'en';
+let expCount = 0, eduCount = 0, certCount = 0, awardCount = 0;
+let selectedErp = new Set();
+
+// ─────────────────────────────────────────
+// VIEW MANAGEMENT
+// ─────────────────────────────────────────
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById(name + '-view').classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// ─────────────────────────────────────────
+// I18N
+// ─────────────────────────────────────────
+function t(key) { return TRANSLATIONS[currentLang][key] || TRANSLATIONS['en'][key] || key; }
+
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('btn-lang-' + lang).classList.add('active');
+  applyTranslations();
+  rebuildDynamicParts();
+}
+
+function applyTranslations() {
+  // Static i18n attributes
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    const val = t(key);
+    if (val) el.innerHTML = val;
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+    const key = el.getAttribute('data-i18n-ph');
+    el.placeholder = t(key);
+  });
+  // Country select
+  const sel = document.getElementById('f-country');
+  if (sel) {
+    const cur = sel.value;
+    sel.innerHTML = '<option value="">—</option>';
+    (TRANSLATIONS[currentLang].countries || []).forEach(c => {
+      const o = document.createElement('option');
+      o.value = c; o.textContent = c;
+      if (c === cur) o.selected = true;
+      sel.appendChild(o);
+    });
+  }
+}
+
+function rebuildDynamicParts() {
+  buildErpToggles();
+  buildHomeErpTags();
+  rebuildAllEntries();
+}
+
+// ─────────────────────────────────────────
+// ERP TOGGLES
+// ─────────────────────────────────────────
+function buildErpToggles() {
+  const container = document.getElementById('erp-toggles');
+  if (!container) return;
+  container.innerHTML = '';
+  ERP_SYSTEMS.forEach(sys => {
+    const btn = document.createElement('button');
+    btn.className = 'erp-toggle' + (selectedErp.has(sys) ? ' selected' : '');
+    btn.textContent = (selectedErp.has(sys) ? '✓ ' : '') + sys;
+    btn.onclick = () => {
+      if (selectedErp.has(sys)) selectedErp.delete(sys);
+      else selectedErp.add(sys);
+      buildErpToggles();
+    };
+    container.appendChild(btn);
+  });
+}
+
+function buildHomeErpTags() {
+  const c = document.getElementById('home-erp-tags');
+  if (!c) return;
+  c.innerHTML = ERP_SYSTEMS.map(s => `<span class="erp-tag">${s}</span>`).join('');
+}
+
+// ─────────────────────────────────────────
+// DYNAMIC ENTRIES
+// ─────────────────────────────────────────
+const entries = { exp: [], edu: [], cert: [], award: [] };
+
+function addEntry(type) {
+  const id = Date.now();
+  entries[type].push(id);
+  renderEntry(type, id);
+}
+
+function removeEntry(type, id) {
+  entries[type] = entries[type].filter(i => i !== id);
+  const el = document.getElementById('entry-' + type + '-' + id);
+  if (el) el.remove();
+}
+
+function renderEntry(type, id) {
+  const listId = type + '-list';
+  const container = document.getElementById(listId);
+  const div = document.createElement('div');
+  div.className = 'entry-block';
+  div.id = 'entry-' + type + '-' + id;
+  div.innerHTML = buildEntryHTML(type, id);
+  container.appendChild(div);
+}
+
+function buildEntryHTML(type, id) {
+  const p = id; // unique prefix
+  if (type === 'exp') return `
+    <div class="entry-header">
+      <div class="entry-body">
+        <div class="grid-2">
+          <div class="field"><label>${t('f.jobTitle')} <span class="req">*</span></label><input type="text" id="exp-title-${p}" /></div>
+          <div class="field"><label>${t('f.company')} <span class="req">*</span></label><input type="text" id="exp-co-${p}" /></div>
+          <div class="field"><label>${t('f.startDate')}</label><input type="month" id="exp-start-${p}" /></div>
+          <div class="field exp-end-field-${p}"><label>${t('f.endDate')}</label><input type="month" id="exp-end-${p}" /></div>
+        </div>
+        <label class="checkbox-row"><input type="checkbox" id="exp-curr-${p}" onchange="toggleCurrent(${p})"> ${t('f.current')}</label>
+        <div class="field"><label>${t('f.description')}</label><textarea id="exp-desc-${p}" rows="3"></textarea></div>
+      </div>
+      <button class="btn-remove" onclick="removeEntry('exp',${id})" title="Remove"><i class="fa-solid fa-xmark"></i></button>
+    </div>`;
+  if (type === 'edu') return `
+    <div class="entry-header">
+      <div class="entry-body">
+        <div class="grid-3">
+          <div class="field"><label>${t('f.degree')}</label><input type="text" id="edu-deg-${p}" /></div>
+          <div class="field"><label>${t('f.institution')}</label><input type="text" id="edu-inst-${p}" /></div>
+          <div class="field"><label>${t('f.gradYear')}</label><input type="number" id="edu-yr-${p}" placeholder="2020" min="1950" max="2030" /></div>
+        </div>
+      </div>
+      <button class="btn-remove" onclick="removeEntry('edu',${id})" title="Remove"><i class="fa-solid fa-xmark"></i></button>
+    </div>`;
+  if (type === 'cert') return `
+    <div class="entry-header">
+      <div class="entry-body">
+        <div class="grid-3">
+          <div class="field"><label>${t('f.certName')}</label><input type="text" id="cert-name-${p}" placeholder="SAP Certified Application Associate" /></div>
+          <div class="field"><label>${t('f.issuer')}</label><input type="text" id="cert-iss-${p}" placeholder="SAP SE" /></div>
+          <div class="field"><label>${t('f.certYear')}</label><input type="number" id="cert-yr-${p}" placeholder="2023" min="1980" max="2030" /></div>
+        </div>
+      </div>
+      <button class="btn-remove" onclick="removeEntry('cert',${id})" title="Remove"><i class="fa-solid fa-xmark"></i></button>
+    </div>`;
+  if (type === 'award') return `
+    <div class="entry-header">
+      <div class="entry-body">
+        <div class="grid-3">
+          <div class="field"><label>${t('f.awardName')}</label><input type="text" id="award-name-${p}" /></div>
+          <div class="field"><label>${t('f.awardOrg')}</label><input type="text" id="award-org-${p}" /></div>
+          <div class="field"><label>${t('f.awardYear')}</label><input type="number" id="award-yr-${p}" placeholder="2024" min="1980" max="2030" /></div>
+        </div>
+      </div>
+      <button class="btn-remove" onclick="removeEntry('award',${id})" title="Remove"><i class="fa-solid fa-xmark"></i></button>
+    </div>`;
+}
+
+function rebuildAllEntries() {
+  ['exp','edu','cert','award'].forEach(type => {
+    const container = document.getElementById(type + '-list');
+    if (!container) return;
+    const ids = [...entries[type]];
+    container.innerHTML = '';
+    ids.forEach(id => {
+      const div = document.createElement('div');
+      div.className = 'entry-block';
+      div.id = 'entry-' + type + '-' + id;
+      div.innerHTML = buildEntryHTML(type, id);
+      container.appendChild(div);
+    });
+  });
+  // Update add buttons
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    const val = t(key);
+    if (val) el.innerHTML = val;
+  });
+}
+
+function toggleCurrent(p) {
+  const checked = document.getElementById('exp-curr-' + p).checked;
+  const endField = document.querySelector('.exp-end-field-' + p);
+  if (endField) endField.style.display = checked ? 'none' : '';
+}
+
+// ─────────────────────────────────────────
+// SUBMIT
+// ─────────────────────────────────────────
+function handleSubmit() {
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.querySelector('span').textContent = t('form.submitting');
+  setTimeout(() => {
+    btn.disabled = false;
+    btn.querySelector('span').textContent = t('form.submit');
+    showView('success');
+  }, 1800);
+}
+
+// ─────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  applyTranslations();
+  buildErpToggles();
+  buildHomeErpTags();
+  // Add one entry per section by default
+  addEntry('exp');
+  addEntry('edu');
+  addEntry('cert');
+  addEntry('award');
+});
+</script>
+</body>
+</html>
