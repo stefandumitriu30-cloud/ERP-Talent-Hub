@@ -19,8 +19,11 @@
   --shadow-sm:0 1px 3px rgba(0,0,0,.08);
   --shadow-md:0 4px 16px rgba(0,0,0,.10);
 }
-html{scroll-behavior:smooth}
-body{font-family:'Inter',sans-serif;font-size:15px;color:var(--gray-900);background:var(--white);line-height:1.6}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:'Inter',sans-serif;font-size:15px;color:var(--gray-900);background:var(--white);line-height:1.6;-webkit-font-smoothing:antialiased}
+/* touch targets min 44px for interactive elements */
+input,select,textarea{min-height:44px}
+.btn-primary,.btn-outline,.btn-ghost,.btn-add,.btn-submit,.gate-btn,.chat-send-btn{min-height:44px}
 h1,h2,h3,h4{font-weight:600;line-height:1.25}
 a{color:var(--blue);text-decoration:none}
 input,select,textarea{
@@ -163,13 +166,120 @@ footer strong{color:rgba(255,255,255,.75)}
 #recruiter-view h2{font-size:24px;margin-bottom:10px}
 #recruiter-view p{color:var(--gray-500);margin-bottom:28px;line-height:1.7}
 
-@media(max-width:600px){
-  .grid-2,.grid-3{grid-template-columns:1fr}
-  .nav-right{gap:4px}
+/* ══════════════════════════════════════
+   RESPONSIVE — MOBILE FIRST
+   ══════════════════════════════════════ */
+
+/* Tablet ≤ 768px */
+@media(max-width:768px){
+  /* NAV */
+  .nav-inner{flex-wrap:wrap;height:auto;padding:10px 0;gap:8px}
+  .nav-right{flex-wrap:wrap;gap:4px;justify-content:flex-end}
+  .lang-switcher{order:-1}
+
+  /* HERO */
   #hero{padding:52px 16px 40px}
+  .hero-title{font-size:clamp(24px,6vw,38px)}
+  .hero-subtitle{font-size:15px}
+  .hero-ctas{flex-direction:column;align-items:center}
+  .hero-ctas button{width:100%;max-width:320px}
+
+  /* STATS */
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+
+  /* FEATURES */
+  .features-grid{grid-template-columns:1fr}
+
+  /* FORM */
+  .grid-2,.grid-3{grid-template-columns:1fr}
+  #form-view{padding:24px 16px 60px}
+  .form-card{padding:20px 16px}
+
+  /* PORTAL */
   .portal-layout{flex-direction:column}
-  .portal-sidebar{width:100%;max-width:100%;border-right:none;border-bottom:1px solid var(--gray-100);max-height:260px}
-  .portal-main{height:calc(100vh - 60px - 260px)}
+  .portal-sidebar{width:100%;max-width:100%;border-right:none;border-bottom:1px solid var(--gray-100);max-height:220px;min-width:unset}
+  .portal-main{flex:1;min-height:0}
+
+  /* GATE */
+  .rec-gate-card{padding:28px 20px}
+
+  /* CHAT */
+  .chat-topbar{padding:10px 14px;gap:8px}
+  .chat-messages{padding:14px 12px}
+  .chat-input-area{padding:10px 12px}
+  .msg-bubble{max-width:80%}
+}
+
+/* Phone ≤ 480px */
+@media(max-width:480px){
+  /* NAV — stack logo + buttons */
+  #nav{padding:0 14px}
+  .nav-inner{gap:6px}
+  .nav-logo span{font-size:14px}
+  .btn-ghost.btn-sm,.btn-primary.btn-sm{font-size:12px;padding:5px 10px}
+
+  /* HERO */
+  #hero{padding:40px 14px 32px}
+  .hero-badge{font-size:11px;padding:4px 10px}
+  .hero-title{font-size:clamp(22px,7vw,32px);margin-bottom:12px}
+  .hero-subtitle{font-size:14px;margin-bottom:24px}
+
+  /* STATS */
+  .stats-grid{grid-template-columns:repeat(2,1fr);gap:10px}
+  .stat-num{font-size:22px}
+
+  /* SECTIONS padding */
+  .stats-section,.erp-section,.features-section,.cta-banner{padding:36px 14px}
+
+  /* FORM */
+  #form-view{padding:16px 12px 60px}
+  .form-card{padding:16px 14px;border-radius:10px}
+  .form-header h1{font-size:19px}
+  .back-btn{margin-bottom:18px}
+  .phone-wrapper{flex-direction:row}/* keep inline on phone */
+  .phone-prefix-select{min-width:90px;font-size:12px}
+
+  /* PORTAL sidebar collapses to horizontal scroll list */
+  .portal-sidebar{max-height:180px}
+  .portal-sidebar-header{padding:12px 12px 8px}
+  .portal-title{font-size:14px;margin-bottom:6px}
+  .portal-search-wrap{margin-bottom:6px}
+  .portal-tabs{gap:2px}
+  .ptab{font-size:11px;padding:4px 7px}
+  .cand-card{padding:8px}
+  .cand-avatar{width:32px;height:32px;font-size:12px}
+  .cand-name{font-size:12px}
+  .cand-meta{font-size:10px}
+
+  /* CHAT */
+  .chat-topbar-name{font-size:13px}
+  .chat-topbar-sub{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px}
+  .msg-bubble{font-size:13px;padding:8px 11px;max-width:85%}
+  .chat-messages{padding:12px 10px;gap:10px}
+  .chat-textarea{font-size:13px}
+  .msg-avatar{width:24px;height:24px;font-size:10px}
+
+  /* GATE */
+  .rec-gate-card{padding:24px 14px;border-radius:14px}
+  .gate-title{font-size:17px}
+  .gate-sub{font-size:13px}
+  .gate-steps-list{padding:12px 14px;gap:10px}
+  .gate-approved-card{flex-direction:column;align-items:flex-start;gap:10px}
+
+  /* SUCCESS / RECRUITER placeholder */
+  #success-view,#recruiter-view{padding:48px 16px}
+
+  /* ERP TAG CLOUD */
+  .tag-cloud{gap:6px}
+  .erp-tag{font-size:12px;padding:4px 10px}
+
+  /* CTA BANNER */
+  .cta-banner h2{font-size:18px}
+  .btn-white{padding:11px 20px;font-size:14px}
+
+  /* FOOTER */
+  footer{padding:20px 14px;font-size:12px}
+  #footer-ownership{font-size:11px}
 }
 
 /* ─── PORTAL LAYOUT ─── */
