@@ -1275,12 +1275,12 @@ input[type=file].photo-input{display:none}
     <div class="mia-header-avatar">M</div>
     <div class="mia-header-info">
       <div class="mia-header-name">Mia</div>
-      <div class="mia-header-status">Your ERP Talent Hub guide</div>
+      <div class="mia-header-status" id="mia-header-status" data-i18n="mia.guide">Your ERP Talent Hub guide</div>
     </div>
     <div class="mia-header-actions">
       <button class="mia-sound-btn" id="mia-sound-btn" onclick="toggleMiaSound()" title="Toggle voice">
         <i class="fa-solid fa-volume-xmark" id="mia-sound-icon"></i>
-        <span class="mia-sound-label" id="mia-sound-label">Sound off</span>
+        <span class="mia-sound-label" id="mia-sound-label" data-i18n="mia.soundOff">Sound off</span>
       </button>
       <div class="mia-speaking-wave" id="mia-wave">
         <span></span><span></span><span></span><span></span><span></span>
@@ -1292,7 +1292,7 @@ input[type=file].photo-input{display:none}
   <div class="mia-input-area">
     <div class="mia-quick-btns" id="mia-quick-btns"></div>
     <div class="mia-input-row">
-      <textarea class="mia-textarea" id="mia-input" rows="1" placeholder="Ask Mia anything…" onkeydown="miaInputKey(event)"></textarea>
+      <textarea class="mia-textarea" id="mia-input" rows="1" placeholder="Ask Mia anything…" data-i18n-ph="mia.placeholder" onkeydown="miaInputKey(event)"></textarea>
       <button class="mia-send-btn" onclick="miaSendUserMessage()"><i class="fa-solid fa-paper-plane"></i></button>
     </div>
   </div>
@@ -1306,7 +1306,7 @@ input[type=file].photo-input{display:none}
       <div class="mia-pulse"></div>
     </button>
     <div class="mia-hint-bubble" id="mia-hint" onclick="toggleMiaPanel()" style="display:none">
-      <p id="mia-hint-text">👋 Hi! I'm <strong>Mia</strong>, your guide. Click me to get started!</p>
+      <p id="mia-hint-text" data-i18n="mia.hint">👋 Hi! I'm <strong>Mia</strong>, your guide. Click me to get started!</p>
     </div>
   </div>
 </div>
@@ -1328,6 +1328,7 @@ const TRANSLATIONS = {
   en:{
     "candidates":"My messages","recruiters":"For recruiters","submit":"Submit your CV",
     "nav.login":"Login","nav.register":"Register",
+    "mia.guide":"Your ERP Talent Hub guide","mia.soundOff":"Sound off","mia.soundOn":"Sound on","mia.placeholder":"Ask Mia anything…","mia.hint":"👋 Hi! I'm <strong>Mia</strong>, your guide. Click me to get started!",
     "myprofile":"My profile",
     "mp.live":"Profile live","mp.edit":"Edit profile",
     "mp.privacy":"Your contact details (email, phone, LinkedIn) are hidden from recruiters until they request access and you accept.",
@@ -1366,6 +1367,7 @@ const TRANSLATIONS = {
   it:{
     "candidates":"I miei messaggi","recruiters":"Per recruiter","submit":"Invia il tuo CV",
     "nav.login":"Accedi","nav.register":"Registrati",
+    "mia.guide":"La tua guida su ERP Talent Hub","mia.soundOff":"Audio spento","mia.soundOn":"Audio acceso","mia.placeholder":"Chiedi qualcosa a Mia…","mia.hint":"👋 Ciao! Sono <strong>Mia</strong>, la tua guida. Clicca su di me!",
     "myprofile":"Il mio profilo",
     "mp.live":"Profilo attivo","mp.edit":"Modifica profilo",
     "mp.privacy":"I tuoi recapiti (email, telefono, LinkedIn) sono nascosti ai recruiter finché non richiedono l'accesso e tu non accetti.",
@@ -1404,6 +1406,7 @@ const TRANSLATIONS = {
   es:{
     "candidates":"Mis mensajes","recruiters":"Para recruiters","submit":"Envía tu CV",
     "nav.login":"Iniciar sesión","nav.register":"Registrarse",
+    "mia.guide":"Tu guía en ERP Talent Hub","mia.soundOff":"Sonido apagado","mia.soundOn":"Sonido encendido","mia.placeholder":"Pregúntale algo a Mia…","mia.hint":"👋 ¡Hola! Soy <strong>Mia</strong>, tu guía. ¡Haz clic en mí!",
     "myprofile":"Mi perfil",
     "mp.live":"Perfil activo","mp.edit":"Editar perfil",
     "mp.privacy":"Tus datos de contacto (email, teléfono, LinkedIn) están ocultos para los recruiters hasta que soliciten acceso y tú aceptes.",
@@ -1442,6 +1445,7 @@ const TRANSLATIONS = {
   de:{
     "candidates":"Meine Nachrichten","recruiters":"Für Recruiter","submit":"Lebenslauf einreichen",
     "nav.login":"Anmelden","nav.register":"Registrieren",
+    "mia.guide":"Ihre Führerin auf ERP Talent Hub","mia.soundOff":"Ton aus","mia.soundOn":"Ton an","mia.placeholder":"Fragen Sie Mia…","mia.hint":"👋 Hallo! Ich bin <strong>Mia</strong>, Ihre Führerin. Klicken Sie mich an!",
     "myprofile":"Mein Profil",
     "mp.live":"Profil aktiv","mp.edit":"Profil bearbeiten",
     "mp.privacy":"Ihre Kontaktdaten (E-Mail, Telefon, LinkedIn) sind für Recruiter verborgen, bis sie Zugang anfordern und Sie zustimmen.",
@@ -1480,6 +1484,7 @@ const TRANSLATIONS = {
   fr:{
     "candidates":"Mes messages","recruiters":"Pour les recruteurs","submit":"Déposer mon CV",
     "nav.login":"Connexion","nav.register":"S'inscrire",
+    "mia.guide":"Votre guide sur ERP Talent Hub","mia.soundOff":"Son désactivé","mia.soundOn":"Son activé","mia.placeholder":"Posez une question à Mia…","mia.hint":"👋 Bonjour ! Je suis <strong>Mia</strong>, votre guide. Cliquez sur moi !",
     "myprofile":"Mon profil",
     "mp.live":"Profil en ligne","mp.edit":"Modifier le profil",
     "mp.privacy":"Vos coordonnées (e-mail, téléphone, LinkedIn) sont masquées aux recruteurs jusqu'à ce qu'ils demandent l'accès et que vous acceptiez.",
@@ -4219,14 +4224,27 @@ let MIA_FALLBACKS = MIA_FALLBACKS_ALL['en'];
 function setMiaLang(lang) {
   MIA_SCRIPTS   = MIA_SCRIPTS_ALL[lang]  || MIA_SCRIPTS_ALL['en'];
   MIA_FALLBACKS = MIA_FALLBACKS_ALL[lang] || MIA_FALLBACKS_ALL['en'];
-  // Re-greet with new language if panel is open
+
+  // Refresh all Mia UI strings
+  const guideEl = document.getElementById('mia-header-status');
+  if (guideEl) guideEl.textContent = t('mia.guide');
+
+  const inputEl = document.getElementById('mia-input');
+  if (inputEl) inputEl.placeholder = t('mia.placeholder');
+
+  const soundLabel = document.getElementById('mia-sound-label');
+  if (soundLabel) soundLabel.textContent = miaSoundOn ? t('mia.soundOn') : t('mia.soundOff');
+
+  // Update hint bubble with context-aware translated text
+  const script = MIA_SCRIPTS[miaContext] || MIA_SCRIPTS['home'];
+  const hintEl = document.getElementById('mia-hint-text');
+  if (hintEl) hintEl.innerHTML = script.hint || t('mia.hint');
+
+  // Re-greet in new language if panel is open
   if (miaOpen) {
     document.getElementById('mia-messages').innerHTML = '';
     miaGreet(miaContext);
   }
-  // Update hint text
-  const script = MIA_SCRIPTS[miaContext] || MIA_SCRIPTS['home'];
-  document.getElementById('mia-hint-text').innerHTML = script.hint || "👋 Mia";
 }
 
 
@@ -4554,12 +4572,12 @@ function toggleMiaSound() {
   if (miaSoundOn) {
     btn.classList.add('active');
     icon.className    = 'fa-solid fa-volume-high';
-    label.textContent = 'Sound on';
+    label.textContent = t('mia.soundOn');
     miaSpeak("Hi! I'm Mia — great to hear you! I'll guide you through every step. Just ask me anything! 😊");
   } else {
     btn.classList.remove('active');
     icon.className    = 'fa-solid fa-volume-xmark';
-    label.textContent = 'Sound off';
+    label.textContent = t('mia.soundOff');
     stopMiaSpeech();
   }
 }
