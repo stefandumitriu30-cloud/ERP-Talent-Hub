@@ -377,7 +377,61 @@ footer strong{color:rgba(255,255,255,.75)}
 .mp-month.selected{background:var(--blue);color:#fff}
 .mp-clear{width:100%;background:none;border:1px solid var(--gray-200);border-radius:6px;padding:5px;font-size:12px;color:var(--gray-400);cursor:pointer;min-height:unset}
 .mp-clear:hover{border-color:var(--gray-300);color:var(--gray-600)}
-/* ─── NOTIFICATION BELL ─── */
+/* ─── AUTH MODAL ─── */
+.auth-modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:600;display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
+.auth-modal{background:var(--white);border-radius:18px;box-shadow:0 24px 64px rgba(0,0,0,.18);width:100%;max-width:420px;overflow:hidden;animation:slideDown .2s ease}
+.auth-modal-header{background:var(--blue);padding:28px 32px 24px;text-align:center}
+.auth-modal-header .auth-logo{width:40px;height:40px;background:rgba(255,255,255,.2);border-radius:10px;display:inline-block;margin-bottom:12px}
+.auth-modal-header h2{color:#fff;font-size:19px;margin-bottom:4px}
+.auth-modal-header p{color:rgba(255,255,255,.75);font-size:13px}
+.auth-modal-body{padding:28px 32px}
+.auth-tabs{display:flex;border:1.5px solid var(--gray-200);border-radius:var(--radius);padding:3px;margin-bottom:22px;gap:3px}
+.auth-tab{flex:1;border:none;background:none;padding:8px;border-radius:6px;font-size:13px;font-weight:500;color:var(--gray-500);cursor:pointer;transition:all .15s;min-height:unset}
+.auth-tab.active{background:var(--blue);color:#fff}
+.auth-role-select{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px}
+.auth-role-btn{border:1.5px solid var(--gray-200);border-radius:var(--radius);padding:12px 8px;text-align:center;cursor:pointer;transition:all .15s;background:var(--white)}
+.auth-role-btn:hover{border-color:var(--blue);background:var(--blue-light)}
+.auth-role-btn.selected{border-color:var(--blue);background:var(--blue-light)}
+.auth-role-btn i{font-size:20px;color:var(--gray-400);display:block;margin-bottom:5px}
+.auth-role-btn.selected i{color:var(--blue)}
+.auth-role-btn span{font-size:12px;font-weight:500;color:var(--gray-600)}
+.auth-role-btn.selected span{color:var(--blue)}
+.auth-field{margin-bottom:14px}
+.auth-field label{display:block;font-size:13px;font-weight:500;color:var(--gray-700);margin-bottom:5px}
+.auth-field input{width:100%;padding:10px 12px;border:1.5px solid var(--gray-300);border-radius:var(--radius);font-size:14px;transition:border-color .15s;outline:none;font-family:'Inter',sans-serif}
+.auth-field input:focus{border-color:var(--blue)}
+.auth-error{background:#FEF2F2;border:1px solid #FECACA;border-radius:var(--radius);padding:9px 12px;font-size:13px;color:#DC2626;margin-bottom:14px;display:none}
+.auth-error.show{display:block}
+.auth-submit{width:100%;padding:12px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius);font-size:15px;font-weight:500;cursor:pointer;transition:background .15s;margin-top:4px}
+.auth-submit:hover{background:var(--blue-dark)}
+.auth-footer-note{text-align:center;font-size:12px;color:var(--gray-400);margin-top:14px}
+.auth-footer-note a{color:var(--blue);cursor:pointer}
+/* Nav user pill */
+.nav-user-pill{display:flex;align-items:center;gap:8px;padding:4px 12px 4px 5px;border:1px solid var(--gray-200);border-radius:20px;cursor:pointer;transition:all .15s;background:var(--white)}
+.nav-user-pill:hover{border-color:var(--blue);background:var(--blue-light)}
+.nav-user-avatar{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;overflow:hidden;flex-shrink:0}
+.nav-user-name{font-size:12px;font-weight:500;color:var(--gray-700);max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nav-user-dropdown{position:absolute;top:calc(100% + 8px);right:0;background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-lg);box-shadow:var(--shadow-md);min-width:180px;z-index:300;overflow:hidden}
+.nav-user-dropdown-item{display:flex;align-items:center;gap:10px;padding:11px 16px;font-size:13px;color:var(--gray-700);cursor:pointer;transition:background .12s}
+.nav-user-dropdown-item:hover{background:var(--gray-50)}
+.nav-user-dropdown-item.danger{color:#DC2626}
+.nav-user-dropdown-item.danger:hover{background:#FEF2F2}
+.nav-user-wrap{position:relative}
+.photo-upload-wrap{display:flex;align-items:center;gap:20px;margin-bottom:20px}
+.photo-preview{width:80px;height:80px;border-radius:50%;background:var(--gray-100);border:2px dashed var(--gray-300);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;position:relative;cursor:pointer;transition:border-color .15s}
+.photo-preview:hover{border-color:var(--blue)}
+.photo-preview img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.photo-preview .photo-placeholder{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--gray-400)}
+.photo-preview .photo-placeholder i{font-size:22px}
+.photo-preview .photo-placeholder span{font-size:10px;font-weight:500}
+.photo-upload-info{flex:1}
+.photo-upload-info p{font-size:13px;color:var(--gray-600);margin-bottom:8px;line-height:1.5}
+.photo-upload-info small{font-size:11px;color:var(--gray-400)}
+.btn-photo{font-size:13px;padding:7px 16px;background:var(--white);border:1.5px solid var(--gray-300);border-radius:var(--radius);cursor:pointer;color:var(--gray-700);transition:all .15s;min-height:unset}
+.btn-photo:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-light)}
+.btn-photo-remove{font-size:12px;padding:5px 12px;background:none;border:none;color:#DC2626;cursor:pointer;min-height:unset;margin-left:6px}
+.btn-photo-remove:hover{text-decoration:underline}
+input[type=file].photo-input{display:none}
 .notif-bell{position:relative;background:none;border:none;cursor:pointer;padding:6px 8px;border-radius:var(--radius);color:var(--gray-500);font-size:17px;transition:all .15s;min-height:unset}
 .notif-bell:hover{background:var(--gray-100);color:var(--gray-900)}
 .notif-bell.has-unread{color:var(--blue)}
@@ -502,17 +556,112 @@ footer strong{color:rgba(255,255,255,.75)}
         <button class="lang-btn" onclick="setLang('fr')" id="btn-lang-fr">FR</button>
       </div>
       <button class="btn-ghost btn-sm" id="nav-btn-myprofile" data-i18n="myprofile" onclick="showView('myprofile')" style="display:none">My profile</button>
-      <!-- Notification bell — hidden until profile submitted -->
+      <!-- Notification bell — hidden until logged in as candidate -->
       <button class="notif-bell" id="notif-bell" onclick="toggleNotifDrawer()" style="display:none" title="Notifications" aria-label="Notifications">
         <i class="fa-solid fa-bell"></i>
         <span class="notif-count" id="notif-count" style="display:none">0</span>
       </button>
-      <button class="btn-ghost btn-sm" onclick="showView('candidate')" id="nav-btn-candidates" data-i18n="candidates">My messages</button>
-      <button class="btn-ghost btn-sm" onclick="showView('recruiter')" id="nav-btn-recruiters" data-i18n="recruiters">For recruiters</button>
-      <button class="btn-primary btn-sm" onclick="showView('form')" id="nav-btn-submit" data-i18n="submit">Submit your CV</button>
+      <!-- Auth nav — shown/hidden by renderNav() -->
+      <div id="nav-auth-buttons" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <button class="btn-ghost btn-sm" onclick="openAuthModal('login')" id="nav-login-btn" data-i18n="nav.login">Login</button>
+        <button class="btn-primary btn-sm" onclick="openAuthModal('register')" id="nav-register-btn" data-i18n="nav.register">Register</button>
+      </div>
+      <!-- Logged-in user pill — shown after login -->
+      <div class="nav-user-wrap" id="nav-user-wrap" style="display:none">
+        <div class="nav-user-pill" onclick="toggleUserDropdown()">
+          <div class="nav-user-avatar" id="nav-user-avatar"></div>
+          <span class="nav-user-name" id="nav-user-name"></span>
+          <i class="fa-solid fa-chevron-down" style="font-size:10px;color:var(--gray-400)"></i>
+        </div>
+        <div class="nav-user-dropdown" id="nav-user-dropdown" style="display:none">
+          <div class="nav-user-dropdown-item" id="dd-myprofile" onclick="closeUserDropdown();showView('myprofile')" style="display:none">
+            <i class="fa-solid fa-user"></i> My profile
+          </div>
+          <div class="nav-user-dropdown-item" id="dd-messages" onclick="closeUserDropdown();showView('candidate')" style="display:none">
+            <i class="fa-solid fa-comments"></i> My messages
+          </div>
+          <div class="nav-user-dropdown-item" id="dd-recruiter-portal" onclick="closeUserDropdown();showView('recruiter')" style="display:none">
+            <i class="fa-solid fa-briefcase"></i> Recruiter portal
+          </div>
+          <div class="nav-user-dropdown-item" id="dd-admin" onclick="closeUserDropdown();showView('admin')" style="display:none">
+            <i class="fa-solid fa-shield-halved"></i> Admin dashboard
+          </div>
+          <hr style="border:none;border-top:1px solid var(--gray-100);margin:4px 0">
+          <div class="nav-user-dropdown-item danger" onclick="logoutUser()">
+            <i class="fa-solid fa-right-from-bracket"></i> Logout
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </nav>
+
+<!-- ═══════════════════ AUTH MODAL ═══════════════════ -->
+<div id="auth-modal" style="display:none" class="auth-modal-overlay" onclick="handleAuthOverlayClick(event)">
+  <div class="auth-modal">
+
+    <!-- Header -->
+    <div class="auth-modal-header">
+      <div class="auth-logo"></div>
+      <h2 id="auth-modal-title">Welcome to ERP Talent Hub</h2>
+      <p id="auth-modal-sub">Sign in to access your profile</p>
+    </div>
+
+    <!-- Body -->
+    <div class="auth-modal-body">
+      <!-- Login / Register tabs -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="auth-tab-login" onclick="switchAuthTab('login')">Login</button>
+        <button class="auth-tab" id="auth-tab-register" onclick="switchAuthTab('register')">Register</button>
+      </div>
+
+      <!-- Role selector (register only) -->
+      <div id="auth-role-section" style="display:none">
+        <p style="font-size:13px;color:var(--gray-500);margin-bottom:10px">I am a:</p>
+        <div class="auth-role-select">
+          <div class="auth-role-btn selected" id="role-btn-candidate" onclick="selectAuthRole('candidate')">
+            <i class="fa-solid fa-user-tie"></i>
+            <span>ERP Professional</span>
+          </div>
+          <div class="auth-role-btn" id="role-btn-recruiter" onclick="selectAuthRole('recruiter')">
+            <i class="fa-solid fa-briefcase"></i>
+            <span>Recruiter</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fields -->
+      <div id="auth-name-field" class="auth-field" style="display:none">
+        <label>Full name</label>
+        <input type="text" id="auth-name" placeholder="e.g. Marco Rossi" />
+      </div>
+      <div class="auth-field">
+        <label>Email address</label>
+        <input type="email" id="auth-email" placeholder="you@example.com" onkeydown="if(event.key==='Enter')submitAuth()" />
+      </div>
+      <div class="auth-field">
+        <label>Password</label>
+        <input type="password" id="auth-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')submitAuth()" />
+      </div>
+      <div class="auth-field" id="auth-confirm-field" style="display:none">
+        <label>Confirm password</label>
+        <input type="password" id="auth-confirm" placeholder="••••••••" onkeydown="if(event.key==='Enter')submitAuth()" />
+      </div>
+
+      <!-- Error -->
+      <div class="auth-error" id="auth-error"></div>
+
+      <!-- Submit -->
+      <button class="auth-submit" id="auth-submit-btn" onclick="submitAuth()">Login</button>
+
+      <!-- Footer note -->
+      <p class="auth-footer-note" id="auth-footer-note">
+        No account yet? <a onclick="switchAuthTab('register')">Register now</a>
+      </p>
+    </div>
+
+  </div>
+</div>
 
 <!-- ═══════════════════ NOTIFICATION DRAWER ═══════════════════ -->
 <div id="notif-drawer" style="display:none">
@@ -543,8 +692,8 @@ footer strong{color:rgba(255,255,255,.75)}
     <h1 class="hero-title" data-i18n="hero.title">Your ERP expertise,<br><span>visible to the world.</span></h1>
     <p class="hero-subtitle" data-i18n="hero.sub">Join the dedicated platform where SAP, Oracle, Microsoft Dynamics, and other ERP professionals showcase their careers to leading recruiters.</p>
     <div class="hero-ctas">
-      <button class="btn-primary" style="padding:13px 30px;font-size:15px" onclick="showView('form')" data-i18n="hero.cta">Build your profile</button>
-      <button class="btn-outline" style="padding:13px 24px;font-size:15px" onclick="showView('recruiter')" data-i18n="hero.secondary">I'm a recruiter</button>
+      <button class="btn-primary" style="padding:13px 30px;font-size:15px" onclick="authGatedNav('candidate')" data-i18n="hero.cta">Build your profile</button>
+      <button class="btn-outline" style="padding:13px 24px;font-size:15px" onclick="authGatedNav('recruiter')" data-i18n="hero.secondary">I'm a recruiter</button>
     </div>
   </section>
 
@@ -583,7 +732,7 @@ footer strong{color:rgba(255,255,255,.75)}
   <section class="cta-banner">
     <h2 data-i18n="cta.title">Ready to be discovered?</h2>
     <p data-i18n="cta.sub">It takes 5 minutes to build a profile that works for you around the clock.</p>
-    <button class="btn-white" onclick="showView('form')" data-i18n="hero.cta">Build your profile</button>
+    <button class="btn-white" onclick="authGatedNav('candidate')" data-i18n="hero.cta">Build your profile</button>
   </section>
 
 </div><!-- /home-view -->
@@ -600,6 +749,25 @@ footer strong{color:rgba(255,255,255,.75)}
     <!-- PERSONAL -->
     <div class="form-card">
       <div class="section-header"><i class="fa-solid fa-user"></i><h3 data-i18n="sec.personal">Personal information</h3></div>
+
+      <!-- Profile photo -->
+      <div class="photo-upload-wrap">
+        <div class="photo-preview" id="cand-photo-preview" onclick="document.getElementById('cand-photo-input').click()" title="Click to upload photo">
+          <div class="photo-placeholder" id="cand-photo-placeholder">
+            <i class="fa-solid fa-camera"></i>
+            <span>Photo</span>
+          </div>
+        </div>
+        <div class="photo-upload-info">
+          <p data-i18n="f.photoHint">Add a professional profile photo. It will be shown to recruiters alongside your CV.</p>
+          <div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px">
+            <button type="button" class="btn-photo" onclick="document.getElementById('cand-photo-input').click()"><i class="fa-solid fa-upload" style="margin-right:6px"></i><span data-i18n="f.uploadPhoto">Upload photo</span></button>
+            <button type="button" class="btn-photo-remove" id="cand-photo-remove" style="display:none" onclick="removeCandPhoto()"><i class="fa-solid fa-trash" style="margin-right:4px"></i><span data-i18n="f.removePhoto">Remove</span></button>
+          </div>
+          <small data-i18n="f.photoRules">JPG or PNG · Max 5 MB · Square format recommended</small>
+        </div>
+        <input type="file" id="cand-photo-input" class="photo-input" accept="image/jpeg,image/png,image/webp" onchange="onCandPhotoChange(event)" />
+      </div>
       <div class="grid-2">
         <div class="field"><label><span data-i18n="f.firstName">First name</span><span class="req">*</span></label><input type="text" id="f-firstName" /></div>
         <div class="field"><label><span data-i18n="f.lastName">Last name</span><span class="req">*</span></label><input type="text" id="f-lastName" /></div>
@@ -855,9 +1023,28 @@ footer strong{color:rgba(255,255,255,.75)}
           <label style="font-size:13px;font-weight:500;color:#334155;display:block;margin-bottom:6px">Full name (as on LinkedIn) <span style="color:#DC2626">*</span></label>
           <input type="text" id="gate-li-name" placeholder="e.g. Sarah Johnson" />
         </div>
-        <div class="field" style="text-align:left;margin-bottom:20px">
+        <div class="field" style="text-align:left;margin-bottom:16px">
           <label style="font-size:13px;font-weight:500;color:#334155;display:block;margin-bottom:6px">Company / Agency <span style="color:#DC2626">*</span></label>
           <input type="text" id="gate-li-company" placeholder="e.g. Korn Ferry" />
+        </div>
+        <!-- Recruiter photo upload -->
+        <div class="field" style="text-align:left;margin-bottom:20px">
+          <label style="font-size:13px;font-weight:500;color:#334155;display:block;margin-bottom:8px">Profile photo <span style="font-weight:400;color:var(--gray-400)">(optional)</span></label>
+          <div class="photo-upload-wrap" style="margin-bottom:0">
+            <div class="photo-preview" id="rec-photo-preview" onclick="document.getElementById('rec-photo-input').click()" title="Click to upload photo" style="width:60px;height:60px">
+              <div class="photo-placeholder" id="rec-photo-placeholder">
+                <i class="fa-solid fa-camera" style="font-size:18px"></i>
+              </div>
+            </div>
+            <div class="photo-upload-info" style="margin-bottom:0">
+              <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+                <button type="button" class="btn-photo" onclick="document.getElementById('rec-photo-input').click()"><i class="fa-solid fa-upload" style="margin-right:5px"></i>Upload photo</button>
+                <button type="button" class="btn-photo-remove" id="rec-photo-remove" style="display:none" onclick="removeRecPhoto()"><i class="fa-solid fa-trash" style="margin-right:4px"></i>Remove</button>
+              </div>
+              <small style="color:var(--gray-400);font-size:11px;display:block;margin-top:5px">JPG or PNG · Max 5 MB</small>
+            </div>
+            <input type="file" id="rec-photo-input" class="photo-input" accept="image/jpeg,image/png,image/webp" onchange="onRecPhotoChange(event)" />
+          </div>
         </div>
         <button class="btn-primary gate-btn" id="gate-verify-btn" onclick="startVerification()"><i class="fa-solid fa-shield-halved" style="margin-right:8px"></i>Verify LinkedIn Recruiter account</button>
         <button class="btn-ghost" style="margin-top:8px;width:100%;font-size:13px" onclick="gotoStep(1)">← Back</button>
@@ -1017,24 +1204,6 @@ footer strong{color:rgba(255,255,255,.75)}
   </div>
 </div>
 
-<!-- ─── ADMIN LOGIN MODAL ─── -->
-<div id="admin-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:center;justify-content:center">
-  <div style="background:var(--white);border-radius:var(--radius-lg);padding:36px 32px;width:100%;max-width:380px;box-shadow:var(--shadow-md);margin:16px">
-    <div style="text-align:center;margin-bottom:24px">
-      <div style="width:52px;height:52px;border-radius:50%;background:#FEF3C7;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:22px;color:#92400E"><i class="fa-solid fa-shield-halved"></i></div>
-      <h2 style="font-size:18px;margin-bottom:4px">Admin access</h2>
-      <p style="font-size:13px;color:var(--gray-500)">Enter your administrator password to continue.</p>
-    </div>
-    <div class="field">
-      <label style="font-size:13px;font-weight:500;color:var(--gray-700);display:block;margin-bottom:5px">Password</label>
-      <input type="password" id="admin-pw-input" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkAdminPw()" />
-    </div>
-    <div id="admin-pw-error" style="display:none;font-size:12px;color:#DC2626;margin-top:-8px;margin-bottom:10px"><i class="fa-solid fa-triangle-exclamation"></i> Incorrect password. Try again.</div>
-    <button class="btn-primary" style="width:100%;margin-top:12px" onclick="checkAdminPw()">Login</button>
-    <button class="btn-ghost" style="width:100%;margin-top:6px;font-size:13px" onclick="closeAdminModal()">Cancel</button>
-  </div>
-</div>
-
 <!-- FOOTER -->
 <footer>
   <strong>ERP Talent Hub</strong> &nbsp;·&nbsp; EN · IT · ES · DE · FR
@@ -1051,6 +1220,7 @@ footer strong{color:rgba(255,255,255,.75)}
 const TRANSLATIONS = {
   en:{
     "candidates":"My messages","recruiters":"For recruiters","submit":"Submit your CV",
+    "nav.login":"Login","nav.register":"Register",
     "myprofile":"My profile",
     "mp.live":"Profile live","mp.edit":"Edit profile",
     "mp.privacy":"Your contact details (email, phone, LinkedIn) are hidden from recruiters until they request access and you accept.",
@@ -1073,6 +1243,7 @@ const TRANSLATIONS = {
     "sec.education":"Education","sec.certs":"Certifications & licences","sec.awards":"Awards & recognition",
     "f.firstName":"First name","f.lastName":"Last name","f.city":"City","f.country":"Country","f.province":"Province / State",
     "f.email":"Email address","f.phone":"Phone number","f.linkedin":"LinkedIn profile URL",
+    "f.photoHint":"Add a professional profile photo. It will be shown to recruiters alongside your CV.","f.uploadPhoto":"Upload photo","f.removePhoto":"Remove","f.photoRules":"JPG or PNG · Max 5 MB · Square format recommended",
     "f.summary":"Summary","f.summaryPh":"Describe your ERP expertise, the systems you specialise in, your industry focus, and what makes you stand out...",
     "words":"words",
     "f.jobTitle":"Job title","f.company":"Company","f.startDate":"Start","f.endDate":"End","f.current":"Current position","f.description":"Responsibilities & achievements",
@@ -1087,6 +1258,7 @@ const TRANSLATIONS = {
   },
   it:{
     "candidates":"I miei messaggi","recruiters":"Per recruiter","submit":"Invia il tuo CV",
+    "nav.login":"Accedi","nav.register":"Registrati",
     "myprofile":"Il mio profilo",
     "mp.live":"Profilo attivo","mp.edit":"Modifica profilo",
     "mp.privacy":"I tuoi recapiti (email, telefono, LinkedIn) sono nascosti ai recruiter finché non richiedono l'accesso e tu non accetti.",
@@ -1109,6 +1281,7 @@ const TRANSLATIONS = {
     "sec.education":"Formazione","sec.certs":"Certificazioni e licenze","sec.awards":"Premi e riconoscimenti",
     "f.firstName":"Nome","f.lastName":"Cognome","f.city":"Città","f.country":"Paese","f.province":"Provincia / Regione",
     "f.email":"Indirizzo email","f.phone":"Numero di telefono","f.linkedin":"URL profilo LinkedIn",
+    "f.photoHint":"Aggiungi una foto profilo professionale. Sarà mostrata ai recruiter insieme al tuo CV.","f.uploadPhoto":"Carica foto","f.removePhoto":"Rimuovi","f.photoRules":"JPG o PNG · Max 5 MB · Formato quadrato consigliato",
     "f.summary":"Sommario","f.summaryPh":"Descrivi la tua esperienza ERP, i sistemi in cui sei specializzato, il settore di riferimento e ciò che ti distingue...",
     "words":"parole",
     "f.jobTitle":"Titolo professionale","f.company":"Azienda","f.startDate":"Inizio","f.endDate":"Fine","f.current":"Posizione attuale","f.description":"Responsabilità e risultati",
@@ -1123,6 +1296,7 @@ const TRANSLATIONS = {
   },
   es:{
     "candidates":"Mis mensajes","recruiters":"Para recruiters","submit":"Envía tu CV",
+    "nav.login":"Iniciar sesión","nav.register":"Registrarse",
     "myprofile":"Mi perfil",
     "mp.live":"Perfil activo","mp.edit":"Editar perfil",
     "mp.privacy":"Tus datos de contacto (email, teléfono, LinkedIn) están ocultos para los recruiters hasta que soliciten acceso y tú aceptes.",
@@ -1145,6 +1319,7 @@ const TRANSLATIONS = {
     "sec.education":"Educación","sec.certs":"Certificaciones y licencias","sec.awards":"Premios y reconocimientos",
     "f.firstName":"Nombre","f.lastName":"Apellidos","f.city":"Ciudad","f.country":"País","f.province":"Provincia / Estado",
     "f.email":"Correo electrónico","f.phone":"Número de teléfono","f.linkedin":"URL de perfil LinkedIn",
+    "f.photoHint":"Añade una foto de perfil profesional. Se mostrará a los recruiters junto a tu CV.","f.uploadPhoto":"Subir foto","f.removePhoto":"Eliminar","f.photoRules":"JPG o PNG · Máx 5 MB · Formato cuadrado recomendado",
     "f.summary":"Resumen","f.summaryPh":"Describe tu experiencia en ERP, los sistemas en los que te especializas, tu sector de enfoque y qué te diferencia...",
     "words":"palabras",
     "f.jobTitle":"Cargo","f.company":"Empresa","f.startDate":"Inicio","f.endDate":"Fin","f.current":"Posición actual","f.description":"Responsabilidades y logros",
@@ -1159,6 +1334,7 @@ const TRANSLATIONS = {
   },
   de:{
     "candidates":"Meine Nachrichten","recruiters":"Für Recruiter","submit":"Lebenslauf einreichen",
+    "nav.login":"Anmelden","nav.register":"Registrieren",
     "myprofile":"Mein Profil",
     "mp.live":"Profil aktiv","mp.edit":"Profil bearbeiten",
     "mp.privacy":"Ihre Kontaktdaten (E-Mail, Telefon, LinkedIn) sind für Recruiter verborgen, bis sie Zugang anfordern und Sie zustimmen.",
@@ -1181,6 +1357,7 @@ const TRANSLATIONS = {
     "sec.education":"Ausbildung","sec.certs":"Zertifizierungen & Lizenzen","sec.awards":"Auszeichnungen & Anerkennungen",
     "f.firstName":"Vorname","f.lastName":"Nachname","f.city":"Stadt","f.country":"Land","f.province":"Provinz / Bundesland",
     "f.email":"E-Mail-Adresse","f.phone":"Telefonnummer","f.linkedin":"LinkedIn-Profil-URL",
+    "f.photoHint":"Fügen Sie ein professionelles Profilfoto hinzu. Es wird Recruitern zusammen mit Ihrem Lebenslauf angezeigt.","f.uploadPhoto":"Foto hochladen","f.removePhoto":"Entfernen","f.photoRules":"JPG oder PNG · Max. 5 MB · Quadratisches Format empfohlen",
     "f.summary":"Kurzprofil","f.summaryPh":"Beschreiben Sie Ihre ERP-Expertise, die Systeme, auf die Sie spezialisiert sind, Ihren Branchenfokus und was Sie auszeichnet...",
     "words":"Wörter",
     "f.jobTitle":"Berufsbezeichnung","f.company":"Unternehmen","f.startDate":"Beginn","f.endDate":"Ende","f.current":"Aktuelle Position","f.description":"Aufgaben & Leistungen",
@@ -1195,6 +1372,7 @@ const TRANSLATIONS = {
   },
   fr:{
     "candidates":"Mes messages","recruiters":"Pour les recruteurs","submit":"Déposer mon CV",
+    "nav.login":"Connexion","nav.register":"S'inscrire",
     "myprofile":"Mon profil",
     "mp.live":"Profil en ligne","mp.edit":"Modifier le profil",
     "mp.privacy":"Vos coordonnées (e-mail, téléphone, LinkedIn) sont masquées aux recruteurs jusqu'à ce qu'ils demandent l'accès et que vous acceptiez.",
@@ -1217,6 +1395,7 @@ const TRANSLATIONS = {
     "sec.education":"Formation","sec.certs":"Certifications & licences","sec.awards":"Prix & distinctions",
     "f.firstName":"Prénom","f.lastName":"Nom","f.city":"Ville","f.country":"Pays","f.province":"Province / Région",
     "f.email":"Adresse e-mail","f.phone":"Numéro de téléphone","f.linkedin":"URL du profil LinkedIn",
+    "f.photoHint":"Ajoutez une photo de profil professionnelle. Elle sera affichée aux recruteurs avec votre CV.","f.uploadPhoto":"Télécharger une photo","f.removePhoto":"Supprimer","f.photoRules":"JPG ou PNG · Max 5 Mo · Format carré recommandé",
     "f.summary":"Résumé","f.summaryPh":"Décrivez votre expertise ERP, les systèmes dans lesquels vous êtes spécialisé, votre secteur de prédilection et ce qui vous distingue...",
     "words":"mots",
     "f.jobTitle":"Intitulé du poste","f.company":"Entreprise","f.startDate":"Début","f.endDate":"Fin","f.current":"Poste actuel","f.description":"Responsabilités & réalisations",
@@ -1655,6 +1834,7 @@ function handleSubmit() {
       // Save profile snapshot and reveal My Profile nav button
       savedProfile = collectProfileData();
       allCandidateProfiles.push({ ...savedProfile, submittedAt: new Date().toISOString() });
+      persistCandidateProfile();
       const mpBtn = document.getElementById('nav-btn-myprofile');
       if (mpBtn) mpBtn.style.display = '';
       // Show notification bell
@@ -2152,13 +2332,23 @@ function showRejected() {
 
 function enterRecruiterPortal() {
   recruiterVerified = true;
-  verifiedRecruiters.push({ ...recruiterProfile, verifiedAt: new Date().toISOString() });
+  verifiedRecruiters.push({ ...recruiterProfile, photo: recPhotoBase64, verifiedAt: new Date().toISOString() });
+  persistRecruiterData();
   document.getElementById('rec-gate').style.display = 'none';
   const portal = document.getElementById('rec-portal');
   portal.style.display = 'flex';
-  // Show recruiter's first name in badge
+  // Show recruiter's first name + photo in badge
   const firstName = recruiterProfile.name.split(' ')[0];
-  document.getElementById('rec-verified-name').textContent = firstName + ' · Verified';
+  const badgeEl = document.getElementById('rec-verified-name');
+  if (badgeEl) badgeEl.textContent = firstName + ' · Verified';
+  // Show recruiter photo in portal header if available
+  const badgeParent = badgeEl?.closest('.portal-role-badge');
+  if (badgeParent && recPhotoBase64) {
+    const photoEl = document.createElement('img');
+    photoEl.src = recPhotoBase64;
+    photoEl.style.cssText = 'width:22px;height:22px;border-radius:50%;object-fit:cover;margin-right:4px;vertical-align:middle';
+    badgeParent.insertBefore(photoEl, badgeParent.firstChild);
+  }
   initRecruiterPortal();
 }
 
@@ -2590,10 +2780,14 @@ function renderRecChatWindow(candidateId) {
   const color = avatarColor(cand.name);
   const ini = initials(cand.name);
 
+  const recAvatarContent = recPhotoBase64
+    ? `<img src="${recPhotoBase64}" style="width:100%;height:100%;object-fit:cover;border-radius:50%" alt="Recruiter photo" />`
+    : ini;
+
   area.innerHTML = `
     <div class="chat-window">
       <div class="chat-topbar">
-        <div class="chat-topbar-avatar" style="background:${color}">${ini}</div>
+        <div class="chat-topbar-avatar" style="background:${recPhotoBase64 ? 'transparent' : color}">${recAvatarContent}</div>
         <div class="chat-topbar-info">
           <div class="chat-topbar-name">${cand.name}</div>
           <div class="chat-topbar-sub">${cand.role} · ${cand.location}</div>
@@ -2640,13 +2834,15 @@ function renderRecMessages(candidateId) {
     }
     const isMe = m.from === 'rec';
     const cand = CANDIDATES.find(c => c.id === candidateId);
-    const color = avatarColor(isMe ? 'Recruiter' : cand.name);
-    const ini = initials(isMe ? 'RE' : cand.name);
+    const bgColor = isMe ? (recPhotoBase64 ? 'transparent' : avatarColor('Recruiter')) : (savedProfile?.photo ? 'transparent' : avatarColor(cand.name));
+    const avatarHTML = isMe
+      ? (recPhotoBase64 ? `<img src="${recPhotoBase64}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : initials('RE'))
+      : (savedProfile?.photo ? `<img src="${savedProfile.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : initials(cand.name));
     const timeStr = m.time ? new Date(m.time).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}) : '';
     const row = document.createElement('div');
     row.className = 'msg-row' + (isMe ? ' mine' : '');
     row.innerHTML = `
-      <div class="msg-avatar" style="background:${color}">${ini}</div>
+      <div class="msg-avatar" style="background:${bgColor}">${avatarHTML}</div>
       <div>
         <div class="msg-bubble ${isMe ? 'mine' : 'them'}">${escHtml(m.text)}${isMe ? `<div class="msg-status">✓ Sent</div>` : ''}</div>
         <div style="font-size:11px;color:var(--gray-400);margin-top:3px;${isMe?'text-align:right':''}">${timeStr}</div>
@@ -2808,13 +3004,17 @@ function renderCandMessages(candidateId) {
       lastDate = d;
     }
     const isMe = m.from === 'cand';
-    const color = isMe ? avatarColor('cand self') : avatarColor('Recruiter REC');
-    const ini = isMe ? initials('ME') : 'HR';
+    const bgColor = isMe
+      ? (savedProfile?.photo ? 'transparent' : avatarColor('cand self'))
+      : (recPhotoBase64 ? 'transparent' : avatarColor('Recruiter REC'));
+    const avatarHTML = isMe
+      ? (savedProfile?.photo ? `<img src="${savedProfile.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : initials('ME'))
+      : (recPhotoBase64 ? `<img src="${recPhotoBase64}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : 'HR');
     const timeStr = m.time ? new Date(m.time).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}) : '';
     const row = document.createElement('div');
     row.className = 'msg-row' + (isMe ? ' mine' : '');
     row.innerHTML = `
-      <div class="msg-avatar" style="background:${color}">${ini}</div>
+      <div class="msg-avatar" style="background:${bgColor}">${avatarHTML}</div>
       <div>
         <div class="msg-bubble ${isMe ? 'mine' : 'them'}">${escHtml(m.text)}${isMe ? `<div class="msg-status">✓ Sent</div>` : ''}</div>
         <div style="font-size:11px;color:var(--gray-400);margin-top:3px;${isMe?'text-align:right':''}">${timeStr}</div>
@@ -2862,21 +3062,29 @@ function autoResizeTextarea(el) {
 
 // ─── View management + portal init ───────────────────────
 function showView(name) {
+  // Auth guards for protected views
+  const guards = { form:'candidate', myprofile:'candidate', candidate:'candidate', recruiter:'recruiter', admin:'admin' };
+  if (guards[name] && !currentUser) {
+    pendingNavTarget = name;
+    openAuthModal('login', guards[name] === 'admin' ? null : guards[name]);
+    return;
+  }
+  if (name === 'admin' && currentUser?.role !== 'admin') { showView('home'); return; }
+  if (name === 'recruiter' && currentUser && currentUser.role !== 'recruiter' && currentUser.role !== 'admin') { showView('home'); return; }
+  if ((name === 'form' || name === 'myprofile' || name === 'candidate') && currentUser && currentUser.role !== 'candidate' && currentUser.role !== 'admin') { showView('home'); return; }
+
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   const target = document.getElementById(name + '-view');
   if (target) target.classList.add('active');
   window.scrollTo(0, 0);
+
   if (name === 'success') {
     const notice = document.getElementById('emailjs-setup-notice');
     if (notice) notice.style.display = EMAILJS_CONFIGURED ? 'none' : 'block';
   }
   if (name === 'myprofile') renderMyProfile();
-  if (name === 'admin') {
-    if (!adminAuthenticated) { openAdminModal(); return; }
-    initAdminPortal();
-  }
+  if (name === 'admin') initAdminPortal();
   if (name === 'recruiter') {
-    // If not yet verified, show gate at step 1; if verified, show portal
     if (!recruiterVerified) {
       document.getElementById('rec-gate').style.display = 'flex';
       document.getElementById('rec-portal').style.display = 'none';
@@ -2942,7 +3150,7 @@ function collectProfileData() {
     awardYear: document.getElementById('award-yr-' + id)?.value || '',
   })).filter(e => e.awardName);
 
-  return { firstName, lastName, city, province, country, email, phone, linkedin, summary, erp, exps, edus, certs, awards };
+  return { firstName, lastName, city, province, country, email, phone, linkedin, summary, erp, exps, edus, certs, awards, photo: candPhotoBase64 };
 }
 
 function renderMyProfile() {
@@ -2954,7 +3162,7 @@ function renderMyProfile() {
 
   // Avatar + name
   const av = document.getElementById('mp-avatar');
-  if (av) { av.textContent = ini.toUpperCase(); av.style.background = color; }
+  if (av) renderAvatar(av, p.photo, ini.toUpperCase(), color, 52, 20);
   const fn = document.getElementById('mp-fullname');
   if (fn) fn.textContent = fullName;
   const loc = document.getElementById('mp-location');
@@ -3101,31 +3309,6 @@ const allCandidateProfiles = []; // populated on each form submit
 // recruiters come from the CANDIDATES sample array + any verified recruiter sessions
 const verifiedRecruiters  = []; // populated when a recruiter completes gate
 
-function openAdminModal() {
-  const modal = document.getElementById('admin-modal');
-  modal.style.display = 'flex';
-  document.getElementById('admin-pw-input').value = '';
-  document.getElementById('admin-pw-error').style.display = 'none';
-  setTimeout(() => document.getElementById('admin-pw-input').focus(), 80);
-}
-
-function closeAdminModal() {
-  document.getElementById('admin-modal').style.display = 'none';
-}
-
-function checkAdminPw() {
-  const pw = document.getElementById('admin-pw-input').value;
-  if (pw === ADMIN_PASSWORD) {
-    adminAuthenticated = true;
-    closeAdminModal();
-    showView('admin');
-  } else {
-    document.getElementById('admin-pw-error').style.display = 'block';
-    document.getElementById('admin-pw-input').value = '';
-    document.getElementById('admin-pw-input').focus();
-  }
-}
-
 function setAdminTab(tab, el) {
   adminTab = tab;
   document.querySelectorAll('#admin-tab-cand,#admin-tab-rec').forEach(b => b.classList.remove('active'));
@@ -3192,7 +3375,7 @@ function renderAdminList() {
       div.className = 'cand-card';
       div.onclick = () => showAdminRecruiterDetail(r);
       div.innerHTML = `
-        <div class="cand-avatar" style="background:${avatarColor(r.name)}">${initials(r.name)}</div>
+        <div style="${r.photo ? `width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0` : `width:38px;height:38px;border-radius:50%;background:${avatarColor(r.name)};display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0`}">${r.photo ? `<img src="${r.photo}" style="width:100%;height:100%;object-fit:cover">` : initials(r.name)}</div>
         <div class="cand-info">
           <div class="cand-name">${escHtml(r.name)}</div>
           <div class="cand-meta">${escHtml(r.company)}</div>
@@ -3225,7 +3408,7 @@ function showAdminCandidateDetail(p) {
     <div style="padding:28px;overflow-y:auto;height:100%">
       <!-- Header -->
       <div style="display:flex;align-items:center;gap:14px;margin-bottom:24px;flex-wrap:wrap">
-        <div style="width:52px;height:52px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;flex-shrink:0">${initials(fullName)}</div>
+        <div style="${p.photo ? `width:52px;height:52px;border-radius:50%;overflow:hidden;flex-shrink:0` : `width:52px;height:52px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;flex-shrink:0`}">${p.photo ? `<img src="${p.photo}" style="width:100%;height:100%;object-fit:cover">` : initials(fullName)}</div>
         <div>
           <div style="font-size:18px;font-weight:600">${escHtml(fullName)}</div>
           <div style="font-size:13px;color:var(--gray-500)"><i class="fa-solid fa-location-dot" style="color:var(--blue);margin-right:4px"></i>${[p.city, p.province, p.country].filter(Boolean).join(', ')}</div>
@@ -3277,7 +3460,7 @@ function showAdminRecruiterDetail(r) {
   detail.innerHTML = `
     <div style="padding:28px;overflow-y:auto;height:100%">
       <div style="display:flex;align-items:center;gap:14px;margin-bottom:24px;flex-wrap:wrap">
-        <div style="width:52px;height:52px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;flex-shrink:0">${initials(r.name)}</div>
+        <div style="${r.photo ? `width:52px;height:52px;border-radius:50%;overflow:hidden;flex-shrink:0` : `width:52px;height:52px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;flex-shrink:0`}">${r.photo ? `<img src="${r.photo}" style="width:100%;height:100%;object-fit:cover">` : initials(r.name)}</div>
         <div>
           <div style="font-size:18px;font-weight:600">${escHtml(r.name)}</div>
           <div style="font-size:13px;color:var(--gray-500)">${escHtml(r.company)}</div>
@@ -3307,14 +3490,434 @@ function showAdminRecruiterDetail(r) {
 }
 
 // ─────────────────────────────────────────
+// AUTH SYSTEM
+// ─────────────────────────────────────────
+
+const ADMIN_EMAIL    = 'admin@erp-talent-hub.com';
+const ADMIN_PASS     = 'VFT@Admin2026';
+const STORAGE_KEY    = 'erpth_users';
+const SESSION_KEY    = 'erpth_session';
+
+let currentUser = null; // { id, email, name, role, photo, profileData, recruiterData }
+let authModalMode = 'login'; // 'login' | 'register'
+let authRole = 'candidate';  // 'candidate' | 'recruiter'
+let pendingNavTarget = null; // where to go after login
+
+// ── Storage helpers ──────────────────────
+function getUsers() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch { return {}; }
+}
+function saveUsers(users) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
+}
+function getSession() {
+  try { return JSON.parse(localStorage.getItem(SESSION_KEY) || 'null'); } catch { return null; }
+}
+function saveSession(user) {
+  if (user) localStorage.setItem(SESSION_KEY, JSON.stringify(user));
+  else localStorage.removeItem(SESSION_KEY);
+}
+
+// ── Simple hash (not cryptographic — for demo only) ──
+function hashPass(pass) {
+  let h = 0;
+  for (let i = 0; i < pass.length; i++) h = (Math.imul(31, h) + pass.charCodeAt(i)) | 0;
+  return h.toString(36);
+}
+
+// ── Modal open/close ─────────────────────
+function openAuthModal(mode = 'login', role = null) {
+  authModalMode = mode;
+  if (role) authRole = role;
+  document.getElementById('auth-modal').style.display = 'flex';
+  switchAuthTab(mode);
+  if (role) selectAuthRole(role);
+  setTimeout(() => document.getElementById('auth-email').focus(), 80);
+}
+
+function closeAuthModal() {
+  document.getElementById('auth-modal').style.display = 'none';
+  document.getElementById('auth-error').classList.remove('show');
+  document.getElementById('auth-email').value = '';
+  document.getElementById('auth-password').value = '';
+  document.getElementById('auth-confirm').value = '';
+  if (document.getElementById('auth-name')) document.getElementById('auth-name').value = '';
+  pendingNavTarget = null;
+}
+
+function handleAuthOverlayClick(e) {
+  if (e.target === document.getElementById('auth-modal')) closeAuthModal();
+}
+
+function switchAuthTab(mode) {
+  authModalMode = mode;
+  const isLogin = mode === 'login';
+  document.getElementById('auth-tab-login').classList.toggle('active', isLogin);
+  document.getElementById('auth-tab-register').classList.toggle('active', !isLogin);
+  document.getElementById('auth-role-section').style.display  = isLogin ? 'none' : 'block';
+  document.getElementById('auth-name-field').style.display    = isLogin ? 'none' : 'block';
+  document.getElementById('auth-confirm-field').style.display = isLogin ? 'none' : 'block';
+  document.getElementById('auth-submit-btn').textContent      = isLogin ? 'Login' : 'Create account';
+  document.getElementById('auth-footer-note').innerHTML       = isLogin
+    ? 'No account yet? <a onclick="switchAuthTab(\'register\')">Register now</a>'
+    : 'Already have an account? <a onclick="switchAuthTab(\'login\')">Login</a>';
+  document.getElementById('auth-error').classList.remove('show');
+}
+
+function selectAuthRole(role) {
+  authRole = role;
+  document.getElementById('role-btn-candidate').classList.toggle('selected', role === 'candidate');
+  document.getElementById('role-btn-recruiter').classList.toggle('selected', role === 'recruiter');
+}
+
+function showAuthError(msg) {
+  const el = document.getElementById('auth-error');
+  el.textContent = msg;
+  el.classList.add('show');
+}
+
+// ── Submit ───────────────────────────────
+function submitAuth() {
+  const email    = document.getElementById('auth-email').value.trim().toLowerCase();
+  const password = document.getElementById('auth-password').value;
+  document.getElementById('auth-error').classList.remove('show');
+
+  if (!email || !password) return showAuthError('Please fill in all fields.');
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showAuthError('Please enter a valid email address.');
+
+  if (authModalMode === 'login') {
+    // Admin shortcut
+    if (email === ADMIN_EMAIL.toLowerCase() && password === ADMIN_PASS) {
+      loginSuccess({ id: 'admin', email: ADMIN_EMAIL, name: 'Admin', role: 'admin', photo: null });
+      return;
+    }
+    const users = getUsers();
+    const user  = users[email];
+    if (!user) return showAuthError('No account found with this email. Please register first.');
+    if (user.hash !== hashPass(password)) return showAuthError('Incorrect password. Please try again.');
+    loginSuccess(user);
+
+  } else {
+    // Register
+    const name    = document.getElementById('auth-name').value.trim();
+    const confirm = document.getElementById('auth-confirm').value;
+    if (!name)              return showAuthError('Please enter your full name.');
+    if (password.length < 6) return showAuthError('Password must be at least 6 characters.');
+    if (password !== confirm) return showAuthError('Passwords do not match.');
+
+    const users = getUsers();
+    if (users[email]) return showAuthError('An account with this email already exists. Please login instead.');
+
+    const newUser = {
+      id: 'u_' + Date.now(),
+      email, name,
+      role: authRole,
+      hash: hashPass(password),
+      photo: null,
+      profileData: null,
+      recruiterData: null,
+    };
+    users[email] = newUser;
+    saveUsers(users);
+    loginSuccess(newUser);
+  }
+}
+
+function loginSuccess(user) {
+  currentUser = user;
+  // Strip hash before saving to session
+  const sessionUser = { ...user };
+  delete sessionUser.hash;
+  saveSession(sessionUser);
+  closeAuthModal();
+  renderNav();
+
+  // Navigate based on role and pending target
+  const target = pendingNavTarget || defaultViewForRole(user.role);
+  pendingNavTarget = null;
+
+  // Restore profile data if candidate has submitted before
+  if (user.role === 'candidate' && user.profileData) {
+    savedProfile = user.profileData;
+    if (user.photo) candPhotoBase64 = user.photo;
+  }
+  if (user.role === 'recruiter' && user.recruiterData) {
+    recruiterProfile = user.recruiterData;
+    recruiterVerified = true;
+    if (user.photo) recPhotoBase64 = user.photo;
+  }
+
+  showView(target);
+}
+
+function defaultViewForRole(role) {
+  if (role === 'admin')     return 'admin';
+  if (role === 'recruiter') return 'recruiter';
+  return savedProfile ? 'myprofile' : 'form';
+}
+
+function logoutUser() {
+  currentUser = null;
+  saveSession(null);
+  // Reset state
+  savedProfile = null;
+  candPhotoBase64 = null;
+  recPhotoBase64 = null;
+  recruiterVerified = false;
+  recruiterProfile = {};
+  notifications = [];
+  closeUserDropdown();
+  renderNav();
+  showView('home');
+}
+
+// ── Nav rendering ────────────────────────
+function renderNav() {
+  const authBtns   = document.getElementById('nav-auth-buttons');
+  const userWrap   = document.getElementById('nav-user-wrap');
+  const bell       = document.getElementById('notif-bell');
+  const myprofileBtn = document.getElementById('nav-btn-myprofile');
+
+  if (!currentUser) {
+    authBtns.style.display  = 'flex';
+    userWrap.style.display  = 'none';
+    if (bell) bell.style.display = 'none';
+    if (myprofileBtn) myprofileBtn.style.display = 'none';
+    return;
+  }
+
+  authBtns.style.display = 'none';
+  userWrap.style.display = 'flex';
+
+  // Avatar
+  const avatarEl = document.getElementById('nav-user-avatar');
+  const color    = avatarColor(currentUser.name);
+  if (currentUser.photo) {
+    avatarEl.innerHTML = `<img src="${currentUser.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+    avatarEl.style.background = 'transparent';
+  } else {
+    avatarEl.textContent = initials(currentUser.name);
+    avatarEl.style.background = currentUser.role === 'admin' ? '#92400E' : color;
+  }
+  document.getElementById('nav-user-name').textContent = currentUser.name.split(' ')[0];
+
+  // Dropdown items
+  document.getElementById('dd-myprofile').style.display      = currentUser.role === 'candidate' ? 'flex' : 'none';
+  document.getElementById('dd-messages').style.display       = currentUser.role === 'candidate' ? 'flex' : 'none';
+  document.getElementById('dd-recruiter-portal').style.display = currentUser.role === 'recruiter' ? 'flex' : 'none';
+  document.getElementById('dd-admin').style.display          = currentUser.role === 'admin'     ? 'flex' : 'none';
+
+  // Bell — candidates only
+  if (bell) bell.style.display = currentUser.role === 'candidate' ? 'flex' : 'none';
+}
+
+function toggleUserDropdown() {
+  const dd = document.getElementById('nav-user-dropdown');
+  const isOpen = dd.style.display !== 'none';
+  dd.style.display = isOpen ? 'none' : 'block';
+  if (!isOpen) {
+    setTimeout(() => {
+      document.addEventListener('click', function closeDD(e) {
+        if (!document.getElementById('nav-user-wrap')?.contains(e.target)) {
+          dd.style.display = 'none';
+          document.removeEventListener('click', closeDD);
+        }
+      });
+    }, 10);
+  }
+}
+
+function closeUserDropdown() {
+  const dd = document.getElementById('nav-user-dropdown');
+  if (dd) dd.style.display = 'none';
+}
+
+// Auth-gated navigation — prompts login if not authenticated
+function authGatedNav(role) {
+  if (currentUser) {
+    showView(defaultViewForRole(currentUser.role));
+  } else {
+    pendingNavTarget = role === 'recruiter' ? 'recruiter' : 'form';
+    openAuthModal('register', role);
+  }
+}
+
+// Persist profile data to the user's account on submit
+function persistCandidateProfile() {
+  if (!currentUser || currentUser.role !== 'candidate') return;
+  const users = getUsers();
+  if (!users[currentUser.email]) return;
+  users[currentUser.email].profileData = savedProfile;
+  users[currentUser.email].photo       = candPhotoBase64;
+  saveUsers(users);
+  currentUser.profileData = savedProfile;
+  currentUser.photo       = candPhotoBase64;
+  saveSession(currentUser);
+}
+
+function persistRecruiterData() {
+  if (!currentUser || currentUser.role !== 'recruiter') return;
+  const users = getUsers();
+  if (!users[currentUser.email]) return;
+  users[currentUser.email].recruiterData = recruiterProfile;
+  users[currentUser.email].photo         = recPhotoBase64;
+  saveUsers(users);
+  currentUser.recruiterData = recruiterProfile;
+  currentUser.photo         = recPhotoBase64;
+  saveSession(currentUser);
+}
+
+// ─────────────────────────────────────────
+// PHOTO UPLOAD
+// ─────────────────────────────────────────
+
+let candPhotoBase64 = null;
+let recPhotoBase64  = null;
+
+function readImageFile(file, maxMB = 5) {
+  return new Promise((resolve, reject) => {
+    if (!file) return reject('No file');
+    if (file.size > maxMB * 1024 * 1024) return reject(`File too large (max ${maxMB} MB)`);
+    if (!['image/jpeg','image/png','image/webp'].includes(file.type)) return reject('Only JPG, PNG or WebP allowed');
+    const reader = new FileReader();
+    reader.onload = e => resolve(e.target.result);
+    reader.onerror = () => reject('Read error');
+    reader.readAsDataURL(file);
+  });
+}
+
+// ── CANDIDATE ──
+async function onCandPhotoChange(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  try {
+    const base64 = await readImageFile(file);
+    candPhotoBase64 = base64;
+    renderCandPhotoPreview(base64);
+  } catch (err) {
+    alert('Photo error: ' + err);
+    event.target.value = '';
+  }
+}
+
+function renderCandPhotoPreview(src) {
+  const preview = document.getElementById('cand-photo-preview');
+  const placeholder = document.getElementById('cand-photo-placeholder');
+  const removeBtn = document.getElementById('cand-photo-remove');
+  if (!preview) return;
+  // Remove old img if any
+  const old = preview.querySelector('img');
+  if (old) old.remove();
+  if (src) {
+    const img = document.createElement('img');
+    img.src = src;
+    img.alt = 'Profile photo';
+    preview.appendChild(img);
+    if (placeholder) placeholder.style.display = 'none';
+    if (removeBtn) removeBtn.style.display = 'inline-flex';
+    preview.style.border = '2px solid var(--blue)';
+  } else {
+    if (placeholder) placeholder.style.display = 'flex';
+    if (removeBtn) removeBtn.style.display = 'none';
+    preview.style.border = '2px dashed var(--gray-300)';
+  }
+}
+
+function removeCandPhoto() {
+  candPhotoBase64 = null;
+  document.getElementById('cand-photo-input').value = '';
+  renderCandPhotoPreview(null);
+}
+
+// ── RECRUITER ──
+async function onRecPhotoChange(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  try {
+    const base64 = await readImageFile(file);
+    recPhotoBase64 = base64;
+    renderRecPhotoPreview(base64);
+  } catch (err) {
+    alert('Photo error: ' + err);
+    event.target.value = '';
+  }
+}
+
+function renderRecPhotoPreview(src) {
+  const preview = document.getElementById('rec-photo-preview');
+  const placeholder = document.getElementById('rec-photo-placeholder');
+  const removeBtn = document.getElementById('rec-photo-remove');
+  if (!preview) return;
+  const old = preview.querySelector('img');
+  if (old) old.remove();
+  if (src) {
+    const img = document.createElement('img');
+    img.src = src;
+    img.alt = 'Profile photo';
+    preview.appendChild(img);
+    if (placeholder) placeholder.style.display = 'none';
+    if (removeBtn) removeBtn.style.display = 'inline-flex';
+    preview.style.border = '2px solid var(--blue)';
+  } else {
+    if (placeholder) placeholder.style.display = 'flex';
+    if (removeBtn) removeBtn.style.display = 'none';
+    preview.style.border = '2px dashed var(--gray-300)';
+  }
+}
+
+function removeRecPhoto() {
+  recPhotoBase64 = null;
+  document.getElementById('rec-photo-input').value = '';
+  renderRecPhotoPreview(null);
+}
+
+// Shared helper — renders avatar: photo if available, else initials circle
+function renderAvatar(container, photoSrc, initText, color, size = 52, fontSize = 18) {
+  if (!container) return;
+  container.style.width  = size + 'px';
+  container.style.height = size + 'px';
+  container.style.borderRadius = '50%';
+  container.style.overflow = 'hidden';
+  container.style.flexShrink = '0';
+  container.style.display = 'flex';
+  container.style.alignItems = 'center';
+  container.style.justifyContent = 'center';
+  container.style.fontWeight = '700';
+  container.style.fontSize = fontSize + 'px';
+  container.style.color = '#fff';
+
+  if (photoSrc) {
+    container.style.background = 'transparent';
+    container.innerHTML = `<img src="${photoSrc}" style="width:100%;height:100%;object-fit:cover" alt="Profile photo" />`;
+  } else {
+    container.style.background = color;
+    container.innerHTML = initText;
+  }
+}
+
+// ─────────────────────────────────────────
 // INIT
 // ─────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
+  // Restore session
+  const session = getSession();
+  if (session) {
+    currentUser = session;
+    if (session.role === 'candidate' && session.profileData) {
+      savedProfile = session.profileData;
+      if (session.photo) candPhotoBase64 = session.photo;
+    }
+    if (session.role === 'recruiter' && session.recruiterData) {
+      recruiterProfile = session.recruiterData;
+      recruiterVerified = true;
+      if (session.photo) recPhotoBase64 = session.photo;
+    }
+  }
+  renderNav();
   applyTranslations();
   buildPhonePrefix();
   buildErpToggles();
   buildHomeErpTags();
-  // Add one entry per section by default
   addEntry('exp');
   addEntry('edu');
   addEntry('cert');
