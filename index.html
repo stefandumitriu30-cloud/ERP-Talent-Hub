@@ -4121,7 +4121,7 @@ async function submitForgotPassword() {
 
   try {
     const { error } = await sb().auth.resetPasswordForEmail(email, {
-      redirectTo: window.location.origin + window.location.pathname,
+      redirectTo: 'https://stefandumitriu30-cloud.github.io/ERP-Talent-Hub/',
     });
     btn.disabled = false;
     btn.textContent = t('auth.sendReset') || 'Send reset link';
