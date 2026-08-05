@@ -678,6 +678,12 @@ input[type=file].photo-input{display:none}
         <button class="auth-tab" id="auth-tab-register" onclick="switchAuthTab('register')">Register</button>
       </div>
 
+      <!-- Login / Register tabs -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="auth-tab-login" onclick="switchAuthTab('login')">Login</button>
+        <button class="auth-tab" id="auth-tab-register" onclick="switchAuthTab('register')">Register</button>
+      </div>
+
       <!-- Role selector (register only) -->
       <div id="auth-role-section" style="display:none">
         <p style="font-size:13px;color:var(--gray-500);margin-bottom:10px">I am a:</p>
@@ -693,34 +699,61 @@ input[type=file].photo-input{display:none}
         </div>
       </div>
 
-      <!-- Fields -->
-      <div id="auth-name-field" class="auth-field" style="display:none">
-        <label>Full name</label>
-        <input type="text" id="auth-name" placeholder="e.g. Marco Rossi" />
-      </div>
-      <div class="auth-field">
-        <label>Email address</label>
-        <input type="email" id="auth-email" placeholder="you@example.com" onkeydown="if(event.key==='Enter')submitAuth()" />
-      </div>
-      <div class="auth-field">
-        <label>Password</label>
-        <input type="password" id="auth-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')submitAuth()" />
-      </div>
-      <div class="auth-field" id="auth-confirm-field" style="display:none">
-        <label>Confirm password</label>
-        <input type="password" id="auth-confirm" placeholder="••••••••" onkeydown="if(event.key==='Enter')submitAuth()" />
+      <!-- Fields (login + register) -->
+      <div id="auth-login-register-fields">
+        <div id="auth-name-field" class="auth-field" style="display:none">
+          <label>Full name</label>
+          <input type="text" id="auth-name" placeholder="e.g. Marco Rossi" />
+        </div>
+        <div class="auth-field">
+          <label>Email address</label>
+          <input type="email" id="auth-email" placeholder="you@example.com" onkeydown="if(event.key==='Enter')submitAuth()" />
+        </div>
+        <div class="auth-field" id="auth-password-field">
+          <label>Password</label>
+          <div style="position:relative">
+            <input type="password" id="auth-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')submitAuth()" style="padding-right:36px" />
+          </div>
+          <div style="text-align:right;margin-top:4px">
+            <a onclick="switchAuthTab('forgot')" style="font-size:12px;color:var(--blue);cursor:pointer" id="auth-forgot-link">Forgot password?</a>
+          </div>
+        </div>
+        <div class="auth-field" id="auth-confirm-field" style="display:none">
+          <label>Confirm password</label>
+          <input type="password" id="auth-confirm" placeholder="••••••••" onkeydown="if(event.key==='Enter')submitAuth()" />
+        </div>
+        <!-- Error -->
+        <div class="auth-error" id="auth-error"></div>
+        <!-- Submit -->
+        <button class="auth-submit" id="auth-submit-btn" onclick="submitAuth()">Login</button>
+        <!-- Footer note -->
+        <p class="auth-footer-note" id="auth-footer-note">
+          No account yet? <a onclick="switchAuthTab('register')">Register now</a>
+        </p>
       </div>
 
-      <!-- Error -->
-      <div class="auth-error" id="auth-error"></div>
-
-      <!-- Submit -->
-      <button class="auth-submit" id="auth-submit-btn" onclick="submitAuth()">Login</button>
-
-      <!-- Footer note -->
-      <p class="auth-footer-note" id="auth-footer-note">
-        No account yet? <a onclick="switchAuthTab('register')">Register now</a>
-      </p>
+      <!-- Forgot password panel -->
+      <div id="auth-forgot-panel" style="display:none">
+        <div style="text-align:center;margin-bottom:18px">
+          <div style="width:48px;height:48px;border-radius:50%;background:var(--blue-light);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:20px;color:var(--blue)">
+            <i class="fa-solid fa-key"></i>
+          </div>
+          <p id="auth-forgot-desc" style="font-size:13px;color:var(--gray-500);line-height:1.6">Enter your email address and we'll send you a link to reset your password.</p>
+        </div>
+        <div class="auth-field">
+          <label id="auth-forgot-email-label">Email address</label>
+          <input type="email" id="auth-forgot-email" placeholder="you@example.com" onkeydown="if(event.key==='Enter')submitForgotPassword()" />
+        </div>
+        <div class="auth-error" id="auth-forgot-error"></div>
+        <div id="auth-forgot-success" style="display:none;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:var(--radius);padding:12px 14px;font-size:13px;color:#15803D;margin-bottom:12px;text-align:center">
+          <i class="fa-solid fa-circle-check" style="margin-right:6px"></i>
+          <span id="auth-forgot-success-text">Check your inbox! A reset link has been sent.</span>
+        </div>
+        <button class="auth-submit" id="auth-forgot-btn" onclick="submitForgotPassword()">Send reset link</button>
+        <p class="auth-footer-note" style="margin-top:12px">
+          <a onclick="switchAuthTab('login')" style="color:var(--blue);cursor:pointer">← Back to login</a>
+        </p>
+      </div>
     </div>
 
   </div>
@@ -1328,6 +1361,7 @@ const TRANSLATIONS = {
   en:{
     "candidates":"My messages","recruiters":"For recruiters","submit":"Submit your CV",
     "nav.login":"Login","nav.register":"Register",
+    "auth.login":"Login","auth.createAccount":"Create account","auth.noAccount":"No account yet?","auth.registerNow":"Register now","auth.haveAccount":"Already have an account?","auth.loginLink":"Login","auth.forgot":"Forgot password?","auth.forgotDesc":"Enter your email address and we'll send you a link to reset your password.","auth.emailLabel":"Email address","auth.sendReset":"Send reset link","auth.sending":"Sending…","auth.resetSent":"Check your inbox! A reset link has been sent.","auth.emailRequired":"Please enter your email address.","auth.emailInvalid":"Please enter a valid email address.",
     "mia.guide":"Your ERP Talent Hub guide","mia.soundOff":"Sound off","mia.soundOn":"Sound on","mia.placeholder":"Ask Mia anything…","mia.hint":"👋 Hi! I'm <strong>Mia</strong>, your guide. Click me to get started!",
     "myprofile":"My profile",
     "mp.live":"Profile live","mp.edit":"Edit profile",
@@ -1367,6 +1401,7 @@ const TRANSLATIONS = {
   it:{
     "candidates":"I miei messaggi","recruiters":"Per recruiter","submit":"Invia il tuo CV",
     "nav.login":"Accedi","nav.register":"Registrati",
+    "auth.login":"Accedi","auth.createAccount":"Crea account","auth.noAccount":"Non hai un account?","auth.registerNow":"Registrati","auth.haveAccount":"Hai già un account?","auth.loginLink":"Accedi","auth.forgot":"Password dimenticata?","auth.forgotDesc":"Inserisci il tuo indirizzo email e ti invieremo un link per reimpostare la password.","auth.emailLabel":"Indirizzo email","auth.sendReset":"Invia link di reset","auth.sending":"Invio in corso…","auth.resetSent":"Controlla la tua casella! Il link di reset è stato inviato.","auth.emailRequired":"Inserisci il tuo indirizzo email.","auth.emailInvalid":"Inserisci un indirizzo email valido.",
     "mia.guide":"La tua guida su ERP Talent Hub","mia.soundOff":"Audio spento","mia.soundOn":"Audio acceso","mia.placeholder":"Chiedi qualcosa a Mia…","mia.hint":"👋 Ciao! Sono <strong>Mia</strong>, la tua guida. Clicca su di me!",
     "myprofile":"Il mio profilo",
     "mp.live":"Profilo attivo","mp.edit":"Modifica profilo",
@@ -1406,6 +1441,7 @@ const TRANSLATIONS = {
   es:{
     "candidates":"Mis mensajes","recruiters":"Para recruiters","submit":"Envía tu CV",
     "nav.login":"Iniciar sesión","nav.register":"Registrarse",
+    "auth.login":"Iniciar sesión","auth.createAccount":"Crear cuenta","auth.noAccount":"¿No tienes cuenta?","auth.registerNow":"Regístrate","auth.haveAccount":"¿Ya tienes cuenta?","auth.loginLink":"Iniciar sesión","auth.forgot":"¿Olvidaste tu contraseña?","auth.forgotDesc":"Introduce tu email y te enviaremos un enlace para restablecer tu contraseña.","auth.emailLabel":"Correo electrónico","auth.sendReset":"Enviar enlace de restablecimiento","auth.sending":"Enviando…","auth.resetSent":"¡Revisa tu bandeja! Se ha enviado el enlace de restablecimiento.","auth.emailRequired":"Por favor introduce tu correo electrónico.","auth.emailInvalid":"Por favor introduce un correo electrónico válido.",
     "mia.guide":"Tu guía en ERP Talent Hub","mia.soundOff":"Sonido apagado","mia.soundOn":"Sonido encendido","mia.placeholder":"Pregúntale algo a Mia…","mia.hint":"👋 ¡Hola! Soy <strong>Mia</strong>, tu guía. ¡Haz clic en mí!",
     "myprofile":"Mi perfil",
     "mp.live":"Perfil activo","mp.edit":"Editar perfil",
@@ -1445,6 +1481,7 @@ const TRANSLATIONS = {
   de:{
     "candidates":"Meine Nachrichten","recruiters":"Für Recruiter","submit":"Lebenslauf einreichen",
     "nav.login":"Anmelden","nav.register":"Registrieren",
+    "auth.login":"Anmelden","auth.createAccount":"Konto erstellen","auth.noAccount":"Noch kein Konto?","auth.registerNow":"Jetzt registrieren","auth.haveAccount":"Bereits ein Konto?","auth.loginLink":"Anmelden","auth.forgot":"Passwort vergessen?","auth.forgotDesc":"Geben Sie Ihre E-Mail-Adresse ein und wir senden Ihnen einen Link zum Zurücksetzen des Passworts.","auth.emailLabel":"E-Mail-Adresse","auth.sendReset":"Link zum Zurücksetzen senden","auth.sending":"Wird gesendet…","auth.resetSent":"Prüfen Sie Ihr Postfach! Ein Reset-Link wurde gesendet.","auth.emailRequired":"Bitte geben Sie Ihre E-Mail-Adresse ein.","auth.emailInvalid":"Bitte geben Sie eine gültige E-Mail-Adresse ein.",
     "mia.guide":"Ihre Führerin auf ERP Talent Hub","mia.soundOff":"Ton aus","mia.soundOn":"Ton an","mia.placeholder":"Fragen Sie Mia…","mia.hint":"👋 Hallo! Ich bin <strong>Mia</strong>, Ihre Führerin. Klicken Sie mich an!",
     "myprofile":"Mein Profil",
     "mp.live":"Profil aktiv","mp.edit":"Profil bearbeiten",
@@ -1484,6 +1521,7 @@ const TRANSLATIONS = {
   fr:{
     "candidates":"Mes messages","recruiters":"Pour les recruteurs","submit":"Déposer mon CV",
     "nav.login":"Connexion","nav.register":"S'inscrire",
+    "auth.login":"Connexion","auth.createAccount":"Créer un compte","auth.noAccount":"Pas encore de compte ?","auth.registerNow":"S'inscrire","auth.haveAccount":"Vous avez déjà un compte ?","auth.loginLink":"Connexion","auth.forgot":"Mot de passe oublié ?","auth.forgotDesc":"Entrez votre adresse email et nous vous enverrons un lien pour réinitialiser votre mot de passe.","auth.emailLabel":"Adresse email","auth.sendReset":"Envoyer le lien de réinitialisation","auth.sending":"Envoi en cours…","auth.resetSent":"Vérifiez votre boîte mail ! Un lien de réinitialisation a été envoyé.","auth.emailRequired":"Veuillez entrer votre adresse email.","auth.emailInvalid":"Veuillez entrer une adresse email valide.",
     "mia.guide":"Votre guide sur ERP Talent Hub","mia.soundOff":"Son désactivé","mia.soundOn":"Son activé","mia.placeholder":"Posez une question à Mia…","mia.hint":"👋 Je suis <strong>Mia</strong>, votre guide. Cliquez sur moi !",
     "myprofile":"Mon profil",
     "mp.live":"Profil en ligne","mp.edit":"Modifier le profil",
@@ -3725,7 +3763,9 @@ function openAuthModal(mode = 'login', role = null) {
 function closeAuthModal() {
   document.getElementById('auth-modal').style.display = 'none';
   document.getElementById('auth-error').classList.remove('show');
-  ['auth-email','auth-password','auth-confirm','auth-name'].forEach(id => {
+  document.getElementById('auth-forgot-error').classList.remove('show');
+  document.getElementById('auth-forgot-success').style.display = 'none';
+  ['auth-email','auth-password','auth-confirm','auth-name','auth-forgot-email'].forEach(id => {
     const el = document.getElementById(id); if (el) el.value = '';
   });
   pendingNavTarget = null;
@@ -3737,17 +3777,41 @@ function handleAuthOverlayClick(e) {
 
 function switchAuthTab(mode) {
   authModalMode = mode;
-  const isLogin = mode === 'login';
+  const isLogin    = mode === 'login';
+  const isRegister = mode === 'register';
+  const isForgot   = mode === 'forgot';
+
+  // Tabs highlight
   document.getElementById('auth-tab-login').classList.toggle('active', isLogin);
-  document.getElementById('auth-tab-register').classList.toggle('active', !isLogin);
-  document.getElementById('auth-role-section').style.display  = isLogin ? 'none' : 'block';
-  document.getElementById('auth-name-field').style.display    = isLogin ? 'none' : 'block';
-  document.getElementById('auth-confirm-field').style.display = isLogin ? 'none' : 'block';
-  document.getElementById('auth-submit-btn').textContent      = isLogin ? 'Login' : 'Create account';
-  document.getElementById('auth-footer-note').innerHTML       = isLogin
-    ? "No account yet? <a onclick=\"switchAuthTab('register')\">Register now</a>"
-    : "Already have an account? <a onclick=\"switchAuthTab('login')\">Login</a>";
-  document.getElementById('auth-error').classList.remove('show');
+  document.getElementById('auth-tab-register').classList.toggle('active', isRegister);
+
+  // Show/hide panels
+  document.getElementById('auth-login-register-fields').style.display = isForgot ? 'none' : 'block';
+  document.getElementById('auth-forgot-panel').style.display           = isForgot ? 'block' : 'none';
+
+  if (!isForgot) {
+    document.getElementById('auth-role-section').style.display  = isLogin ? 'none' : 'block';
+    document.getElementById('auth-name-field').style.display    = isLogin ? 'none' : 'block';
+    document.getElementById('auth-password-field').style.display = 'block';
+    document.getElementById('auth-confirm-field').style.display = isLogin ? 'none' : 'block';
+    document.getElementById('auth-submit-btn').textContent      = isLogin ? t('auth.login') || 'Login' : t('auth.createAccount') || 'Create account';
+    document.getElementById('auth-footer-note').innerHTML       = isLogin
+      ? `${t('auth.noAccount') || 'No account yet?'} <a onclick="switchAuthTab('register')">${t('auth.registerNow') || 'Register now'}</a>`
+      : `${t('auth.haveAccount') || 'Already have an account?'} <a onclick="switchAuthTab('login')">${t('auth.loginLink') || 'Login'}</a>`;
+    document.getElementById('auth-forgot-link').textContent = t('auth.forgot') || 'Forgot password?';
+    document.getElementById('auth-error').classList.remove('show');
+  } else {
+    // Reset forgot panel state
+    document.getElementById('auth-forgot-error').classList.remove('show');
+    document.getElementById('auth-forgot-success').style.display = 'none';
+    document.getElementById('auth-forgot-email').value = '';
+    document.getElementById('auth-forgot-btn').disabled = false;
+    document.getElementById('auth-forgot-btn').textContent = t('auth.sendReset') || 'Send reset link';
+    document.getElementById('auth-forgot-desc').textContent = t('auth.forgotDesc') || "Enter your email address and we'll send you a link to reset your password.";
+    document.getElementById('auth-forgot-email-label').textContent = t('auth.emailLabel') || 'Email address';
+    document.getElementById('auth-forgot-success-text').textContent = t('auth.resetSent') || 'Check your inbox! A reset link has been sent.';
+    setTimeout(() => document.getElementById('auth-forgot-email').focus(), 80);
+  }
 }
 
 function selectAuthRole(role) {
@@ -3864,6 +3928,53 @@ async function doRegister(email, password) {
   }
 
   loginSuccess(buildUserObject(data.user, { name, role: authRole, photo: null }));
+}
+
+async function submitForgotPassword() {
+  const email = document.getElementById('auth-forgot-email').value.trim().toLowerCase();
+  const errEl = document.getElementById('auth-forgot-error');
+  errEl.classList.remove('show');
+  document.getElementById('auth-forgot-success').style.display = 'none';
+
+  if (!email) {
+    errEl.textContent = t('auth.emailRequired') || 'Please enter your email address.';
+    errEl.classList.add('show');
+    return;
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    errEl.textContent = t('auth.emailInvalid') || 'Please enter a valid email address.';
+    errEl.classList.add('show');
+    return;
+  }
+
+  const btn = document.getElementById('auth-forgot-btn');
+  btn.disabled = true;
+  btn.textContent = t('auth.sending') || 'Sending…';
+
+  if (!SUPABASE_READY || !sb()) {
+    btn.disabled = false;
+    btn.textContent = t('auth.sendReset') || 'Send reset link';
+    errEl.textContent = 'Database not configured. Please contact the administrator.';
+    errEl.classList.add('show');
+    return;
+  }
+
+  try {
+    const { error } = await sb().auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.href,
+    });
+    btn.disabled = false;
+    btn.textContent = t('auth.sendReset') || 'Send reset link';
+    if (error) throw error;
+    // Show success regardless (don't reveal if email exists)
+    document.getElementById('auth-forgot-success').style.display = 'block';
+    document.getElementById('auth-forgot-email').value = '';
+  } catch(err) {
+    btn.disabled = false;
+    btn.textContent = t('auth.sendReset') || 'Send reset link';
+    errEl.textContent = err.message || 'An error occurred. Please try again.';
+    errEl.classList.add('show');
+  }
 }
 
 function buildUserObject(authUser, profile) {
