@@ -413,6 +413,7 @@ footer strong{color:rgba(255,255,255,.75)}
         <button class="lang-btn" onclick="setLang('de')" id="btn-lang-de">DE</button>
         <button class="lang-btn" onclick="setLang('fr')" id="btn-lang-fr">FR</button>
       </div>
+      <button class="btn-ghost btn-sm" id="nav-btn-myprofile" data-i18n="myprofile" onclick="showView('myprofile')" style="display:none">My profile</button>
       <button class="btn-ghost btn-sm" onclick="showView('candidate')" id="nav-btn-candidates" data-i18n="candidates">My messages</button>
       <button class="btn-ghost btn-sm" onclick="showView('recruiter')" id="nav-btn-recruiters" data-i18n="recruiters">For recruiters</button>
       <button class="btn-primary btn-sm" onclick="showView('form')" id="nav-btn-submit" data-i18n="submit">Submit your CV</button>
@@ -570,12 +571,88 @@ footer strong{color:rgba(255,255,255,.75)}
   </div>
 </div>
 
+<!-- ═══════════════════ MY PROFILE VIEW ═══════════════════ -->
+<div id="myprofile-view" class="view">
+  <div style="max-width:740px;margin:0 auto;padding:36px 24px 80px">
+
+    <!-- Header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px">
+      <div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+          <div id="mp-avatar" style="width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#fff;flex-shrink:0"></div>
+          <div>
+            <h1 id="mp-fullname" style="font-size:22px;font-weight:600;margin:0"></h1>
+            <div id="mp-location" style="font-size:14px;color:var(--gray-500);margin-top:2px"></div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <span style="display:inline-flex;align-items:center;gap:5px;background:#ECFDF5;border:1px solid #BBF7D0;border-radius:20px;padding:5px 14px;font-size:12px;font-weight:600;color:#15803D">
+          <i class="fa-solid fa-circle-check"></i> <span data-i18n="mp.live">Profile live</span>
+        </span>
+        <button class="btn-outline btn-sm" onclick="showView('form')" style="font-size:13px">
+          <i class="fa-solid fa-pen" style="margin-right:6px"></i><span data-i18n="mp.edit">Edit profile</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Contact bar -->
+    <div id="mp-contact-bar" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:24px"></div>
+
+    <!-- ERP Systems -->
+    <div class="form-card" style="margin-bottom:16px">
+      <div class="section-header"><i class="fa-solid fa-microchip"></i><h3 data-i18n="sec.erp">ERP systems</h3></div>
+      <div id="mp-erp-tags" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+    </div>
+
+    <!-- Summary -->
+    <div class="form-card" style="margin-bottom:16px">
+      <div class="section-header"><i class="fa-solid fa-id-card"></i><h3 data-i18n="sec.summary">Professional summary</h3></div>
+      <p id="mp-summary" style="font-size:14px;color:var(--gray-700);line-height:1.75;white-space:pre-wrap"></p>
+    </div>
+
+    <!-- Experience -->
+    <div class="form-card" style="margin-bottom:16px">
+      <div class="section-header"><i class="fa-solid fa-briefcase"></i><h3 data-i18n="sec.experience">Work experience</h3></div>
+      <div id="mp-experience"></div>
+    </div>
+
+    <!-- Education -->
+    <div class="form-card" style="margin-bottom:16px">
+      <div class="section-header"><i class="fa-solid fa-graduation-cap"></i><h3 data-i18n="sec.education">Education</h3></div>
+      <div id="mp-education"></div>
+    </div>
+
+    <!-- Certifications -->
+    <div class="form-card" style="margin-bottom:16px">
+      <div class="section-header"><i class="fa-solid fa-certificate"></i><h3 data-i18n="sec.certs">Certifications &amp; licences</h3></div>
+      <div id="mp-certs"></div>
+    </div>
+
+    <!-- Awards -->
+    <div class="form-card" style="margin-bottom:16px">
+      <div class="section-header"><i class="fa-solid fa-trophy"></i><h3 data-i18n="sec.awards">Awards &amp; recognition</h3></div>
+      <div id="mp-awards"></div>
+    </div>
+
+    <!-- Privacy notice -->
+    <div style="background:#EFF6FF;border:1px solid var(--blue-mid);border-radius:10px;padding:14px 18px;font-size:13px;color:#1E40AF;display:flex;gap:10px;align-items:flex-start">
+      <i class="fa-solid fa-lock" style="margin-top:2px;flex-shrink:0"></i>
+      <span data-i18n="mp.privacy">Your contact details (email, phone, LinkedIn) are hidden from recruiters until they request access and you accept.</span>
+    </div>
+
+  </div>
+</div>
+
 <!-- ═══════════════════ SUCCESS VIEW ═══════════════════ -->
 <div id="success-view" class="view">
   <div class="success-icon"><i class="fa-solid fa-check"></i></div>
   <h2 data-i18n="success.title">Your profile has been published!</h2>
   <p data-i18n="success.sub">Recruiters can now discover your profile. You'll receive an email confirmation shortly.</p>
-  <button class="btn-primary" onclick="showView('home')" data-i18n="success.back">Back to homepage</button>
+  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+    <button class="btn-primary" onclick="showView('myprofile')" data-i18n="success.viewprofile">View my profile</button>
+    <button class="btn-outline" onclick="showView('home')" data-i18n="success.back">Back to homepage</button>
+  </div>
   <!-- EmailJS setup notice — only visible when not configured -->
   <div id="emailjs-setup-notice" style="display:none;margin-top:32px;background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;padding:18px 20px;text-align:left;font-size:13px;color:#92400E;max-width:440px;margin-left:auto;margin-right:auto">
     <div style="font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px"><i class="fa-solid fa-triangle-exclamation" style="color:#F97316"></i> Email sending not yet configured</div>
@@ -777,6 +854,11 @@ footer strong{color:rgba(255,255,255,.75)}
 const TRANSLATIONS = {
   en:{
     "candidates":"My messages","recruiters":"For recruiters","submit":"Submit your CV",
+    "myprofile":"My profile",
+    "mp.live":"Profile live","mp.edit":"Edit profile",
+    "mp.privacy":"Your contact details (email, phone, LinkedIn) are hidden from recruiters until they request access and you accept.",
+    "mp.present":"Present","mp.nodata":"Not provided",
+    "success.viewprofile":"View my profile",
     "footer.owned":"Owned by © 2026 Vantage Finance & Tech · VAT 13449530016",
     "hero.badge":"Dedicated ERP recruitment platform",
     "hero.title":"Your ERP expertise,<br><span>visible to the world.</span>",
@@ -809,6 +891,11 @@ const TRANSLATIONS = {
   },
   it:{
     "candidates":"I miei messaggi","recruiters":"Per recruiter","submit":"Invia il tuo CV",
+    "myprofile":"Il mio profilo",
+    "mp.live":"Profilo attivo","mp.edit":"Modifica profilo",
+    "mp.privacy":"I tuoi recapiti (email, telefono, LinkedIn) sono nascosti ai recruiter finché non richiedono l'accesso e tu non accetti.",
+    "mp.present":"In corso","mp.nodata":"Non specificato",
+    "success.viewprofile":"Visualizza il mio profilo",
     "footer.owned":"Di proprietà di © 2026 Vantage Finance & Tech · P.IVA 13449530016",
     "hero.badge":"Piattaforma dedicata al recruiting ERP",
     "hero.title":"La tua competenza ERP,<br><span>visibile al mondo.</span>",
@@ -841,6 +928,11 @@ const TRANSLATIONS = {
   },
   es:{
     "candidates":"Mis mensajes","recruiters":"Para recruiters","submit":"Envía tu CV",
+    "myprofile":"Mi perfil",
+    "mp.live":"Perfil activo","mp.edit":"Editar perfil",
+    "mp.privacy":"Tus datos de contacto (email, teléfono, LinkedIn) están ocultos para los recruiters hasta que soliciten acceso y tú aceptes.",
+    "mp.present":"Actualidad","mp.nodata":"No especificado",
+    "success.viewprofile":"Ver mi perfil",
     "footer.owned":"Propiedad de © 2026 Vantage Finance & Tech · NIF 13449530016",
     "hero.badge":"Plataforma dedicada al reclutamiento ERP",
     "hero.title":"Tu experiencia ERP,<br><span>visible para el mundo.</span>",
@@ -873,6 +965,11 @@ const TRANSLATIONS = {
   },
   de:{
     "candidates":"Meine Nachrichten","recruiters":"Für Recruiter","submit":"Lebenslauf einreichen",
+    "myprofile":"Mein Profil",
+    "mp.live":"Profil aktiv","mp.edit":"Profil bearbeiten",
+    "mp.privacy":"Ihre Kontaktdaten (E-Mail, Telefon, LinkedIn) sind für Recruiter verborgen, bis sie Zugang anfordern und Sie zustimmen.",
+    "mp.present":"Aktuell","mp.nodata":"Nicht angegeben",
+    "success.viewprofile":"Mein Profil ansehen",
     "footer.owned":"Eigentum von © 2026 Vantage Finance & Tech · USt-IdNr. 13449530016",
     "hero.badge":"Dedizierte ERP-Recruiting-Plattform",
     "hero.title":"Ihr ERP-Know-how,<br><span>sichtbar für die Welt.</span>",
@@ -905,6 +1002,11 @@ const TRANSLATIONS = {
   },
   fr:{
     "candidates":"Mes messages","recruiters":"Pour les recruteurs","submit":"Déposer mon CV",
+    "myprofile":"Mon profil",
+    "mp.live":"Profil en ligne","mp.edit":"Modifier le profil",
+    "mp.privacy":"Vos coordonnées (e-mail, téléphone, LinkedIn) sont masquées aux recruteurs jusqu'à ce qu'ils demandent l'accès et que vous acceptiez.",
+    "mp.present":"En poste","mp.nodata":"Non renseigné",
+    "success.viewprofile":"Voir mon profil",
     "footer.owned":"Propriété de © 2026 Vantage Finance & Tech · TVA 13449530016",
     "hero.badge":"Plateforme dédiée au recrutement ERP",
     "hero.title":"Votre expertise ERP,<br><span>visible dans le monde entier.</span>",
@@ -1255,6 +1357,10 @@ function handleSubmit() {
     btn.disabled = false;
     btn.querySelector('span').textContent = t('form.submit');
     if (success) {
+      // Save profile snapshot and reveal My Profile nav button
+      savedProfile = collectProfileData();
+      const mpBtn = document.getElementById('nav-btn-myprofile');
+      if (mpBtn) mpBtn.style.display = '';
       showView('success');
     } else {
       // Show visible error banner below the submit button
@@ -1924,6 +2030,7 @@ function showView(name) {
     const notice = document.getElementById('emailjs-setup-notice');
     if (notice) notice.style.display = EMAILJS_CONFIGURED ? 'none' : 'block';
   }
+  if (name === 'myprofile') renderMyProfile();
   if (name === 'recruiter') {    // If not yet verified, show gate at step 1; if verified, show portal
     if (!recruiterVerified) {
       document.getElementById('rec-gate').style.display = 'flex';
@@ -1934,6 +2041,175 @@ function showView(name) {
     }
   }
   if (name === 'candidate') initCandidatePortal();
+}
+
+// ─────────────────────────────────────────
+// MY PROFILE
+// ─────────────────────────────────────────
+
+let savedProfile = null; // populated on form submit
+
+function collectProfileData() {
+  // Personal
+  const firstName = document.getElementById('f-firstName')?.value.trim() || '';
+  const lastName  = document.getElementById('f-lastName')?.value.trim() || '';
+  const city      = document.getElementById('f-city')?.value.trim() || '';
+  const country   = document.getElementById('f-country')?.value.trim() || '';
+  // Contact
+  const email     = document.getElementById('f-email')?.value.trim() || '';
+  const prefix    = document.getElementById('f-phone-prefix')?.value || '';
+  const phone     = prefix + ' ' + (document.getElementById('f-phone')?.value.trim() || '');
+  const linkedin  = document.getElementById('f-linkedin')?.value.trim() || '';
+  // Summary
+  const summary   = document.getElementById('f-summary')?.value.trim() || '';
+  // ERP
+  const erp       = [...selectedErp];
+
+  // Experiences
+  const exps = entries.exp.map(id => ({
+    jobTitle:    document.getElementById('exp-title-' + id)?.value.trim() || '',
+    company:     document.getElementById('exp-co-' + id)?.value.trim() || '',
+    startDate:   document.getElementById('exp-start-' + id)?.value || '',
+    endDate:     document.getElementById('exp-end-' + id)?.value || '',
+    current:     document.getElementById('exp-curr-' + id)?.checked || false,
+    description: document.getElementById('exp-desc-' + id)?.value.trim() || '',
+  })).filter(e => e.jobTitle || e.company);
+
+  // Education
+  const edus = entries.edu.map(id => ({
+    degree:      document.getElementById('edu-deg-' + id)?.value.trim() || '',
+    institution: document.getElementById('edu-inst-' + id)?.value.trim() || '',
+    gradYear:    document.getElementById('edu-yr-' + id)?.value || '',
+  })).filter(e => e.degree || e.institution);
+
+  // Certifications
+  const certs = entries.cert.map(id => ({
+    certName: document.getElementById('cert-name-' + id)?.value.trim() || '',
+    issuer:   document.getElementById('cert-iss-' + id)?.value.trim() || '',
+    certYear: document.getElementById('cert-yr-' + id)?.value || '',
+  })).filter(e => e.certName);
+
+  // Awards
+  const awards = entries.award.map(id => ({
+    awardName: document.getElementById('award-name-' + id)?.value.trim() || '',
+    awardOrg:  document.getElementById('award-org-' + id)?.value.trim() || '',
+    awardYear: document.getElementById('award-yr-' + id)?.value || '',
+  })).filter(e => e.awardName);
+
+  return { firstName, lastName, city, country, email, phone, linkedin, summary, erp, exps, edus, certs, awards };
+}
+
+function renderMyProfile() {
+  if (!savedProfile) return;
+  const p = savedProfile;
+  const fullName = p.firstName + ' ' + p.lastName;
+  const ini = (p.firstName[0] || '') + (p.lastName[0] || '');
+  const color = avatarColor(fullName);
+
+  // Avatar + name
+  const av = document.getElementById('mp-avatar');
+  if (av) { av.textContent = ini.toUpperCase(); av.style.background = color; }
+  const fn = document.getElementById('mp-fullname');
+  if (fn) fn.textContent = fullName;
+  const loc = document.getElementById('mp-location');
+  if (loc) loc.innerHTML = `<i class="fa-solid fa-location-dot" style="color:var(--blue);margin-right:5px"></i>${[p.city, p.country].filter(Boolean).join(', ')}`;
+
+  // Contact bar
+  const bar = document.getElementById('mp-contact-bar');
+  if (bar) {
+    bar.innerHTML = '';
+    const chips = [
+      p.email    && { icon: 'fa-envelope',  text: p.email,    href: 'mailto:' + p.email },
+      p.phone.trim().length > 2 && { icon: 'fa-phone', text: p.phone.trim() },
+      p.linkedin && { icon: 'fa-brands fa-linkedin', text: 'LinkedIn', href: p.linkedin, color: '#0A66C2' },
+    ].filter(Boolean);
+    chips.forEach(c => {
+      const chip = document.createElement('a');
+      chip.href = c.href || '#';
+      chip.target = c.href ? '_blank' : '';
+      chip.style.cssText = `display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:20px;font-size:13px;color:${c.color || 'var(--gray-700)'};text-decoration:none`;
+      chip.innerHTML = `<i class="fa-solid ${c.icon}" style="font-size:12px"></i>${escHtml(c.text)}`;
+      bar.appendChild(chip);
+    });
+  }
+
+  // ERP tags
+  const erpBox = document.getElementById('mp-erp-tags');
+  if (erpBox) {
+    erpBox.innerHTML = p.erp.length
+      ? p.erp.map(s => `<span style="font-size:13px;padding:5px 13px;background:var(--blue-light);border:1px solid var(--blue-mid);border-radius:20px;color:var(--blue);font-weight:500">${escHtml(s)}</span>`).join('')
+      : `<span style="color:var(--gray-400);font-size:13px">${t('mp.nodata')}</span>`;
+  }
+
+  // Summary
+  const sumEl = document.getElementById('mp-summary');
+  if (sumEl) sumEl.textContent = p.summary || t('mp.nodata');
+
+  // Experiences
+  renderProfileList('mp-experience', p.exps, (e) => {
+    const period = e.startDate
+      ? formatDate(e.startDate) + ' – ' + (e.current ? t('mp.present') : formatDate(e.endDate))
+      : '';
+    return `
+      <div style="margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--gray-100)">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap">
+          <div>
+            <div style="font-size:15px;font-weight:600;color:var(--gray-900)">${escHtml(e.jobTitle)}</div>
+            <div style="font-size:13px;color:var(--blue);font-weight:500;margin-top:1px">${escHtml(e.company)}</div>
+          </div>
+          ${period ? `<span style="font-size:12px;color:var(--gray-400);white-space:nowrap;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:6px;padding:3px 9px">${period}</span>` : ''}
+        </div>
+        ${e.description ? `<p style="font-size:13px;color:var(--gray-600);margin-top:8px;line-height:1.65">${escHtml(e.description)}</p>` : ''}
+      </div>`;
+  });
+
+  // Education
+  renderProfileList('mp-education', p.edus, (e) => `
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+      <div>
+        <div style="font-size:14px;font-weight:600">${escHtml(e.degree)}</div>
+        <div style="font-size:13px;color:var(--gray-500)">${escHtml(e.institution)}</div>
+      </div>
+      ${e.gradYear ? `<span style="font-size:12px;color:var(--gray-400);background:var(--gray-50);border:1px solid var(--gray-200);border-radius:6px;padding:3px 9px">${e.gradYear}</span>` : ''}
+    </div>`);
+
+  // Certifications
+  renderProfileList('mp-certs', p.certs, (e) => `
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+      <div>
+        <div style="font-size:14px;font-weight:600">${escHtml(e.certName)}</div>
+        <div style="font-size:13px;color:var(--gray-500)">${escHtml(e.issuer)}</div>
+      </div>
+      ${e.certYear ? `<span style="font-size:12px;color:var(--gray-400);background:var(--gray-50);border:1px solid var(--gray-200);border-radius:6px;padding:3px 9px">${e.certYear}</span>` : ''}
+    </div>`);
+
+  // Awards
+  renderProfileList('mp-awards', p.awards, (e) => `
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+      <div>
+        <div style="font-size:14px;font-weight:600">${escHtml(e.awardName)}</div>
+        <div style="font-size:13px;color:var(--gray-500)">${escHtml(e.awardOrg)}</div>
+      </div>
+      ${e.awardYear ? `<span style="font-size:12px;color:var(--gray-400);background:var(--gray-50);border:1px solid var(--gray-200);border-radius:6px;padding:3px 9px">${e.awardYear}</span>` : ''}
+    </div>`);
+}
+
+function renderProfileList(containerId, items, renderFn) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  if (!items || items.length === 0) {
+    el.innerHTML = `<span style="color:var(--gray-400);font-size:13px">${t('mp.nodata')}</span>`;
+    return;
+  }
+  el.innerHTML = items.map(renderFn).join('');
+}
+
+function formatDate(ym) {
+  if (!ym) return '';
+  const [year, month] = ym.split('-');
+  if (!month) return year;
+  const d = new Date(parseInt(year), parseInt(month) - 1);
+  return d.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' });
 }
 
 // ─────────────────────────────────────────
