@@ -1142,17 +1142,23 @@ function toggleCurrent(p) {
 //   5. Replace the three placeholder strings below with your real values
 
 const EMAILJS_PUBLIC_KEY  = 'tmF7awXmm1glzV6iH';      // ✅ configured
-const EMAILJS_SERVICE_ID  = 'service_t6s75tf';       // ✅ configured
-const EMAILJS_TEMPLATE_ID = 'template_u0vfx1w'; // ✅ configured
+const EMAILJS_SERVICE_ID  = 'service_t6s75tf';         // ✅ configured
+const EMAILJS_TEMPLATE_ID = 'template_u0vfx1w';        // ✅ configured
 
 const EMAILJS_CONFIGURED =
   EMAILJS_PUBLIC_KEY  !== 'YOUR_PUBLIC_KEY' &&
   EMAILJS_SERVICE_ID  !== 'YOUR_SERVICE_ID' &&
   EMAILJS_TEMPLATE_ID !== 'YOUR_TEMPLATE_ID';
 
-if (EMAILJS_CONFIGURED) {
-  emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
-}
+// Init EmailJS only after the window has fully loaded
+window.addEventListener('load', () => {
+  if (EMAILJS_CONFIGURED && typeof emailjs !== 'undefined') {
+    emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+    console.log('✅ EmailJS initialised');
+  } else if (EMAILJS_CONFIGURED) {
+    console.warn('⚠️ EmailJS SDK not loaded yet');
+  }
+});
 
 // ─────────────────────────────────────────
 // FORM VALIDATION
@@ -1238,28 +1244,49 @@ function handleSubmit() {
     erp_systems: erpSystems,
     summary:     summary.slice(0, 400) + (summary.length > 400 ? '…' : ''),
     reply_to:    email,
+    // Explicit recipient fields recognised by EmailJS
+    user_email:  email,
+    user_name:   firstName + ' ' + lastName,
+    email:       email,
+    name:        firstName + ' ' + lastName,
   };
 
-  const finish = (success) => {
+  const finish = (success, errMsg) => {
     btn.disabled = false;
     btn.querySelector('span').textContent = t('form.submit');
     if (success) {
       showView('success');
     } else {
-      showView('success'); // still show success; email failure is silent to user
+      // Show visible error banner below the submit button
+      let banner = document.getElementById('email-error-banner');
+      if (!banner) {
+        banner = document.createElement('div');
+        banner.id = 'email-error-banner';
+        banner.style.cssText = 'margin-top:14px;background:#FEF2F2;border:1px solid #FECACA;border-radius:8px;padding:12px 16px;font-size:13px;color:#DC2626;text-align:left;line-height:1.6';
+        document.querySelector('.form-submit').after(banner);
+      }
+      banner.innerHTML = `<strong>⚠️ Email could not be sent.</strong> Your profile was saved, but the confirmation email failed.<br><span style="color:#64748B;font-size:12px">Error: ${errMsg || 'Unknown error'} — Check your browser console (F12) for details.</span>`;
+      showView('success');
     }
   };
 
   if (EMAILJS_CONFIGURED) {
+    // Re-init in case SDK loaded late
+    if (typeof emailjs !== 'undefined') {
+      emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+    }
+    console.log('📧 Sending email to:', email, 'via service:', EMAILJS_SERVICE_ID, 'template:', EMAILJS_TEMPLATE_ID);
     emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
-      .then(() => finish(true))
+      .then((res) => {
+        console.log('✅ Email sent successfully:', res.status, res.text);
+        finish(true);
+      })
       .catch((err) => {
-        console.warn('EmailJS error:', err);
-        finish(false);
+        console.error('❌ EmailJS send error:', JSON.stringify(err));
+        finish(false, JSON.stringify(err));
       });
   } else {
-    // EmailJS not configured — simulate delay and proceed
-    console.info('EmailJS not configured. Skipping email send. Fill in EMAILJS_PUBLIC_KEY, EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID to activate.');
+    console.info('EmailJS not configured — skipping send.');
     setTimeout(() => finish(true), 1800);
   }
 }
