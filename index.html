@@ -1839,10 +1839,26 @@ function buildEntryHTML(type, id) {
 }
 
 function rebuildAllEntries() {
+  // Only rebuild if the form view is actually visible — avoids wiping data on lang switch
+  const formView = document.getElementById('form-view');
+  if (!formView || !formView.classList.contains('active')) return;
+
   ['exp','edu','cert','award'].forEach(type => {
     const container = document.getElementById(type + '-list');
     if (!container) return;
     const ids = [...entries[type]];
+
+    // ── Save current field values before wiping HTML ──
+    const saved = {};
+    ids.forEach(id => {
+      saved[id] = {};
+      container.querySelectorAll('[id$="-' + id + '"]').forEach(el => {
+        if (el.type === 'checkbox') saved[id][el.id] = el.checked;
+        else saved[id][el.id] = el.value;
+      });
+    });
+
+    // ── Rebuild HTML ──
     container.innerHTML = '';
     ids.forEach(id => {
       const div = document.createElement('div');
@@ -1850,9 +1866,18 @@ function rebuildAllEntries() {
       div.id = 'entry-' + type + '-' + id;
       div.innerHTML = buildEntryHTML(type, id);
       container.appendChild(div);
+
+      // ── Restore saved values ──
+      Object.entries(saved[id] || {}).forEach(([elId, val]) => {
+        const el = document.getElementById(elId);
+        if (!el) return;
+        if (el.type === 'checkbox') el.checked = val;
+        else el.value = val;
+      });
     });
   });
-  // Update add buttons
+
+  // Update i18n labels on add buttons
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
     const val = t(key);
@@ -5109,11 +5134,11 @@ function populateFormFromProfile(p) {
   }
 
   // ── Work experience ──
-  if (p.exps && p.exps.length > 0) {
-    // Clear default empty entry
-    entries.exp = [];
-    document.getElementById('exp-list').innerHTML = '';
-    p.exps.forEach(exp => {
+  // Always clear existing entries first (including the default empty one from INIT)
+  entries.exp = [];
+  document.getElementById('exp-list').innerHTML = '';
+  const expsToFill = (p.exps && p.exps.length > 0) ? p.exps : [{ jobTitle:'', company:'', startDate:'', endDate:'', current:false, description:'' }];
+  expsToFill.forEach(exp => {
       const id = Date.now() + Math.random();
       entries.exp.push(id);
       const div = document.createElement('div');
@@ -5133,13 +5158,12 @@ function populateFormFromProfile(p) {
         if (exp.current) { const cb = document.getElementById('exp-curr-' + id); if (cb) { cb.checked = true; toggleCurrent(id); } }
       }, 60);
     });
-  }
 
   // ── Education ──
-  if (p.edus && p.edus.length > 0) {
-    entries.edu = [];
-    document.getElementById('edu-list').innerHTML = '';
-    p.edus.forEach(edu => {
+  entries.edu = [];
+  document.getElementById('edu-list').innerHTML = '';
+  const edusToFill = (p.edus && p.edus.length > 0) ? p.edus : [{ degree:'', institution:'', gradYear:'' }];
+  edusToFill.forEach(edu => {
       const id = Date.now() + Math.random();
       entries.edu.push(id);
       const div = document.createElement('div');
@@ -5154,13 +5178,12 @@ function populateFormFromProfile(p) {
         s('edu-yr-' + id,   edu.gradYear);
       }, 60);
     });
-  }
 
   // ── Certifications ──
-  if (p.certs && p.certs.length > 0) {
-    entries.cert = [];
-    document.getElementById('cert-list').innerHTML = '';
-    p.certs.forEach(cert => {
+  entries.cert = [];
+  document.getElementById('cert-list').innerHTML = '';
+  const certsToFill = (p.certs && p.certs.length > 0) ? p.certs : [{ certName:'', issuer:'', certYear:'' }];
+  certsToFill.forEach(cert => {
       const id = Date.now() + Math.random();
       entries.cert.push(id);
       const div = document.createElement('div');
@@ -5175,13 +5198,12 @@ function populateFormFromProfile(p) {
         s('cert-yr-' + id,   cert.certYear);
       }, 60);
     });
-  }
 
   // ── Awards ──
-  if (p.awards && p.awards.length > 0) {
-    entries.award = [];
-    document.getElementById('award-list').innerHTML = '';
-    p.awards.forEach(award => {
+  entries.award = [];
+  document.getElementById('award-list').innerHTML = '';
+  const awardsToFill = (p.awards && p.awards.length > 0) ? p.awards : [{ awardName:'', awardOrg:'', awardYear:'' }];
+  awardsToFill.forEach(award => {
       const id = Date.now() + Math.random();
       entries.award.push(id);
       const div = document.createElement('div');
@@ -5196,7 +5218,6 @@ function populateFormFromProfile(p) {
         s('award-yr-' + id,   award.awardYear);
       }, 60);
     });
-  }
 
   // Scroll to top of form
   window.scrollTo(0, 0);
