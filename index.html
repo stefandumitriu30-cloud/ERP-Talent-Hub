@@ -126,6 +126,9 @@ button{font-family:'Inter',sans-serif;cursor:pointer;font-size:14px;border-radiu
 .erp-toggle{font-size:13px;padding:6px 14px;border-radius:20px;border:1.5px solid var(--gray-300);background:var(--white);color:var(--gray-600);cursor:pointer;transition:all .12s;font-family:'Inter',sans-serif}
 .erp-toggle.selected{border-color:var(--blue);background:var(--blue-light);color:var(--blue);font-weight:500}
 .form-submit{display:flex;justify-content:flex-end;margin-top:8px}
+.field-error{font-size:12px;color:#DC2626;margin-top:4px;display:flex;align-items:center;gap:4px}
+.field-error::before{content:'⚠';font-size:11px}
+input.input-error,select.input-error,textarea.input-error{border-color:#DC2626;background:#FEF2F2}
 .btn-submit{background:var(--blue);color:#fff;border-color:var(--blue);padding:13px 36px;font-weight:500;font-size:15px;border-radius:var(--radius)}
 .btn-submit:hover{background:var(--blue-dark)}
 .btn-submit:disabled{opacity:.65;cursor:wait}
@@ -391,6 +394,7 @@ footer strong{color:rgba(255,255,255,.75)}
 .gate-approved-card{display:flex;align-items:center;gap:14px;background:var(--gray-50);border:1px solid var(--gray-100);border-radius:var(--radius-lg);padding:14px 16px;text-align:left;margin-top:12px}
 .gate-approved-avatar{width:44px;height:44px;border-radius:50%;background:var(--blue);color:#fff;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
 <body>
 
@@ -572,6 +576,17 @@ footer strong{color:rgba(255,255,255,.75)}
   <h2 data-i18n="success.title">Your profile has been published!</h2>
   <p data-i18n="success.sub">Recruiters can now discover your profile. You'll receive an email confirmation shortly.</p>
   <button class="btn-primary" onclick="showView('home')" data-i18n="success.back">Back to homepage</button>
+  <!-- EmailJS setup notice — only visible when not configured -->
+  <div id="emailjs-setup-notice" style="display:none;margin-top:32px;background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;padding:18px 20px;text-align:left;font-size:13px;color:#92400E;max-width:440px;margin-left:auto;margin-right:auto">
+    <div style="font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px"><i class="fa-solid fa-triangle-exclamation" style="color:#F97316"></i> Email sending not yet configured</div>
+    <p style="margin-bottom:10px;line-height:1.6">To activate real confirmation emails, open the HTML file and replace the three placeholders inside the <code style="background:rgba(0,0,0,.07);padding:1px 5px;border-radius:3px">EMAILJS CONFIGURATION</code> section:</p>
+    <ol style="padding-left:18px;line-height:2">
+      <li>Create a free account at <strong>emailjs.com</strong></li>
+      <li>Add an Email Service (Gmail, Outlook…)</li>
+      <li>Create an Email Template using the variables listed in the code</li>
+      <li>Paste your <code style="background:rgba(0,0,0,.07);padding:1px 4px;border-radius:3px">PUBLIC_KEY</code>, <code style="background:rgba(0,0,0,.07);padding:1px 4px;border-radius:3px">SERVICE_ID</code>, <code style="background:rgba(0,0,0,.07);padding:1px 4px;border-radius:3px">TEMPLATE_ID</code></li>
+    </ol>
+  </div>
 </div>
 
 <!-- ═══════════════════ RECRUITER PORTAL ═══════════════════ -->
@@ -1114,15 +1129,139 @@ function toggleCurrent(p) {
 // ─────────────────────────────────────────
 // SUBMIT
 // ─────────────────────────────────────────
+// ─────────────────────────────────────────
+// EMAILJS CONFIGURATION
+// ─────────────────────────────────────────
+// ⚠️  TO ACTIVATE EMAIL SENDING:
+//   1. Create a free account at https://www.emailjs.com
+//   2. Add an Email Service (Gmail, Outlook, SMTP…) → copy the Service ID
+//   3. Create an Email Template with these variables:
+//        {{to_email}}   {{to_name}}   {{first_name}}  {{last_name}}
+//        {{city}}       {{country}}   {{erp_systems}} {{reply_to}}
+//   4. Copy the Template ID and your Public Key
+//   5. Replace the three placeholder strings below with your real values
+
+const EMAILJS_PUBLIC_KEY  = 'tmF7awXmm1glzV6iH';      // ✅ configured
+const EMAILJS_SERVICE_ID  = 'service_t6s75tf';       // ✅ configured
+const EMAILJS_TEMPLATE_ID = 'template_u0vfx1w'; // ✅ configured
+
+const EMAILJS_CONFIGURED =
+  EMAILJS_PUBLIC_KEY  !== 'YOUR_PUBLIC_KEY' &&
+  EMAILJS_SERVICE_ID  !== 'YOUR_SERVICE_ID' &&
+  EMAILJS_TEMPLATE_ID !== 'YOUR_TEMPLATE_ID';
+
+if (EMAILJS_CONFIGURED) {
+  emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+}
+
+// ─────────────────────────────────────────
+// FORM VALIDATION
+// ─────────────────────────────────────────
+function validateForm() {
+  const required = [
+    { id: 'f-firstName', label: 'First name' },
+    { id: 'f-lastName',  label: 'Last name'  },
+    { id: 'f-city',      label: 'City'       },
+    { id: 'f-country',   label: 'Country'    },
+    { id: 'f-email',     label: 'Email'      },
+    { id: 'f-summary',   label: 'Summary'    },
+  ];
+
+  // Clear previous errors
+  document.querySelectorAll('.field-error').forEach(e => e.remove());
+  document.querySelectorAll('.input-error').forEach(e => e.classList.remove('input-error'));
+
+  let firstError = null;
+  required.forEach(({ id, label }) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const val = el.value.trim();
+    if (!val) {
+      el.classList.add('input-error');
+      const msg = document.createElement('div');
+      msg.className = 'field-error';
+      msg.textContent = label + ' is required.';
+      el.parentNode.appendChild(msg);
+      if (!firstError) firstError = el;
+    }
+  });
+
+  // Email format
+  const emailEl = document.getElementById('f-email');
+  if (emailEl && emailEl.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailEl.value)) {
+    emailEl.classList.add('input-error');
+    const msg = document.createElement('div');
+    msg.className = 'field-error';
+    msg.textContent = 'Please enter a valid email address.';
+    emailEl.parentNode.appendChild(msg);
+    if (!firstError) firstError = emailEl;
+  }
+
+  if (firstError) {
+    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    firstError.focus();
+    return false;
+  }
+  return true;
+}
+
+// ─────────────────────────────────────────
+// FORM SUBMISSION + EMAIL
+// ─────────────────────────────────────────
 function handleSubmit() {
+  if (!validateForm()) return;
+
   const btn = document.getElementById('submit-btn');
   btn.disabled = true;
   btn.querySelector('span').textContent = t('form.submitting');
-  setTimeout(() => {
+
+  const firstName  = document.getElementById('f-firstName').value.trim();
+  const lastName   = document.getElementById('f-lastName').value.trim();
+  const email      = document.getElementById('f-email').value.trim();
+  const city       = document.getElementById('f-city').value.trim();
+  const country    = document.getElementById('f-country').value.trim();
+  const phone      = (document.getElementById('f-phone-prefix')?.value || '') +
+                     ' ' + (document.getElementById('f-phone')?.value.trim() || '');
+  const linkedin   = document.getElementById('f-linkedin')?.value.trim() || '';
+  const summary    = document.getElementById('f-summary')?.value.trim() || '';
+  const erpSystems = [...selectedErp].join(', ') || '—';
+
+  const templateParams = {
+    to_email:    email,
+    to_name:     firstName + ' ' + lastName,
+    first_name:  firstName,
+    last_name:   lastName,
+    city,
+    country,
+    phone,
+    linkedin,
+    erp_systems: erpSystems,
+    summary:     summary.slice(0, 400) + (summary.length > 400 ? '…' : ''),
+    reply_to:    email,
+  };
+
+  const finish = (success) => {
     btn.disabled = false;
     btn.querySelector('span').textContent = t('form.submit');
-    showView('success');
-  }, 1800);
+    if (success) {
+      showView('success');
+    } else {
+      showView('success'); // still show success; email failure is silent to user
+    }
+  };
+
+  if (EMAILJS_CONFIGURED) {
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
+      .then(() => finish(true))
+      .catch((err) => {
+        console.warn('EmailJS error:', err);
+        finish(false);
+      });
+  } else {
+    // EmailJS not configured — simulate delay and proceed
+    console.info('EmailJS not configured. Skipping email send. Fill in EMAILJS_PUBLIC_KEY, EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID to activate.');
+    setTimeout(() => finish(true), 1800);
+  }
 }
 
 // ─────────────────────────────────────────
@@ -1754,8 +1893,11 @@ function showView(name) {
   const target = document.getElementById(name + '-view');
   if (target) target.classList.add('active');
   window.scrollTo(0, 0);
-  if (name === 'recruiter') {
-    // If not yet verified, show gate at step 1; if verified, show portal
+  if (name === 'success') {
+    const notice = document.getElementById('emailjs-setup-notice');
+    if (notice) notice.style.display = EMAILJS_CONFIGURED ? 'none' : 'block';
+  }
+  if (name === 'recruiter') {    // If not yet verified, show gate at step 1; if verified, show portal
     if (!recruiterVerified) {
       document.getElementById('rec-gate').style.display = 'flex';
       document.getElementById('rec-portal').style.display = 'none';
