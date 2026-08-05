@@ -536,6 +536,7 @@ input[type=file].photo-input{display:none}
 .gate-approved-card{display:flex;align-items:center;gap:14px;background:var(--gray-50);border:1px solid var(--gray-100);border-radius:var(--radius-lg);padding:14px 16px;text-align:left;margin-top:12px}
 .gate-approved-avatar{width:44px;height:44px;border-radius:50%;background:var(--blue);color:#fff;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
 <body>
@@ -3322,7 +3323,24 @@ function setAdminTab(tab, el) {
     </div>`;
 }
 
-function initAdminPortal() {
+async function initAdminPortal() {
+  if (SUPABASE_READY && sb()) {
+    // Fetch all profiles from Supabase
+    const { data: profiles } = await sb().from('profiles').select('*').order('created_at', { ascending: false });
+    if (profiles) {
+      // Populate allCandidateProfiles and verifiedRecruiters from DB
+      profiles.forEach(p => {
+        if (p.role === 'candidate' && p.profile_data) {
+          const existing = allCandidateProfiles.find(c => c.email === p.email);
+          if (!existing) allCandidateProfiles.push({ ...p.profile_data, email: p.email, photo: p.photo, submittedAt: p.created_at });
+        }
+        if (p.role === 'recruiter') {
+          const existing = verifiedRecruiters.find(r => r.email === p.email);
+          if (!existing && p.recruiter_data) verifiedRecruiters.push({ ...p.recruiter_data, photo: p.photo, verifiedAt: p.created_at, email: p.email });
+        }
+      });
+    }
+  }
   renderAdminList();
 }
 
@@ -3490,26 +3508,36 @@ function showAdminRecruiterDetail(r) {
 }
 
 // ─────────────────────────────────────────
-// AUTH SYSTEM
+// SUPABASE CONFIGURATION
+// ─────────────────────────────────────────
+// ⚠️  Replace these two values with your own from the Supabase dashboard
+// See supabase-setup-guide.html for step-by-step instructions
+
+const SUPABASE_URL  = 'https://qqcuipttgjhtbizplwtp.supabase.co';
+const SUPABASE_ANON = 'sb_publishable_I-7cYk3BWV27lIpOFJecbg_KGieD8-S';
+const SUPABASE_READY = SUPABASE_URL !== 'YOUR_SUPABASE_URL' && SUPABASE_ANON !== 'YOUR_SUPABASE_ANON_KEY';
+
+let _sb = null;
+function sb() {
+  if (!_sb && SUPABASE_READY && window.supabase) {
+    _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+  }
+  return _sb;
+}
+
+// ─────────────────────────────────────────
+// AUTH SYSTEM (Supabase + session cache)
 // ─────────────────────────────────────────
 
-const ADMIN_EMAIL    = 'admin@erp-talent-hub.com';
-const ADMIN_PASS     = 'VFT@Admin2026';
-const STORAGE_KEY    = 'erpth_users';
-const SESSION_KEY    = 'erpth_session';
+const ADMIN_EMAIL  = 'admin@erp-talent-hub.com';
+const ADMIN_PASS   = 'VFT@Admin2026';
+const SESSION_KEY  = 'erpth_session';
 
-let currentUser = null; // { id, email, name, role, photo, profileData, recruiterData }
-let authModalMode = 'login'; // 'login' | 'register'
-let authRole = 'candidate';  // 'candidate' | 'recruiter'
-let pendingNavTarget = null; // where to go after login
+let currentUser      = null;
+let authModalMode    = 'login';
+let authRole         = 'candidate';
+let pendingNavTarget = null;
 
-// ── Storage helpers ──────────────────────
-function getUsers() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch { return {}; }
-}
-function saveUsers(users) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
-}
 function getSession() {
   try { return JSON.parse(localStorage.getItem(SESSION_KEY) || 'null'); } catch { return null; }
 }
@@ -3518,14 +3546,6 @@ function saveSession(user) {
   else localStorage.removeItem(SESSION_KEY);
 }
 
-// ── Simple hash (not cryptographic — for demo only) ──
-function hashPass(pass) {
-  let h = 0;
-  for (let i = 0; i < pass.length; i++) h = (Math.imul(31, h) + pass.charCodeAt(i)) | 0;
-  return h.toString(36);
-}
-
-// ── Modal open/close ─────────────────────
 function openAuthModal(mode = 'login', role = null) {
   authModalMode = mode;
   if (role) authRole = role;
@@ -3538,10 +3558,9 @@ function openAuthModal(mode = 'login', role = null) {
 function closeAuthModal() {
   document.getElementById('auth-modal').style.display = 'none';
   document.getElementById('auth-error').classList.remove('show');
-  document.getElementById('auth-email').value = '';
-  document.getElementById('auth-password').value = '';
-  document.getElementById('auth-confirm').value = '';
-  if (document.getElementById('auth-name')) document.getElementById('auth-name').value = '';
+  ['auth-email','auth-password','auth-confirm','auth-name'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
   pendingNavTarget = null;
 }
 
@@ -3559,8 +3578,8 @@ function switchAuthTab(mode) {
   document.getElementById('auth-confirm-field').style.display = isLogin ? 'none' : 'block';
   document.getElementById('auth-submit-btn').textContent      = isLogin ? 'Login' : 'Create account';
   document.getElementById('auth-footer-note').innerHTML       = isLogin
-    ? 'No account yet? <a onclick="switchAuthTab(\'register\')">Register now</a>'
-    : 'Already have an account? <a onclick="switchAuthTab(\'login\')">Login</a>';
+    ? "No account yet? <a onclick=\"switchAuthTab('register')\">Register now</a>"
+    : "Already have an account? <a onclick=\"switchAuthTab('login')\">Login</a>";
   document.getElementById('auth-error').classList.remove('show');
 }
 
@@ -3572,71 +3591,159 @@ function selectAuthRole(role) {
 
 function showAuthError(msg) {
   const el = document.getElementById('auth-error');
-  el.textContent = msg;
-  el.classList.add('show');
+  el.textContent = msg; el.classList.add('show');
 }
 
-// ── Submit ───────────────────────────────
-function submitAuth() {
+async function submitAuth() {
   const email    = document.getElementById('auth-email').value.trim().toLowerCase();
   const password = document.getElementById('auth-password').value;
   document.getElementById('auth-error').classList.remove('show');
-
   if (!email || !password) return showAuthError('Please fill in all fields.');
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showAuthError('Please enter a valid email address.');
 
-  if (authModalMode === 'login') {
-    // Admin shortcut
-    if (email === ADMIN_EMAIL.toLowerCase() && password === ADMIN_PASS) {
-      loginSuccess({ id: 'admin', email: ADMIN_EMAIL, name: 'Admin', role: 'admin', photo: null });
-      return;
-    }
-    const users = getUsers();
-    const user  = users[email];
-    if (!user) return showAuthError('No account found with this email. Please register first.');
-    if (user.hash !== hashPass(password)) return showAuthError('Incorrect password. Please try again.');
-    loginSuccess(user);
+  // Admin shortcut
+  if (email === ADMIN_EMAIL.toLowerCase() && password === ADMIN_PASS) {
+    return loginSuccess({ id: 'admin', email: ADMIN_EMAIL, name: 'Admin', role: 'admin', photo: null });
+  }
 
-  } else {
-    // Register
-    const name    = document.getElementById('auth-name').value.trim();
-    const confirm = document.getElementById('auth-confirm').value;
-    if (!name)              return showAuthError('Please enter your full name.');
-    if (password.length < 6) return showAuthError('Password must be at least 6 characters.');
-    if (password !== confirm) return showAuthError('Passwords do not match.');
+  const btn = document.getElementById('auth-submit-btn');
+  btn.disabled = true; btn.textContent = 'Please wait…';
 
-    const users = getUsers();
-    if (users[email]) return showAuthError('An account with this email already exists. Please login instead.');
+  if (!SUPABASE_READY || !sb()) {
+    btn.disabled = false;
+    btn.textContent = authModalMode === 'login' ? 'Login' : 'Create account';
+    return showAuthError('Database not configured yet. Please follow the Supabase setup guide.');
+  }
 
-    const newUser = {
-      id: 'u_' + Date.now(),
-      email, name,
-      role: authRole,
-      hash: hashPass(password),
-      photo: null,
-      profileData: null,
-      recruiterData: null,
-    };
-    users[email] = newUser;
-    saveUsers(users);
-    loginSuccess(newUser);
+  try {
+    if (authModalMode === 'login') { await doLogin(email, password); }
+    else { await doRegister(email, password); }
+  } catch(err) {
+    btn.disabled = false;
+    btn.textContent = authModalMode === 'login' ? 'Login' : 'Create account';
+    showAuthError(err.message || 'An error occurred. Please try again.');
   }
 }
 
+async function doLogin(email, password) {
+  const { data, error } = await sb().auth.signInWithPassword({ email, password });
+  if (error) throw new Error(friendlyAuthError(error.message));
+
+  // Fetch profile — if missing, create it (handles edge cases)
+  let { data: profile, error: pe } = await sb()
+    .from('profiles').select('*').eq('id', data.user.id).single();
+
+  if (!profile) {
+    console.warn('Profile missing on login, inserting…');
+    await sb().from('profiles').upsert({
+      id: data.user.id, email, name: email.split('@')[0],
+      role: 'candidate', photo: null, profile_data: null, recruiter_data: null,
+      created_at: new Date().toISOString(),
+    });
+    const { data: p2 } = await sb().from('profiles').select('*').eq('id', data.user.id).single();
+    profile = p2;
+  }
+
+  document.getElementById('auth-submit-btn').disabled = false;
+  loginSuccess(buildUserObject(data.user, profile));
+}
+
+async function doRegister(email, password) {
+  const name    = document.getElementById('auth-name').value.trim();
+  const confirm = document.getElementById('auth-confirm').value;
+  if (!name)               throw new Error('Please enter your full name.');
+  if (password.length < 6) throw new Error('Password must be at least 6 characters.');
+  if (password !== confirm) throw new Error('Passwords do not match.');
+
+  // 1. Sign up with Supabase Auth
+  const { data, error } = await sb().auth.signUp({ email, password });
+  if (error) throw new Error(friendlyAuthError(error.message));
+
+  console.log('signUp response:', JSON.stringify({ id: data.user?.id, email: data.user?.email, confirmed: data.user?.confirmed_at }));
+
+  // 2. Insert profile — use upsert so it's idempotent
+  const { error: pe } = await sb().from('profiles').upsert({
+    id:   data.user.id,
+    email,
+    name,
+    role: authRole,
+    photo: null,
+    profile_data: null,
+    recruiter_data: null,
+    created_at: new Date().toISOString(),
+  });
+
+  if (pe) {
+    console.error('Profile insert error:', pe);
+    throw new Error('Account created but profile save failed: ' + pe.message + '. Check that you ran the SQL setup from the guide.');
+  }
+
+  console.log('Profile inserted successfully for', email);
+  document.getElementById('auth-submit-btn').disabled = false;
+
+  // 3. Check if email confirmation is required
+  const needsConfirm = !data.user.confirmed_at && !data.session;
+  if (needsConfirm) {
+    closeAuthModal();
+    showToast({
+      id: Date.now(), icon: '📧',
+      title: 'Check your email',
+      desc: `A confirmation link was sent to ${email}. Click it, then log in.`,
+      color: '#EFF6FF', iconColor: '#2563EB',
+    });
+    switchAuthTab('login');
+    openAuthModal('login');
+    return;
+  }
+
+  loginSuccess(buildUserObject(data.user, { name, role: authRole, photo: null }));
+}
+
+function buildUserObject(authUser, profile) {
+  return {
+    id:            authUser.id,
+    email:         authUser.email,
+    name:          profile?.name  || authUser.email,
+    role:          profile?.role  || 'candidate',
+    photo:         profile?.photo || null,
+    profileData:   profile?.profile_data   || null,
+    recruiterData: profile?.recruiter_data || null,
+  };
+}
+
+function friendlyAuthError(msg) {
+  if (!msg) return 'An error occurred.';
+  if (msg.includes('Invalid login'))          return 'Incorrect email or password.';
+  if (msg.includes('already registered') || msg.includes('already exists')) return 'An account with this email already exists. Please login instead.';
+  if (msg.includes('Email not confirmed'))    return 'Please check your email and confirm your account first.';
+  if (msg.includes('Password should'))        return 'Password must be at least 6 characters.';
+  if (msg.includes('row-level security'))     return 'Database policy error — please re-run the SQL setup from the guide (the profiles table needs updated RLS policies).';
+  return msg;
+}
+
+// ── Debug helper — run window.erpDebug() in browser console to diagnose ──
+window.erpDebug = async function() {
+  console.group('🔍 ERP Talent Hub — Supabase Diagnostics');
+  console.log('SUPABASE_READY:', SUPABASE_READY);
+  console.log('Supabase URL:', SUPABASE_URL);
+  console.log('SDK loaded:', !!window.supabase);
+  console.log('Client initialised:', !!sb());
+  if (!SUPABASE_READY || !sb()) { console.warn('⚠️ Supabase not configured or SDK not loaded'); console.groupEnd(); return; }
+  const { data: { session }, error: se } = await sb().auth.getSession();
+  console.log('Auth session:', session ? `✅ ${session.user.email}` : '❌ none', se || '');
+  const { data: profiles, error: pe } = await sb().from('profiles').select('id,email,role,created_at').order('created_at',{ascending:false});
+  if (pe) console.error('❌ profiles table error:', pe.message, '→ Did you run the SQL setup?');
+  else console.log('✅ profiles table — rows:', profiles?.length, profiles);
+  const { data: { users }, error: ue } = await sb().auth.admin?.listUsers?.() || {};
+  if (users) console.log('✅ auth users:', users.length);
+  console.groupEnd();
+};
+
 function loginSuccess(user) {
   currentUser = user;
-  // Strip hash before saving to session
-  const sessionUser = { ...user };
-  delete sessionUser.hash;
-  saveSession(sessionUser);
+  saveSession(user);
   closeAuthModal();
   renderNav();
-
-  // Navigate based on role and pending target
-  const target = pendingNavTarget || defaultViewForRole(user.role);
-  pendingNavTarget = null;
-
-  // Restore profile data if candidate has submitted before
   if (user.role === 'candidate' && user.profileData) {
     savedProfile = user.profileData;
     if (user.photo) candPhotoBase64 = user.photo;
@@ -3646,7 +3753,8 @@ function loginSuccess(user) {
     recruiterVerified = true;
     if (user.photo) recPhotoBase64 = user.photo;
   }
-
+  const target = pendingNavTarget || defaultViewForRole(user.role);
+  pendingNavTarget = null;
   showView(target);
 }
 
@@ -3656,58 +3764,37 @@ function defaultViewForRole(role) {
   return savedProfile ? 'myprofile' : 'form';
 }
 
-function logoutUser() {
-  currentUser = null;
-  saveSession(null);
-  // Reset state
-  savedProfile = null;
-  candPhotoBase64 = null;
-  recPhotoBase64 = null;
-  recruiterVerified = false;
-  recruiterProfile = {};
+async function logoutUser() {
+  if (SUPABASE_READY && sb()) await sb().auth.signOut();
+  currentUser = null; saveSession(null);
+  savedProfile = null; candPhotoBase64 = null; recPhotoBase64 = null;
+  recruiterVerified = false; recruiterProfile = {};
   notifications = [];
-  closeUserDropdown();
-  renderNav();
-  showView('home');
+  closeUserDropdown(); renderNav(); showView('home');
 }
 
-// ── Nav rendering ────────────────────────
 function renderNav() {
-  const authBtns   = document.getElementById('nav-auth-buttons');
-  const userWrap   = document.getElementById('nav-user-wrap');
-  const bell       = document.getElementById('notif-bell');
-  const myprofileBtn = document.getElementById('nav-btn-myprofile');
-
+  const authBtns = document.getElementById('nav-auth-buttons');
+  const userWrap = document.getElementById('nav-user-wrap');
+  const bell     = document.getElementById('notif-bell');
   if (!currentUser) {
-    authBtns.style.display  = 'flex';
-    userWrap.style.display  = 'none';
-    if (bell) bell.style.display = 'none';
-    if (myprofileBtn) myprofileBtn.style.display = 'none';
-    return;
+    authBtns.style.display = 'flex'; userWrap.style.display = 'none';
+    if (bell) bell.style.display = 'none'; return;
   }
-
-  authBtns.style.display = 'none';
-  userWrap.style.display = 'flex';
-
-  // Avatar
+  authBtns.style.display = 'none'; userWrap.style.display = 'flex';
   const avatarEl = document.getElementById('nav-user-avatar');
-  const color    = avatarColor(currentUser.name);
   if (currentUser.photo) {
-    avatarEl.innerHTML = `<img src="${currentUser.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+    avatarEl.innerHTML = '<img src="' + currentUser.photo + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
     avatarEl.style.background = 'transparent';
   } else {
     avatarEl.textContent = initials(currentUser.name);
-    avatarEl.style.background = currentUser.role === 'admin' ? '#92400E' : color;
+    avatarEl.style.background = currentUser.role === 'admin' ? '#92400E' : avatarColor(currentUser.name);
   }
   document.getElementById('nav-user-name').textContent = currentUser.name.split(' ')[0];
-
-  // Dropdown items
-  document.getElementById('dd-myprofile').style.display      = currentUser.role === 'candidate' ? 'flex' : 'none';
-  document.getElementById('dd-messages').style.display       = currentUser.role === 'candidate' ? 'flex' : 'none';
+  document.getElementById('dd-myprofile').style.display        = currentUser.role === 'candidate' ? 'flex' : 'none';
+  document.getElementById('dd-messages').style.display         = currentUser.role === 'candidate' ? 'flex' : 'none';
   document.getElementById('dd-recruiter-portal').style.display = currentUser.role === 'recruiter' ? 'flex' : 'none';
-  document.getElementById('dd-admin').style.display          = currentUser.role === 'admin'     ? 'flex' : 'none';
-
-  // Bell — candidates only
+  document.getElementById('dd-admin').style.display            = currentUser.role === 'admin'     ? 'flex' : 'none';
   if (bell) bell.style.display = currentUser.role === 'candidate' ? 'flex' : 'none';
 }
 
@@ -3718,55 +3805,36 @@ function toggleUserDropdown() {
   if (!isOpen) {
     setTimeout(() => {
       document.addEventListener('click', function closeDD(e) {
-        if (!document.getElementById('nav-user-wrap')?.contains(e.target)) {
-          dd.style.display = 'none';
-          document.removeEventListener('click', closeDD);
-        }
+        if (!document.getElementById('nav-user-wrap')?.contains(e.target)) { dd.style.display='none'; document.removeEventListener('click',closeDD); }
       });
     }, 10);
   }
 }
+function closeUserDropdown() { const dd=document.getElementById('nav-user-dropdown'); if(dd) dd.style.display='none'; }
 
-function closeUserDropdown() {
-  const dd = document.getElementById('nav-user-dropdown');
-  if (dd) dd.style.display = 'none';
-}
-
-// Auth-gated navigation — prompts login if not authenticated
 function authGatedNav(role) {
-  if (currentUser) {
-    showView(defaultViewForRole(currentUser.role));
-  } else {
-    pendingNavTarget = role === 'recruiter' ? 'recruiter' : 'form';
-    openAuthModal('register', role);
-  }
+  if (currentUser) { showView(defaultViewForRole(currentUser.role)); }
+  else { pendingNavTarget = role==='recruiter' ? 'recruiter' : 'form'; openAuthModal('register', role); }
 }
 
-// Persist profile data to the user's account on submit
-function persistCandidateProfile() {
+async function persistCandidateProfile() {
   if (!currentUser || currentUser.role !== 'candidate') return;
-  const users = getUsers();
-  if (!users[currentUser.email]) return;
-  users[currentUser.email].profileData = savedProfile;
-  users[currentUser.email].photo       = candPhotoBase64;
-  saveUsers(users);
-  currentUser.profileData = savedProfile;
-  currentUser.photo       = candPhotoBase64;
+  currentUser.profileData = savedProfile; currentUser.photo = candPhotoBase64;
   saveSession(currentUser);
+  if (!SUPABASE_READY || !sb()) return;
+  await sb().from('profiles').update({ profile_data: savedProfile, photo: candPhotoBase64 }).eq('id', currentUser.id);
 }
 
-function persistRecruiterData() {
+async function persistRecruiterData() {
   if (!currentUser || currentUser.role !== 'recruiter') return;
-  const users = getUsers();
-  if (!users[currentUser.email]) return;
-  users[currentUser.email].recruiterData = recruiterProfile;
-  users[currentUser.email].photo         = recPhotoBase64;
-  saveUsers(users);
-  currentUser.recruiterData = recruiterProfile;
-  currentUser.photo         = recPhotoBase64;
+  currentUser.recruiterData = recruiterProfile; currentUser.photo = recPhotoBase64;
   saveSession(currentUser);
+  if (!SUPABASE_READY || !sb()) return;
+  await sb().from('profiles').update({ recruiter_data: recruiterProfile, photo: recPhotoBase64 }).eq('id', currentUser.id);
 }
 
+// ─────────────────────────────────────────
+// PHOTO UPLOAD
 // ─────────────────────────────────────────
 // PHOTO UPLOAD
 // ─────────────────────────────────────────
@@ -3898,21 +3966,44 @@ function renderAvatar(container, photoSrc, initText, color, size = 52, fontSize 
 // ─────────────────────────────────────────
 // INIT
 // ─────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
-  // Restore session
-  const session = getSession();
-  if (session) {
-    currentUser = session;
-    if (session.role === 'candidate' && session.profileData) {
-      savedProfile = session.profileData;
-      if (session.photo) candPhotoBase64 = session.photo;
+document.addEventListener('DOMContentLoaded', async () => {
+  // Restore session — try Supabase first, fall back to localStorage cache
+  const cached = getSession();
+  if (cached) {
+    currentUser = cached;
+    if (cached.role === 'candidate' && cached.profileData) {
+      savedProfile = cached.profileData;
+      if (cached.photo) candPhotoBase64 = cached.photo;
     }
-    if (session.role === 'recruiter' && session.recruiterData) {
-      recruiterProfile = session.recruiterData;
+    if (cached.role === 'recruiter' && cached.recruiterData) {
+      recruiterProfile = cached.recruiterData;
       recruiterVerified = true;
-      if (session.photo) recPhotoBase64 = session.photo;
+      if (cached.photo) recPhotoBase64 = cached.photo;
     }
   }
+
+  // If Supabase is configured, verify session and refresh profile from DB
+  if (SUPABASE_READY && sb()) {
+    try {
+      const { data: { session } } = await sb().auth.getSession();
+      if (session) {
+        const { data: profile } = await sb().from('profiles').select('*').eq('id', session.user.id).single();
+        const user = buildUserObject(session.user, profile);
+        currentUser = user; saveSession(user);
+        if (user.role === 'candidate' && user.profileData) {
+          savedProfile = user.profileData;
+          if (user.photo) candPhotoBase64 = user.photo;
+        }
+        if (user.role === 'recruiter' && user.recruiterData) {
+          recruiterProfile = user.recruiterData; recruiterVerified = true;
+          if (user.photo) recPhotoBase64 = user.photo;
+        }
+      } else if (!cached) {
+        currentUser = null; saveSession(null);
+      }
+    } catch(e) { console.warn('Supabase session check failed:', e); }
+  }
+
   renderNav();
   applyTranslations();
   buildPhonePrefix();
