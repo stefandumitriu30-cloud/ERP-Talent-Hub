@@ -678,12 +678,6 @@ input[type=file].photo-input{display:none}
         <button class="auth-tab" id="auth-tab-register" onclick="switchAuthTab('register')">Register</button>
       </div>
 
-      <!-- Login / Register tabs -->
-      <div class="auth-tabs">
-        <button class="auth-tab active" id="auth-tab-login" onclick="switchAuthTab('login')">Login</button>
-        <button class="auth-tab" id="auth-tab-register" onclick="switchAuthTab('register')">Register</button>
-      </div>
-
       <!-- Role selector (register only) -->
       <div id="auth-role-section" style="display:none">
         <p style="font-size:13px;color:var(--gray-500);margin-bottom:10px">I am a:</p>
@@ -756,6 +750,38 @@ input[type=file].photo-input{display:none}
       </div>
     </div>
 
+  </div>
+</div>
+
+<!-- ═══════════════════ RESET PASSWORD MODAL ═══════════════════ -->
+<div id="reset-pw-modal" style="display:none" class="auth-modal-overlay">
+  <div class="auth-modal">
+    <div class="auth-modal-header">
+      <div class="auth-logo"></div>
+      <h2>Set new password</h2>
+      <p>Choose a strong password for your account.</p>
+    </div>
+    <div class="auth-modal-body">
+      <div style="text-align:center;margin-bottom:18px">
+        <div style="width:48px;height:48px;border-radius:50%;background:var(--blue-light);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:20px;color:var(--blue)">
+          <i class="fa-solid fa-lock"></i>
+        </div>
+      </div>
+      <div class="auth-field">
+        <label id="rp-new-label">New password</label>
+        <input type="password" id="rp-new-pw" placeholder="••••••••" onkeydown="if(event.key==='Enter')submitNewPassword()" />
+      </div>
+      <div class="auth-field">
+        <label id="rp-confirm-label">Confirm new password</label>
+        <input type="password" id="rp-confirm-pw" placeholder="••••••••" onkeydown="if(event.key==='Enter')submitNewPassword()" />
+      </div>
+      <div class="auth-error" id="rp-error"></div>
+      <div id="rp-success" style="display:none;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:var(--radius);padding:12px 14px;font-size:13px;color:#15803D;margin-bottom:12px;text-align:center">
+        <i class="fa-solid fa-circle-check" style="margin-right:6px"></i>
+        <span id="rp-success-text">Password updated! You are now logged in.</span>
+      </div>
+      <button class="auth-submit" id="rp-submit-btn" onclick="submitNewPassword()">Update password</button>
+    </div>
   </div>
 </div>
 
@@ -3930,6 +3956,72 @@ async function doRegister(email, password) {
   loginSuccess(buildUserObject(data.user, { name, role: authRole, photo: null }));
 }
 
+async function submitNewPassword() {
+  const newPw  = document.getElementById('rp-new-pw').value;
+  const confirm = document.getElementById('rp-confirm-pw').value;
+  const errEl  = document.getElementById('rp-error');
+  errEl.classList.remove('show');
+
+  if (!newPw || newPw.length < 6) {
+    errEl.textContent = 'Password must be at least 6 characters.';
+    errEl.classList.add('show'); return;
+  }
+  if (newPw !== confirm) {
+    errEl.textContent = 'Passwords do not match.';
+    errEl.classList.add('show'); return;
+  }
+
+  const btn = document.getElementById('rp-submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Updating…';
+
+  try {
+    const { data, error } = await sb().auth.updateUser({ password: newPw });
+    if (error) throw error;
+
+    // Show success
+    document.getElementById('rp-success').style.display = 'block';
+    btn.style.display = 'none';
+
+    // Clean URL (remove token hash)
+    window.history.replaceState({}, document.title, window.location.pathname);
+
+    // Auto-login with updated profile
+    setTimeout(async () => {
+      document.getElementById('reset-pw-modal').style.display = 'none';
+      const { data: { session } } = await sb().auth.getSession();
+      if (session) {
+        const { data: profile } = await sb().from('profiles').select('*').eq('id', session.user.id).single();
+        loginSuccess(buildUserObject(session.user, profile));
+      }
+    }, 2000);
+
+  } catch(err) {
+    btn.disabled = false;
+    btn.textContent = 'Update password';
+    errEl.textContent = err.message || 'An error occurred. Please try again.';
+    errEl.classList.add('show');
+  }
+}
+
+function checkPasswordResetToken() {
+  // Supabase puts the tokens in the URL hash after redirect
+  const hash   = window.location.hash;
+  const params = new URLSearchParams(hash.replace('#', '?').replace('#', '&'));
+  const type   = params.get('type');
+  const accessToken  = params.get('access_token');
+  const refreshToken = params.get('refresh_token');
+
+  if (type === 'recovery' && accessToken) {
+    // Set the session so updateUser works
+    sb().auth.setSession({ access_token: accessToken, refresh_token: refreshToken || '' });
+    // Show the reset password modal
+    document.getElementById('reset-pw-modal').style.display = 'flex';
+    // Clean the URL
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+}
+
 async function submitForgotPassword() {
   const email = document.getElementById('auth-forgot-email').value.trim().toLowerCase();
   const errEl = document.getElementById('auth-forgot-error');
@@ -4931,6 +5023,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   addEntry('cert');
   addEntry('award');
   initMia();
+  // Check if arriving from password reset email
+  if (SUPABASE_READY && sb()) checkPasswordResetToken();
 });
 </script>
 </body>
