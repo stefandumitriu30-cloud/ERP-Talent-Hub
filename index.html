@@ -3957,9 +3957,9 @@ async function doRegister(email, password) {
 }
 
 async function submitNewPassword() {
-  const newPw  = document.getElementById('rp-new-pw').value;
+  const newPw   = document.getElementById('rp-new-pw').value;
   const confirm = document.getElementById('rp-confirm-pw').value;
-  const errEl  = document.getElementById('rp-error');
+  const errEl   = document.getElementById('rp-error');
   errEl.classList.remove('show');
 
   if (!newPw || newPw.length < 6) {
@@ -3976,22 +3976,28 @@ async function submitNewPassword() {
   btn.textContent = 'Updating…';
 
   try {
-    const { data, error } = await sb().auth.updateUser({ password: newPw });
+    // We need an active session to call updateUser
+    // Re-get the recovery session that was set in checkPasswordResetToken
+    const { data: { session: recSession } } = await sb().auth.getSession();
+
+    if (!recSession) {
+      throw new Error('Session expired. Please request a new password reset link.');
+    }
+
+    const { error } = await sb().auth.updateUser({ password: newPw });
     if (error) throw error;
 
-    // Show success
+    // Show success message
     document.getElementById('rp-success').style.display = 'block';
     btn.style.display = 'none';
 
-    // Clean URL (remove token hash)
-    window.history.replaceState({}, document.title, window.location.pathname);
-
-    // Auto-login with updated profile
+    // After 2s: close modal and log the user in properly
     setTimeout(async () => {
       document.getElementById('reset-pw-modal').style.display = 'none';
       const { data: { session } } = await sb().auth.getSession();
       if (session) {
-        const { data: profile } = await sb().from('profiles').select('*').eq('id', session.user.id).single();
+        const { data: profile } = await sb()
+          .from('profiles').select('*').eq('id', session.user.id).single();
         loginSuccess(buildUserObject(session.user, profile));
       }
     }, 2000);
@@ -4004,22 +4010,84 @@ async function submitNewPassword() {
   }
 }
 
-function checkPasswordResetToken() {
-  // Supabase puts the tokens in the URL hash after redirect
-  const hash   = window.location.hash;
-  const params = new URLSearchParams(hash.replace('#', '?').replace('#', '&'));
-  const type   = params.get('type');
-  const accessToken  = params.get('access_token');
-  const refreshToken = params.get('refresh_token');
+async function checkPasswordResetToken() {
+  // Supabase uses different URL formats depending on version:
+  // v1: #access_token=...&type=recovery (hash)
+  // v2: #type=recovery&access_token=... (hash)
+  // PKCE: ?code=... (query string, exchanged server-side)
 
-  if (type === 'recovery' && accessToken) {
-    // Set the session so updateUser works
-    sb().auth.setSession({ access_token: accessToken, refresh_token: refreshToken || '' });
-    // Show the reset password modal
-    document.getElementById('reset-pw-modal').style.display = 'flex';
-    // Clean the URL
+  if (!SUPABASE_READY || !sb()) return false;
+
+  const hash   = window.location.hash;
+  const search = window.location.search;
+
+  // ── Format 1: hash contains access_token + type=recovery ──
+  if (hash && hash.includes('type=recovery') && hash.includes('access_token')) {
+    const params      = new URLSearchParams(hash.slice(1));
+    const accessToken  = params.get('access_token');
+    const refreshToken = params.get('refresh_token') || '';
+
+    // Set session so updateUser works, but don't log in fully
+    try {
+      await sb().auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
+    } catch(e) { console.warn('setSession error:', e); }
+
     window.history.replaceState({}, document.title, window.location.pathname);
+    showResetPasswordModal();
+    return true;
   }
+
+  // ── Format 2: Supabase auto-exchanged the code and set a session ──
+  // In this case getSession() will return a session with aud='authenticated'
+  // but the URL will still have #type=recovery or the session was just created
+  if (hash && hash.includes('type=recovery')) {
+    try {
+      const { data: { session } } = await sb().auth.getSession();
+      if (session) {
+        window.history.replaceState({}, document.title, window.location.pathname);
+        showResetPasswordModal();
+        return true;
+      }
+    } catch(e) { console.warn('recovery session check error:', e); }
+  }
+
+  // ── Format 3: PKCE flow — ?code= in query string ──
+  if (search && search.includes('code=')) {
+    try {
+      const { data, error } = await sb().auth.exchangeCodeForSession(new URLSearchParams(search).get('code'));
+      if (!error && data?.session) {
+        window.history.replaceState({}, document.title, window.location.pathname);
+        showResetPasswordModal();
+        return true;
+      }
+    } catch(e) { console.warn('code exchange error:', e); }
+  }
+
+  return false;
+}
+
+function showResetPasswordModal() {
+  // Store the current recovery session tokens before signing out
+  // so submitNewPassword can still call updateUser
+  sb().auth.getSession().then(({ data: { session } }) => {
+    if (session) {
+      // Keep the session active — don't sign out
+      // Just block the UI from showing the user as logged in
+      saveSession(null);
+      currentUser = null;
+    }
+  });
+
+  // Clear any cached session in UI
+  ['rp-new-pw','rp-confirm-pw'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  document.getElementById('rp-error')?.classList.remove('show');
+  document.getElementById('rp-success').style.display = 'none';
+  const btn = document.getElementById('rp-submit-btn');
+  if (btn) { btn.disabled = false; btn.style.display = ''; btn.textContent = 'Update password'; }
+  document.getElementById('reset-pw-modal').style.display = 'flex';
+  setTimeout(() => document.getElementById('rp-new-pw')?.focus(), 100);
 }
 
 async function submitForgotPassword() {
@@ -4053,7 +4121,7 @@ async function submitForgotPassword() {
 
   try {
     const { error } = await sb().auth.resetPasswordForEmail(email, {
-      redirectTo: window.location.href,
+      redirectTo: window.location.origin + window.location.pathname,
     });
     btn.disabled = false;
     btn.textContent = t('auth.sendReset') || 'Send reset link';
@@ -4976,7 +5044,26 @@ function initMia() {
 // INIT
 // ─────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
-  // Restore session — try Supabase first, fall back to localStorage cache
+
+  // ── Check FIRST if arriving from a password reset email ──────────
+  // Must run before session restore so Supabase doesn't auto-login
+  const isRecovery = await checkPasswordResetToken();
+  if (isRecovery) {
+    // Don't restore session — just show the reset modal and stop
+    renderNav();
+    applyTranslations();
+    buildPhonePrefix();
+    buildErpToggles();
+    buildHomeErpTags();
+    addEntry('exp');
+    addEntry('edu');
+    addEntry('cert');
+    addEntry('award');
+    initMia();
+    return;
+  }
+
+  // ── Normal session restore ────────────────────────────────────────
   const cached = getSession();
   if (cached) {
     currentUser = cached;
@@ -5023,8 +5110,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   addEntry('cert');
   addEntry('award');
   initMia();
-  // Check if arriving from password reset email
-  if (SUPABASE_READY && sb()) checkPasswordResetToken();
 });
 </script>
 </body>
