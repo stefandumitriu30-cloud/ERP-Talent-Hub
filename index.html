@@ -1538,6 +1538,7 @@ function setLang(lang) {
   document.getElementById('btn-lang-' + lang).classList.add('active');
   applyTranslations();
   rebuildDynamicParts();
+  setMiaLang(lang);
 }
 
 function applyTranslations() {
@@ -4088,81 +4089,146 @@ let miaHintTimer   = null;
 let miaContext     = 'home'; // tracks current page context
 
 // ── Context-aware scripts per view/step ──────────────────
-const MIA_SCRIPTS = {
-  home: {
-    greeting: "Hi! I'm **Mia**, your personal guide on ERP Talent Hub 👋\n\nThis platform connects **ERP professionals** with **verified recruiters**. Whether you're looking for a new opportunity or searching for talent, I'll walk you through every step.",
-    hint: "👋 I'm Mia! Need help getting started?",
-    quick: ["I'm a candidate","I'm a recruiter","How does it work?","Tell me about privacy"],
+// ─────────────────────────────────────────
+// MIA MULTILINGUAL SCRIPTS
+// ─────────────────────────────────────────
+
+const MIA_SCRIPTS_ALL = {
+  en: {
+    home:      { greeting: "Hi! I'm **Mia**, your personal guide on ERP Talent Hub 👋\n\nThis platform connects **ERP professionals** with **verified recruiters**. Whether you're looking for a new opportunity or searching for talent, I'll walk you through every step.", hint: "👋 I'm Mia! Need help getting started?", quick: ["I'm a candidate","I'm a recruiter","How does it work?","Tell me about privacy"] },
+    register:  { greeting: "Let's create your account! 🎉\n\nFirst, tell me: are you an **ERP Professional** looking for opportunities, or a **Recruiter** searching for talent?\n\nThen fill in your name, email and a secure password (at least 6 characters).", hint: "🔐 Need help registering?", quick: ["What's the difference between roles?","Is my data secure?","Can I change my role later?"] },
+    login:     { greeting: "Welcome back! 👋\n\nEnter your **email** and **password** to access your profile.", hint: "🔑 Need help logging in?", quick: ["I forgot my password","I can't find my account"] },
+    form:      { greeting: "Let's build your **ERP profile**! 📋\n\nHere's what to fill in:\n1. **Personal info** — name, city, country and province\n2. **Contact details** — email, phone, LinkedIn\n3. **Professional summary** — 200–500 words\n4. **ERP systems** — select all you know\n5. **Work experience** — most recent first\n6. **Education, certifications & awards**", hint: "📋 I can help you fill in your profile!", quick: ["What should I write in the summary?","How do I add work experience?","Which ERP systems should I select?","Can I edit my profile later?"] },
+    myprofile: { greeting: "This is **your profile** as recruiters will see it 👤\n\nYour contact details are **hidden** until a recruiter requests access and you accept.\n\nUse the **Edit profile** button to update it anytime!", hint: "👤 Want to know how recruiters see you?", quick: ["How do I edit my profile?","Who can see my contact details?","What is the selection pipeline?"] },
+    recruiter: { greeting: "Welcome to the **Recruiter Portal**! 🏢\n\nTo access the ERP talent pool, you first need to **verify your LinkedIn Recruiter account**.\n\nThis ensures all recruiters are genuine professionals.", hint: "🔒 Need help with recruiter verification?", quick: ["What is LinkedIn Recruiter?","Why do I need to verify?","What can I do after verification?"] },
+    candidate: { greeting: "This is your **Messages inbox** 💬\n\nRecruiters will contact you here. Only **verified recruiters** can start a conversation — you can reply once they write first.\n\nCheck your **selection pipeline** to see your hiring stage!", hint: "💬 Questions about your messages?", quick: ["How does the chat work?","What is the selection pipeline?","When will recruiters contact me?"] },
+    gate1:     { greeting: "To access the talent pool, I need to **verify your LinkedIn Recruiter licence** 🔍\n\nThis is a 3-step process:\n1. Enter your LinkedIn Recruiter profile URL\n2. We check your account type\n3. Access granted!", hint: "🔍 Need help with verification?", quick: ["What is a LinkedIn Recruiter account?","Where do I find my profile URL?"] },
+    gate2:     { greeting: "Almost there! Please enter:\n\n• Your **LinkedIn username** (after linkedin.com/in/)\n• Your **full name** as on LinkedIn\n• Your **company or agency** name\n• Optionally a **profile photo**", hint: "❓ How to find your LinkedIn username?", quick: ["Where do I find my LinkedIn username?","What if verification fails?"] },
+    success:   { greeting: "Congratulations! 🎉 Your profile is now **live** on ERP Talent Hub!\n\nHere's what happens next:\n1. Recruiters browse and contact you first\n2. You get a notification when someone views your profile\n3. You reply in the chat once they write\n4. Track your selection progress in the pipeline\n\nGood luck! 💙", hint: "🎉 Your profile is live! What's next?", quick: ["What happens next?","How will I know if a recruiter is interested?","How do I see my profile?"] },
+    admin:     { greeting: "Welcome to the **Admin Dashboard**! 🛡️\n\nHere you can:\n• View **all candidates** and their profiles\n• View **all verified recruiters**\n• Monitor **conversations** and **pipeline** progress\n\nUse the tabs and search to filter users.", hint: "🛡️ Admin guide — click for an overview", quick: ["How do I see a candidate's full profile?","How do I count registered users?"] },
   },
-  register: {
-    greeting: "Let's create your account! 🎉\n\nFirst, tell me: are you an **ERP Professional** looking for opportunities, or a **Recruiter** searching for talent?\n\nThen fill in your name, email and a secure password (at least 6 characters).",
-    hint: "🔐 Need help registering?",
-    quick: ["What's the difference between roles?","Is my data secure?","Can I change my role later?"],
+  it: {
+    home:      { greeting: "Ciao! Sono **Mia**, la tua guida personale su ERP Talent Hub 👋\n\nQuesta piattaforma mette in contatto **professionisti ERP** con **recruiter verificati**. Che tu stia cercando un'opportunità o talenti, ti accompagnerò passo dopo passo.", hint: "👋 Sono Mia! Hai bisogno di aiuto?", quick: ["Sono un candidato","Sono un recruiter","Come funziona?","Dimmi della privacy"] },
+    register:  { greeting: "Creiamo il tuo account! 🎉\n\nPrima dimmi: sei un **Professionista ERP** in cerca di opportunità, o un **Recruiter** alla ricerca di talenti?\n\nPoi inserisci nome, email e una password sicura (almeno 6 caratteri).", hint: "🔐 Aiuto con la registrazione?", quick: ["Qual è la differenza tra i ruoli?","I miei dati sono al sicuro?","Posso cambiare ruolo in seguito?"] },
+    login:     { greeting: "Bentornato! 👋\n\nInserisci la tua **email** e **password** per accedere al tuo profilo.", hint: "🔑 Aiuto con il login?", quick: ["Ho dimenticato la password","Non trovo il mio account"] },
+    form:      { greeting: "Costruiamo il tuo **profilo ERP**! 📋\n\nEcco cosa compilare:\n1. **Informazioni personali** — nome, città, paese e provincia\n2. **Recapiti** — email, telefono, LinkedIn\n3. **Sommario professionale** — 200–500 parole\n4. **Sistemi ERP** — seleziona tutti quelli che conosci\n5. **Esperienze lavorative** — dalla più recente\n6. **Formazione, certificazioni e premi**", hint: "📋 Ti aiuto a compilare il profilo!", quick: ["Cosa scrivo nel sommario?","Come aggiungo un'esperienza?","Quali sistemi ERP seleziono?","Posso modificare il profilo dopo?"] },
+    myprofile: { greeting: "Questo è il tuo **profilo** come lo vedono i recruiter 👤\n\nI tuoi recapiti sono **nascosti** finché un recruiter non richiede l'accesso e tu non accetti.\n\nUsa il pulsante **Modifica profilo** per aggiornarlo in qualsiasi momento!", hint: "👤 Vuoi sapere come ti vedono i recruiter?", quick: ["Come modifico il profilo?","Chi vede i miei recapiti?","Cos'è il pipeline di selezione?"] },
+    recruiter: { greeting: "Benvenuto nel **Portale Recruiter**! 🏢\n\nPer accedere al pool di talenti ERP, devi prima **verificare il tuo account LinkedIn Recruiter**.\n\nQuesto garantisce che tutti i recruiter siano professionisti autentici.", hint: "🔒 Aiuto con la verifica recruiter?", quick: ["Cos'è LinkedIn Recruiter?","Perché devo verificarmi?","Cosa posso fare dopo la verifica?"] },
+    candidate: { greeting: "Questa è la tua **casella messaggi** 💬\n\nI recruiter ti contatteranno qui. Solo i **recruiter verificati** possono avviare una conversazione — tu puoi rispondere una volta che scrivono.\n\nControlla il tuo **pipeline di selezione** per vedere a che punto sei!", hint: "💬 Domande sui tuoi messaggi?", quick: ["Come funziona la chat?","Cos'è il pipeline di selezione?","Quando mi contatteranno i recruiter?"] },
+    gate1:     { greeting: "Per accedere al pool di talenti, devo **verificare la tua licenza LinkedIn Recruiter** 🔍\n\nÈ un processo in 3 passi:\n1. Inserisci l'URL del tuo profilo LinkedIn Recruiter\n2. Verifichiamo il tipo di account\n3. Accesso garantito!", hint: "🔍 Aiuto con la verifica?", quick: ["Cos'è un account LinkedIn Recruiter?","Dove trovo l'URL del mio profilo?"] },
+    gate2:     { greeting: "Quasi fatto! Inserisci:\n\n• Il tuo **username LinkedIn** (dopo linkedin.com/in/)\n• Il tuo **nome completo** come su LinkedIn\n• La tua **azienda o agenzia**\n• Opzionalmente una **foto profilo**", hint: "❓ Come trovare il tuo username LinkedIn?", quick: ["Dove trovo il mio username LinkedIn?","Cosa succede se la verifica fallisce?"] },
+    success:   { greeting: "Congratulazioni! 🎉 Il tuo profilo è ora **attivo** su ERP Talent Hub!\n\nEcco cosa succede:\n1. I recruiter navigano i profili e ti contattano per primi\n2. Ricevi una notifica quando qualcuno visualizza il tuo profilo\n3. Rispondi in chat una volta che scrivono\n4. Monitora il tuo pipeline di selezione\n\nIn bocca al lupo! 💙", hint: "🎉 Il tuo profilo è attivo! Cosa succede ora?", quick: ["Cosa succede dopo?","Come saprò se un recruiter è interessato?","Come vedo il mio profilo?"] },
+    admin:     { greeting: "Benvenuto nella **Dashboard Admin**! 🛡️\n\nQui puoi:\n• Vedere **tutti i candidati** e i loro profili\n• Vedere **tutti i recruiter verificati**\n• Monitorare **conversazioni** e avanzamento del **pipeline**\n\nUsa le schede e la ricerca per filtrare gli utenti.", hint: "🛡️ Guida admin — clicca per una panoramica", quick: ["Come vedo il profilo completo di un candidato?","Come conto gli utenti registrati?"] },
   },
-  login: {
-    greeting: "Welcome back! 👋\n\nEnter your **email** and **password** to access your profile.\n\nIf you've forgotten your password, contact the platform administrator.",
-    hint: "🔑 Need help logging in?",
-    quick: ["I forgot my password","I can't find my account"],
+  es: {
+    home:      { greeting: "¡Hola! Soy **Mia**, tu guía personal en ERP Talent Hub 👋\n\nEsta plataforma conecta **profesionales ERP** con **recruiters verificados**. Tanto si buscas oportunidades como talento, te guiaré paso a paso.", hint: "👋 ¡Soy Mia! ¿Necesitas ayuda?", quick: ["Soy candidato","Soy recruiter","¿Cómo funciona?","Cuéntame sobre la privacidad"] },
+    register:  { greeting: "¡Creemos tu cuenta! 🎉\n\nPrimero dime: ¿eres un **Profesional ERP** buscando oportunidades o un **Recruiter** buscando talento?\n\nLuego completa nombre, email y contraseña segura (mínimo 6 caracteres).", hint: "🔐 ¿Ayuda con el registro?", quick: ["¿Cuál es la diferencia entre roles?","¿Mis datos están seguros?","¿Puedo cambiar de rol después?"] },
+    login:     { greeting: "¡Bienvenido de vuelta! 👋\n\nIntroduce tu **email** y **contraseña** para acceder a tu perfil.", hint: "🔑 ¿Ayuda con el inicio de sesión?", quick: ["Olvidé mi contraseña","No encuentro mi cuenta"] },
+    form:      { greeting: "¡Construyamos tu **perfil ERP**! 📋\n\nEsto es lo que debes rellenar:\n1. **Información personal** — nombre, ciudad, país y provincia\n2. **Datos de contacto** — email, teléfono, LinkedIn\n3. **Resumen profesional** — 200–500 palabras\n4. **Sistemas ERP** — selecciona todos los que conoces\n5. **Experiencia laboral** — de más reciente a más antigua\n6. **Educación, certificaciones y premios**", hint: "📋 ¡Te ayudo a rellenar tu perfil!", quick: ["¿Qué escribo en el resumen?","¿Cómo añado experiencia?","¿Qué sistemas ERP selecciono?","¿Puedo editar el perfil después?"] },
+    myprofile: { greeting: "Este es **tu perfil** tal como lo ven los recruiters 👤\n\nTus datos de contacto están **ocultos** hasta que un recruiter solicite acceso y tú aceptes.\n\n¡Usa el botón **Editar perfil** para actualizarlo cuando quieras!", hint: "👤 ¿Quieres saber cómo te ven los recruiters?", quick: ["¿Cómo edito mi perfil?","¿Quién ve mis datos de contacto?","¿Qué es el pipeline de selección?"] },
+    recruiter: { greeting: "¡Bienvenido al **Portal de Recruiter**! 🏢\n\nPara acceder al banco de talento ERP, primero debes **verificar tu cuenta LinkedIn Recruiter**.\n\nEsto garantiza que todos los recruiters sean profesionales auténticos.", hint: "🔒 ¿Ayuda con la verificación de recruiter?", quick: ["¿Qué es LinkedIn Recruiter?","¿Por qué debo verificarme?","¿Qué puedo hacer tras la verificación?"] },
+    candidate: { greeting: "Este es tu **buzón de mensajes** 💬\n\nLos recruiters te contactarán aquí. Solo los **recruiters verificados** pueden iniciar conversación — tú puedes responder una vez que escriban.\n\n¡Consulta tu **pipeline de selección** para ver en qué etapa estás!", hint: "💬 ¿Preguntas sobre tus mensajes?", quick: ["¿Cómo funciona el chat?","¿Qué es el pipeline de selección?","¿Cuándo me contactarán los recruiters?"] },
+    gate1:     { greeting: "Para acceder al banco de talento, necesito **verificar tu licencia LinkedIn Recruiter** 🔍\n\nEs un proceso de 3 pasos:\n1. Introduce la URL de tu perfil LinkedIn Recruiter\n2. Verificamos el tipo de cuenta\n3. ¡Acceso concedido!", hint: "🔍 ¿Ayuda con la verificación?", quick: ["¿Qué es una cuenta LinkedIn Recruiter?","¿Dónde encuentro la URL de mi perfil?"] },
+    gate2:     { greeting: "¡Casi listo! Por favor introduce:\n\n• Tu **nombre de usuario LinkedIn** (después de linkedin.com/in/)\n• Tu **nombre completo** como en LinkedIn\n• Tu **empresa o agencia**\n• Opcionalmente una **foto de perfil**", hint: "❓ ¿Cómo encontrar tu usuario de LinkedIn?", quick: ["¿Dónde encuentro mi usuario de LinkedIn?","¿Qué pasa si la verificación falla?"] },
+    success:   { greeting: "¡Enhorabuena! 🎉 ¡Tu perfil ya está **activo** en ERP Talent Hub!\n\nEsto es lo que ocurrirá:\n1. Los recruiters navegan perfiles y te contactan primero\n2. Recibes una notificación cuando alguien ve tu perfil\n3. Respondes en el chat una vez que escriben\n4. Sigue tu progreso en el pipeline de selección\n\n¡Buena suerte! 💙", hint: "🎉 ¡Tu perfil está activo! ¿Qué sigue?", quick: ["¿Qué pasa después?","¿Cómo sabré si un recruiter está interesado?","¿Cómo veo mi perfil?"] },
+    admin:     { greeting: "¡Bienvenido al **Panel de Administración**! 🛡️\n\nAquí puedes:\n• Ver **todos los candidatos** y sus perfiles\n• Ver **todos los recruiters verificados**\n• Monitorear **conversaciones** y el progreso del **pipeline**\n\nUsa las pestañas y la búsqueda para filtrar usuarios.", hint: "🛡️ Guía admin — clic para resumen", quick: ["¿Cómo veo el perfil completo de un candidato?","¿Cómo cuento los usuarios registrados?"] },
   },
-  form: {
-    greeting: "Let's build your **ERP profile**! 📋\n\nHere's what to fill in:\n1. **Personal info** — name, city, country and province\n2. **Contact details** — email, phone, LinkedIn\n3. **Professional summary** — 200–500 words about your expertise\n4. **ERP systems** — select all the platforms you know\n5. **Work experience** — from most recent to oldest\n6. **Education, certifications & awards**\n\nTake your time — the more complete your profile, the more recruiters will find you!",
-    hint: "📋 I can help you fill in your profile!",
-    quick: ["What should I write in the summary?","How do I add work experience?","Which ERP systems should I select?","Can I edit my profile later?"],
+  de: {
+    home:      { greeting: "Hallo! Ich bin **Mia**, Ihre persönliche Führerin auf ERP Talent Hub 👋\n\nDiese Plattform verbindet **ERP-Fachleute** mit **verifizierten Recruitern**. Ob Sie eine neue Stelle oder Talente suchen — ich begleite Sie Schritt für Schritt.", hint: "👋 Ich bin Mia! Brauchen Sie Hilfe?", quick: ["Ich bin Kandidat","Ich bin Recruiter","Wie funktioniert es?","Datenschutz erklären"] },
+    register:  { greeting: "Erstellen wir Ihr Konto! 🎉\n\nSagen Sie mir zuerst: Sind Sie ein **ERP-Fachmann** auf Jobsuche oder ein **Recruiter** auf Talentsuche?\n\nDann Name, E-Mail und sicheres Passwort (mindestens 6 Zeichen) eingeben.", hint: "🔐 Hilfe bei der Registrierung?", quick: ["Was ist der Unterschied zwischen den Rollen?","Sind meine Daten sicher?","Kann ich die Rolle später ändern?"] },
+    login:     { greeting: "Willkommen zurück! 👋\n\nGeben Sie Ihre **E-Mail** und Ihr **Passwort** ein, um auf Ihr Profil zuzugreifen.", hint: "🔑 Hilfe beim Einloggen?", quick: ["Ich habe mein Passwort vergessen","Ich finde mein Konto nicht"] },
+    form:      { greeting: "Bauen wir Ihr **ERP-Profil**! 📋\n\nDas müssen Sie ausfüllen:\n1. **Persönliche Angaben** — Name, Stadt, Land und Bundesland\n2. **Kontaktdaten** — E-Mail, Telefon, LinkedIn\n3. **Kurzprofil** — 200–500 Wörter\n4. **ERP-Systeme** — alle auswählen, die Sie kennen\n5. **Berufserfahrung** — neueste zuerst\n6. **Ausbildung, Zertifizierungen und Auszeichnungen**", hint: "📋 Ich helfe Ihnen beim Ausfüllen!", quick: ["Was schreibe ich ins Kurzprofil?","Wie füge ich Erfahrung hinzu?","Welche ERP-Systeme wähle ich?","Kann ich das Profil später bearbeiten?"] },
+    myprofile: { greeting: "Dies ist **Ihr Profil** so wie Recruiter es sehen 👤\n\nIhre Kontaktdaten sind **verborgen**, bis ein Recruiter Zugang anfordert und Sie zustimmen.\n\nNutzen Sie die Schaltfläche **Profil bearbeiten**, um es jederzeit zu aktualisieren!", hint: "👤 Möchten Sie wissen, wie Recruiter Sie sehen?", quick: ["Wie bearbeite ich mein Profil?","Wer sieht meine Kontaktdaten?","Was ist die Auswahlpipeline?"] },
+    recruiter: { greeting: "Willkommen im **Recruiter-Portal**! 🏢\n\nUm auf den ERP-Talentpool zuzugreifen, müssen Sie zuerst Ihr **LinkedIn Recruiter-Konto verifizieren**.\n\nDas stellt sicher, dass alle Recruiter echte Profis sind.", hint: "🔒 Hilfe bei der Recruiter-Verifizierung?", quick: ["Was ist LinkedIn Recruiter?","Warum muss ich mich verifizieren?","Was kann ich nach der Verifizierung tun?"] },
+    candidate: { greeting: "Dies ist Ihr **Nachrichteneingang** 💬\n\nRecruter werden Sie hier kontaktieren. Nur **verifizierte Recruiter** können ein Gespräch starten — Sie können antworten, sobald sie schreiben.\n\nVerfolgen Sie Ihre **Auswahlpipeline**, um Ihren Stand zu sehen!", hint: "💬 Fragen zu Ihren Nachrichten?", quick: ["Wie funktioniert der Chat?","Was ist die Auswahlpipeline?","Wann werden Recruiter mich kontaktieren?"] },
+    gate1:     { greeting: "Um auf den Talentpool zuzugreifen, muss ich Ihre **LinkedIn Recruiter-Lizenz verifizieren** 🔍\n\nDas ist ein 3-Schritte-Prozess:\n1. LinkedIn Recruiter-Profil-URL eingeben\n2. Wir prüfen Ihren Kontotyp\n3. Zugang gewährt!", hint: "🔍 Hilfe bei der Verifizierung?", quick: ["Was ist ein LinkedIn Recruiter-Konto?","Wo finde ich meine Profil-URL?"] },
+    gate2:     { greeting: "Fast geschafft! Bitte eingeben:\n\n• Ihren **LinkedIn-Benutzernamen** (nach linkedin.com/in/)\n• Ihren **vollständigen Namen** wie auf LinkedIn\n• Ihr **Unternehmen oder Ihre Agentur**\n• Optional ein **Profilfoto**", hint: "❓ Wie finde ich meinen LinkedIn-Benutzernamen?", quick: ["Wo finde ich meinen LinkedIn-Benutzernamen?","Was passiert bei fehlgeschlagener Verifizierung?"] },
+    success:   { greeting: "Herzlichen Glückwunsch! 🎉 Ihr Profil ist jetzt **live** auf ERP Talent Hub!\n\nSo geht es weiter:\n1. Recruiter durchsuchen Profile und kontaktieren Sie zuerst\n2. Sie erhalten eine Benachrichtigung, wenn jemand Ihr Profil ansieht\n3. Sie antworten im Chat, sobald sie schreiben\n4. Verfolgen Sie Ihren Fortschritt in der Auswahlpipeline\n\nViel Erfolg! 💙", hint: "🎉 Ihr Profil ist live! Was kommt als Nächstes?", quick: ["Was passiert als Nächstes?","Woran erkenne ich Recruiter-Interesse?","Wie sehe ich mein Profil?"] },
+    admin:     { greeting: "Willkommen im **Admin-Dashboard**! 🛡️\n\nHier können Sie:\n• **Alle Kandidaten** und ihre Profile einsehen\n• **Alle verifizierten Recruiter** einsehen\n• **Gespräche** und **Pipeline**-Fortschritt überwachen\n\nNutzen Sie Tabs und Suche zum Filtern.", hint: "🛡️ Admin-Leitfaden — klicken für Überblick", quick: ["Wie sehe ich das vollständige Profil eines Kandidaten?","Wie zähle ich registrierte Benutzer?"] },
   },
-  myprofile: {
-    greeting: "This is **your profile** as recruiters will see it 👤\n\nYour contact details are **hidden** until a recruiter requests access and you accept.\n\nYou can edit your profile at any time using the **Edit profile** button. Keep it up to date to maximise your visibility!",
-    hint: "👤 Want to know how recruiters see you?",
-    quick: ["How do I edit my profile?","Who can see my contact details?","What is the selection pipeline?"],
-  },
-  recruiter: {
-    greeting: "Welcome to the **Recruiter Portal**! 🏢\n\nTo access the ERP talent pool, you first need to **verify your LinkedIn Recruiter account**.\n\nThis ensures that all recruiters on the platform are genuine professionals. The verification takes less than a minute.",
-    hint: "🔒 Need help with recruiter verification?",
-    quick: ["What is LinkedIn Recruiter?","Why do I need to verify?","What can I do after verification?"],
-  },
-  candidate: {
-    greeting: "This is your **Messages inbox** 💬\n\nRecruiters will contact you here. Remember: **only verified recruiters can start a conversation** — you can reply once they write first.\n\nYou'll also see your **selection pipeline** here — showing exactly which stage you're at in the hiring process.",
-    hint: "💬 Questions about your messages?",
-    quick: ["How does the chat work?","What is the selection pipeline?","When will recruiters contact me?","What do the pipeline stages mean?"],
-  },
-  gate1: {
-    greeting: "To access the talent pool, I need to **verify your LinkedIn Recruiter licence** 🔍\n\nThis is a 3-step process:\n1. Enter your LinkedIn Recruiter profile URL\n2. We check your account type\n3. Access granted!\n\nClick **Connect with LinkedIn Recruiter** to begin.",
-    hint: "🔍 Need help with verification?",
-    quick: ["What is a LinkedIn Recruiter account?","My profile URL — where do I find it?"],
-  },
-  gate2: {
-    greeting: "Almost there! Please enter:\n\n• Your **LinkedIn profile username** (the part after linkedin.com/in/)\n• Your **full name** as it appears on LinkedIn\n• Your **company or agency** name\n• Optionally, a **profile photo**\n\nThen click **Verify** and I'll check your account!",
-    hint: "❓ How to find your LinkedIn username?",
-    quick: ["Where do I find my LinkedIn username?","What if verification fails?"],
-  },
-  success: {
-    greeting: "Congratulations! 🎉 Your profile is now **live** on ERP Talent Hub!\n\nVerified recruiters can now discover you. Here's what happens next:\n1. Recruiters browse profiles and contact you first\n2. You receive a notification when someone views your profile\n3. You reply in the chat once they open the conversation\n4. Track your selection progress in the pipeline\n\nGood luck! I'm always here if you need guidance 💙",
-    hint: "🎉 Your profile is live! What's next?",
-    quick: ["What happens next?","How will I know if a recruiter is interested?","How do I see my profile?"],
-  },
-  admin: {
-    greeting: "Welcome to the **Admin Dashboard**, Admin! 🛡️\n\nHere you can:\n• View **all registered candidates** and their full profiles\n• View **all verified recruiters** and their LinkedIn details\n• Monitor **conversations** opened between recruiters and candidates\n• Track **selection pipeline** progress\n\nUse the tabs and search to filter users.",
-    hint: "🛡️ Admin guide — click for a quick overview",
-    quick: ["How do I see a candidate's full profile?","How do I count registered users?","How do I see recruiter details?"],
+  fr: {
+    home:      { greeting: "Bonjour ! Je suis **Mia**, votre guide personnelle sur ERP Talent Hub 👋\n\nCette plateforme connecte les **professionnels ERP** avec des **recruteurs vérifiés**. Que vous cherchiez une opportunité ou des talents, je vous accompagne pas à pas.", hint: "👋 Je suis Mia ! Besoin d'aide ?", quick: ["Je suis candidat","Je suis recruteur","Comment ça marche ?","Parlez-moi de la confidentialité"] },
+    register:  { greeting: "Créons votre compte ! 🎉\n\nDites-moi d'abord : êtes-vous un **Professionnel ERP** à la recherche d'opportunités, ou un **Recruteur** à la recherche de talents ?\n\nRemplissez ensuite votre nom, email et un mot de passe sécurisé (minimum 6 caractères).", hint: "🔐 Aide pour l'inscription ?", quick: ["Quelle est la différence entre les rôles ?","Mes données sont-elles sécurisées ?","Puis-je changer de rôle plus tard ?"] },
+    login:     { greeting: "Bon retour ! 👋\n\nEntrez votre **email** et votre **mot de passe** pour accéder à votre profil.", hint: "🔑 Aide pour la connexion ?", quick: ["J'ai oublié mon mot de passe","Je ne trouve pas mon compte"] },
+    form:      { greeting: "Construisons votre **profil ERP** ! 📋\n\nVoici ce qu'il faut remplir :\n1. **Informations personnelles** — nom, ville, pays et région\n2. **Coordonnées** — email, téléphone, LinkedIn\n3. **Résumé professionnel** — 200–500 mots\n4. **Systèmes ERP** — sélectionnez tous ceux que vous connaissez\n5. **Expérience professionnelle** — de la plus récente\n6. **Formation, certifications et prix**", hint: "📋 Je vous aide à remplir votre profil !", quick: ["Que dois-je écrire dans le résumé ?","Comment ajouter une expérience ?","Quels systèmes ERP sélectionner ?","Puis-je modifier le profil après ?"] },
+    myprofile: { greeting: "Voici **votre profil** tel que les recruteurs le verront 👤\n\nVos coordonnées sont **masquées** jusqu'à ce qu'un recruteur demande l'accès et que vous acceptiez.\n\nUtilisez le bouton **Modifier le profil** pour le mettre à jour à tout moment !", hint: "👤 Vous voulez savoir comment les recruteurs vous voient ?", quick: ["Comment modifier mon profil ?","Qui voit mes coordonnées ?","Qu'est-ce que le pipeline de sélection ?"] },
+    recruiter: { greeting: "Bienvenue sur le **Portail Recruteur** ! 🏢\n\nPour accéder au vivier de talents ERP, vous devez d'abord **vérifier votre compte LinkedIn Recruiter**.\n\nCela garantit que tous les recruteurs sont de vrais professionnels.", hint: "🔒 Aide pour la vérification recruteur ?", quick: ["Qu'est-ce que LinkedIn Recruiter ?","Pourquoi dois-je me vérifier ?","Que puis-je faire après la vérification ?"] },
+    candidate: { greeting: "Voici votre **boîte de réception** 💬\n\nLes recruteurs vous contacteront ici. Seuls les **recruteurs vérifiés** peuvent démarrer une conversation — vous pouvez répondre une fois qu'ils écrivent.\n\nConsultez votre **pipeline de sélection** pour voir votre étape !", hint: "💬 Questions sur vos messages ?", quick: ["Comment fonctionne le chat ?","Qu'est-ce que le pipeline de sélection ?","Quand les recruteurs me contacteront-ils ?"] },
+    gate1:     { greeting: "Pour accéder au vivier de talents, je dois **vérifier votre licence LinkedIn Recruiter** 🔍\n\nC'est un processus en 3 étapes :\n1. Entrez l'URL de votre profil LinkedIn Recruiter\n2. Nous vérifions le type de compte\n3. Accès accordé !", hint: "🔍 Aide pour la vérification ?", quick: ["Qu'est-ce qu'un compte LinkedIn Recruiter ?","Où trouver l'URL de mon profil ?"] },
+    gate2:     { greeting: "Presque terminé ! Veuillez entrer :\n\n• Votre **nom d'utilisateur LinkedIn** (après linkedin.com/in/)\n• Votre **nom complet** comme sur LinkedIn\n• Votre **entreprise ou agence**\n• Optionnellement une **photo de profil**", hint: "❓ Comment trouver votre nom d'utilisateur LinkedIn ?", quick: ["Où trouver mon nom d'utilisateur LinkedIn ?","Que se passe-t-il si la vérification échoue ?"] },
+    success:   { greeting: "Félicitations ! 🎉 Votre profil est maintenant **en ligne** sur ERP Talent Hub !\n\nVoici ce qui se passe ensuite :\n1. Les recruteurs parcourent les profils et vous contactent en premier\n2. Vous recevez une notification quand quelqu'un consulte votre profil\n3. Vous répondez dans le chat une fois qu'ils écrivent\n4. Suivez votre progression dans le pipeline de sélection\n\nBonne chance ! 💙", hint: "🎉 Votre profil est en ligne ! Et maintenant ?", quick: ["Que se passe-t-il ensuite ?","Comment saurai-je si un recruteur est intéressé ?","Comment voir mon profil ?"] },
+    admin:     { greeting: "Bienvenue sur le **Tableau de bord Admin** ! 🛡️\n\nIci vous pouvez :\n• Voir **tous les candidats** et leurs profils\n• Voir **tous les recruteurs vérifiés**\n• Surveiller les **conversations** et la progression du **pipeline**\n\nUtilisez les onglets et la recherche pour filtrer.", hint: "🛡️ Guide admin — cliquez pour un aperçu", quick: ["Comment voir le profil complet d'un candidat ?","Comment compter les utilisateurs inscrits ?"] },
   },
 };
 
-// ── Fallback AI responses (when no context match) ────────
-const MIA_FALLBACKS = {
-  "how does it work": "ERP Talent Hub works in 3 steps:\n1. **Candidates** register and build their profile\n2. **Verified recruiters** browse the talent pool and contact candidates\n3. **Candidates reply** once a recruiter opens the conversation\n\nYour contact details are always private until you accept a recruiter's request.",
-  "privacy": "Your privacy is our priority 🔒\n\nYour email, phone number and LinkedIn URL are **never shown publicly**. They are only shared with a specific recruiter after they request access and you accept.\n\nOnly verified LinkedIn Recruiter accounts can access the talent pool.",
-  "candidate": "As an **ERP Professional**, you:\n• Build a detailed profile with your experience, certifications and systems\n• Get discovered by verified recruiters\n• Control who sees your contact details\n• Track your selection progress in real time\n\nRegister by clicking **Register** in the top-right corner!",
-  "recruiter": "As a **Recruiter**, you:\n• Verify your LinkedIn Recruiter account to access the talent pool\n• Browse ERP professionals filtered by system, module and seniority\n• Contact candidates directly — you always write first\n• Manage selection stages for each candidate\n\nClick **For recruiters** to get started!",
-  "summary": "Your **professional summary** should be 200–500 words and cover:\n• The **ERP systems** you specialise in (SAP, Oracle, Dynamics…)\n• Your **industry experience** (manufacturing, finance, retail…)\n• Your **key achievements** and projects\n• What makes you **stand out** from other consultants\n\nBe specific — recruiters search by module and industry!",
-  "experience": "For each **work experience** entry:\n• Enter your **job title** and **company name**\n• Select **start and end dates** using the calendar picker\n• Tick **Current position** if you're still there\n• Write a short description of your **responsibilities and achievements**\n\nAdd entries from your **most recent role** going backwards.",
-  "erp systems": "Select **all ERP systems** you have real experience with:\n• SAP S/4HANA, SAP ECC — if you know ABAP, FI/CO, MM, WM, SD…\n• Oracle Fusion, Oracle EBS — finance and supply chain\n• Microsoft Dynamics 365, AX — if you've done implementations\n• Workday — HCM specialists\n• NetSuite, Infor, Sage, IFS — tick all that apply\n\nThe more you select, the more searches you'll appear in!",
-  "pipeline": "The **selection pipeline** has 7 stages:\n1. ✉ **Contacted** — recruiter opened a conversation\n2. 📋 **Screening** — initial profile review\n3. 🎤 **1st Interview** — first interview scheduled\n4. 🎤 **2nd Interview** — second round\n5. 📝 **Assessment** — technical test\n6. 📄 **Offer** — offer extended\n7. ✅ **Hired** — process complete!\n\nYou'll see your current stage in the Messages section.",
-  "linkedin username": "Your LinkedIn **username** is the part in your profile URL after `/in/`.\n\nFor example, if your profile is:\n`linkedin.com/in/sarah-johnson-rec`\n\nYour username is: **sarah-johnson-rec**\n\nFind it by opening LinkedIn → click your profile picture → click **View profile** → look at the URL in your browser.",
-  "edit": "To **edit your profile**, go to **My profile** from the top-right menu → click the **Edit profile** button. This takes you back to the form with all your existing data ready to update. Don't forget to click **Publish profile** again after making changes!",
-  "notification": "You'll receive **notifications** (the 🔔 bell icon) when:\n• A recruiter **views your profile**\n• A recruiter sends you a **connection request**\n• You receive a **new message**\n• Your **selection status changes**\n• A recruiter's status update is **overdue** (5+ working days)\n\nNotifications appear as toasts and are stored in the bell drawer.",
-  "password": "If you've forgotten your password, please contact the platform administrator at **admin@erp-talent-hub.com**. In a future update, a self-service password reset will be available.",
-  "role": "You choose your role (**ERP Professional** or **Recruiter**) when you register. Currently roles cannot be changed after registration — please contact the administrator if you registered with the wrong role.",
-  "default": "I'm not sure I understand your question, but I'm here to help! 😊\n\nYou can ask me about:\n• How to **register or log in**\n• How to **fill in your profile**\n• How the **chat and pipeline** work\n• **Privacy** and data protection\n• **Recruiter verification**\n\nWhat would you like to know?",
+// Active language scripts (updated when lang changes)
+let MIA_SCRIPTS  = MIA_SCRIPTS_ALL['en'];
+
+const MIA_FALLBACKS_ALL = {
+  en: {
+    "how does it work": "ERP Talent Hub works in 3 steps:\n1. **Candidates** register and build their profile\n2. **Verified recruiters** browse the talent pool and contact candidates\n3. **Candidates reply** once a recruiter opens the conversation\n\nYour contact details are always private until you accept a recruiter's request.",
+    "privacy": "Your privacy is our priority 🔒\n\nYour email, phone number and LinkedIn URL are **never shown publicly**. They are only shared with a specific recruiter after they request access and you accept.",
+    "summary": "Your **professional summary** should be 200–500 words covering:\n• The **ERP systems** you specialise in\n• Your **industry experience**\n• Your **key achievements**\n• What makes you **stand out**",
+    "experience": "For each **work experience** entry:\n• Enter your **job title** and **company**\n• Select **start and end dates** using the calendar\n• Tick **Current position** if still there\n• Write your **responsibilities and achievements**",
+    "erp systems": "Select **all ERP systems** you have real experience with — the more you select, the more searches you'll appear in!",
+    "pipeline": "The **selection pipeline** has 7 stages:\n1. ✉ Contacted  2. 📋 Screening  3. 🎤 1st Interview  4. 🎤 2nd Interview  5. 📝 Assessment  6. 📄 Offer  7. ✅ Hired",
+    "linkedin username": "Your LinkedIn **username** is the part after `/in/` in your profile URL.\n\nExample: `linkedin.com/in/sarah-johnson` → username is **sarah-johnson**",
+    "edit": "Go to **My profile** → click **Edit profile** → update your data → click **Publish profile** again.",
+    "notification": "You get notifications 🔔 when a recruiter views your profile, sends a connection request, messages you, or updates your selection status.",
+    "password": "Please contact the administrator at **admin@erp-talent-hub.com** to reset your password.",
+    "role": "Roles are chosen at registration and cannot be changed. Contact the administrator if you chose the wrong role.",
+    "default": "I'm not sure I understand, but I'm here to help! 😊\n\nAsk me about registering, filling in your profile, the chat, the pipeline, or privacy.",
+  },
+  it: {
+    "come funziona": "ERP Talent Hub funziona in 3 passi:\n1. I **candidati** si registrano e costruiscono il profilo\n2. I **recruiter verificati** navigano nel pool e contattano i candidati\n3. I **candidati rispondono** una volta che il recruiter avvia la conversazione",
+    "privacy": "La tua privacy è la nostra priorità 🔒\n\nEmail, telefono e LinkedIn non vengono mai mostrati pubblicamente. Sono condivisi solo con un recruiter specifico dopo che richiede l'accesso e tu accetti.",
+    "sommario": "Il tuo **sommario professionale** deve essere di 200–500 parole e includere:\n• I **sistemi ERP** in cui sei specializzato\n• La tua **esperienza di settore**\n• I tuoi **risultati chiave**\n• Cosa ti **distingue** dagli altri",
+    "pipeline": "Il **pipeline di selezione** ha 7 fasi:\n1. ✉ Contattato  2. 📋 Screening  3. 🎤 1° Colloquio  4. 🎤 2° Colloquio  5. 📝 Assessment  6. 📄 Offerta  7. ✅ Assunto",
+    "password": "Contatta l'amministratore a **admin@erp-talent-hub.com** per reimpostare la password.",
+    "default": "Non sono sicura di capire la domanda, ma sono qui per aiutarti! 😊\n\nChiedimi della registrazione, del profilo, della chat, del pipeline o della privacy.",
+  },
+  es: {
+    "cómo funciona": "ERP Talent Hub funciona en 3 pasos:\n1. Los **candidatos** se registran y construyen su perfil\n2. Los **recruiters verificados** navegan el banco y contactan candidatos\n3. Los **candidatos responden** una vez que el recruiter inicia la conversación",
+    "privacidad": "Tu privacidad es nuestra prioridad 🔒\n\nEmail, teléfono y LinkedIn nunca se muestran públicamente. Solo se comparten con un recruiter tras su solicitud de acceso y tu aceptación.",
+    "resumen": "Tu **resumen profesional** debe tener 200–500 palabras e incluir:\n• Los **sistemas ERP** en que te especializas\n• Tu **experiencia sectorial**\n• Tus **logros clave**\n• Lo que te **diferencia**",
+    "pipeline": "El **pipeline de selección** tiene 7 etapas:\n1. ✉ Contactado  2. 📋 Screening  3. 🎤 1ª Entrevista  4. 🎤 2ª Entrevista  5. 📝 Assessment  6. 📄 Oferta  7. ✅ Contratado",
+    "contraseña": "Contacta al administrador en **admin@erp-talent-hub.com** para restablecer tu contraseña.",
+    "default": "No estoy segura de entender la pregunta, ¡pero estoy aquí para ayudarte! 😊\n\nPregúntame sobre el registro, el perfil, el chat, el pipeline o la privacidad.",
+  },
+  de: {
+    "wie funktioniert": "ERP Talent Hub funktioniert in 3 Schritten:\n1. **Kandidaten** registrieren sich und bauen ihr Profil auf\n2. **Verifizierte Recruiter** durchsuchen den Pool und kontaktieren Kandidaten\n3. **Kandidaten antworten**, sobald der Recruiter das Gespräch öffnet",
+    "datenschutz": "Ihr Datenschutz hat Priorität 🔒\n\nE-Mail, Telefon und LinkedIn werden nie öffentlich angezeigt. Sie werden nur mit einem spezifischen Recruiter geteilt, nachdem er Zugang anfordert und Sie zustimmen.",
+    "kurzprofil": "Ihr **Kurzprofil** sollte 200–500 Wörter umfassen:\n• Die **ERP-Systeme**, auf die Sie spezialisiert sind\n• Ihre **Branchenerfahrung**\n• Ihre **wichtigsten Erfolge**\n• Was Sie **auszeichnet**",
+    "pipeline": "Die **Auswahlpipeline** hat 7 Stufen:\n1. ✉ Kontaktiert  2. 📋 Screening  3. 🎤 1. Interview  4. 🎤 2. Interview  5. 📝 Assessment  6. 📄 Angebot  7. ✅ Eingestellt",
+    "passwort": "Bitte kontaktieren Sie den Administrator unter **admin@erp-talent-hub.com**, um Ihr Passwort zurückzusetzen.",
+    "default": "Ich bin mir nicht sicher, ob ich die Frage verstehe, aber ich bin hier, um zu helfen! 😊\n\nFragen Sie mich zur Registrierung, zum Profil, zum Chat, zur Pipeline oder zum Datenschutz.",
+  },
+  fr: {
+    "comment ça marche": "ERP Talent Hub fonctionne en 3 étapes :\n1. Les **candidats** s'inscrivent et construisent leur profil\n2. Les **recruteurs vérifiés** parcourent le vivier et contactent les candidats\n3. Les **candidats répondent** une fois que le recruteur ouvre la conversation",
+    "confidentialité": "Votre confidentialité est notre priorité 🔒\n\nEmail, téléphone et LinkedIn ne sont jamais affichés publiquement. Ils ne sont partagés qu'avec un recruteur spécifique après sa demande d'accès et votre accord.",
+    "résumé": "Votre **résumé professionnel** doit faire 200–500 mots et inclure :\n• Les **systèmes ERP** dans lesquels vous êtes spécialisé\n• Votre **expérience sectorielle**\n• Vos **réalisations clés**\n• Ce qui vous **démarque**",
+    "pipeline": "Le **pipeline de sélection** comporte 7 étapes :\n1. ✉ Contacté  2. 📋 Screening  3. 🎤 1er Entretien  4. 🎤 2e Entretien  5. 📝 Assessment  6. 📄 Offre  7. ✅ Embauché",
+    "mot de passe": "Veuillez contacter l'administrateur à **admin@erp-talent-hub.com** pour réinitialiser votre mot de passe.",
+    "default": "Je ne suis pas sûre de comprendre, mais je suis là pour vous aider ! 😊\n\nPosez-moi des questions sur l'inscription, le profil, le chat, le pipeline ou la confidentialité.",
+  },
 };
+
+let MIA_FALLBACKS = MIA_FALLBACKS_ALL['en'];
+
+// Called whenever language changes — updates Mia's active language
+function setMiaLang(lang) {
+  MIA_SCRIPTS   = MIA_SCRIPTS_ALL[lang]  || MIA_SCRIPTS_ALL['en'];
+  MIA_FALLBACKS = MIA_FALLBACKS_ALL[lang] || MIA_FALLBACKS_ALL['en'];
+  // Re-greet with new language if panel is open
+  if (miaOpen) {
+    document.getElementById('mia-messages').innerHTML = '';
+    miaGreet(miaContext);
+  }
+  // Update hint text
+  const script = MIA_SCRIPTS[miaContext] || MIA_SCRIPTS['home'];
+  document.getElementById('mia-hint-text').innerHTML = script.hint || "👋 Mia";
+}
+
 
 // ── Core functions ────────────────────────────────────────
 
@@ -4317,23 +4383,15 @@ async function miaHandleQuestion(question) {
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
         max_tokens: 1000,
-        system: `You are Mia, a friendly and professional AI assistant embedded in ERP Talent Hub — a platform that connects ERP professionals with verified recruiters. Your job is to guide users step by step through the platform.
+        system: `You are Mia, a friendly and professional AI assistant embedded in ERP Talent Hub — a platform connecting ERP professionals with verified recruiters.
 
-The platform has these sections:
-- HOME: landing page with hero, features, ERP systems list
-- REGISTER/LOGIN: auth modal where users choose role (ERP Professional or Recruiter)
-- CV FORM: candidates fill in personal info (city verified via OpenStreetMap), contact details, professional summary, ERP systems, work experience (with calendar date picker), education, certifications, awards, and a profile photo
-- MY PROFILE: read-only view of submitted profile, visible only to the candidate
-- RECRUITER PORTAL: recruiters must first verify their LinkedIn Recruiter account via a 4-step gate, then access the talent pool
-- CANDIDATE INBOX: candidates see messages from recruiters, and their selection pipeline (7 stages: Contacted, Screening, 1st Interview, 2nd Interview, Assessment, Offer, Hired)
-- ADMIN DASHBOARD: admin-only view of all candidates and recruiters (login: admin@erp-talent-hub.com / VFT@Admin2026)
-- NOTIFICATIONS: bell icon shows profile views, connection requests, messages, status changes
+IMPORTANT: Always reply in ${currentLang === 'it' ? 'Italian' : currentLang === 'es' ? 'Spanish' : currentLang === 'de' ? 'German' : currentLang === 'fr' ? 'French' : 'English'}. Never switch language.
 
-Current page context: ${miaContext}
-Current user role: ${currentUser?.role || 'guest'}
-User name: ${currentUser?.name || 'visitor'}
+The platform has these sections: HOME, REGISTER/LOGIN, CV FORM (personal info with geo-verified city, contact details, professional summary, ERP systems, work experience with calendar date picker, education, certifications, awards, profile photo), MY PROFILE (read-only, contact details hidden), RECRUITER PORTAL (LinkedIn Recruiter verification gate required), CANDIDATE INBOX (messages + 7-stage selection pipeline: Contacted → Screening → 1st Interview → 2nd Interview → Assessment → Offer → Hired), ADMIN DASHBOARD (admin@erp-talent-hub.com / VFT@Admin2026), NOTIFICATIONS (bell icon).
 
-Keep answers concise (max 120 words), warm, and practical. Use **bold** for emphasis. Use line breaks for readability. Never mention competitor platforms. If you don't know something specific about the platform, be honest and suggest contacting the admin.`,
+Current page: ${miaContext}. User role: ${currentUser?.role || 'guest'}. User name: ${currentUser?.name || 'visitor'}.
+
+Keep answers concise (max 120 words), warm, and practical. Use **bold** for emphasis. If unsure about platform specifics, suggest contacting the admin.`,
         messages: [{ role: 'user', content: question }],
       }),
     });
@@ -4454,11 +4512,12 @@ async function miaElevenLabsSpeak(text) {
         },
         body: JSON.stringify({
           text,
-          model_id: 'eleven_turbo_v2_5', // fastest + highest quality
+          model_id: 'eleven_turbo_v2_5',
+          language_code: currentLang === 'it' ? 'it' : currentLang === 'es' ? 'es' : currentLang === 'de' ? 'de' : currentLang === 'fr' ? 'fr' : 'en',
           voice_settings: {
-            stability: 0.45,        // lower = more expressive, varied
-            similarity_boost: 0.82, // keeps voice consistent
-            style: 0.35,            // adds warmth and personality
+            stability: 0.45,
+            similarity_boost: 0.82,
+            style: 0.35,
             use_speaker_boost: true,
           },
         }),
