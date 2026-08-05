@@ -70,13 +70,6 @@ button{font-family:'Inter',sans-serif;cursor:pointer;font-size:14px;border-radiu
 .hero-subtitle{font-size:17px;color:var(--gray-500);max-width:580px;margin:0 auto 36px;line-height:1.7}
 .hero-ctas{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
 
-/* STATS */
-.stats-section{padding:48px 24px;background:var(--white)}
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;max-width:900px;margin:0 auto}
-.stat-card{text-align:center;padding:20px 16px;border:1px solid var(--gray-100);border-radius:var(--radius-lg);background:var(--gray-50)}
-.stat-num{font-size:28px;font-weight:600;color:var(--blue);margin-bottom:4px}
-.stat-label{font-size:13px;color:var(--gray-500)}
-
 /* FEATURES */
 .features-section{background:var(--gray-50);padding:64px 24px;border-top:1px solid var(--gray-100)}
 .section-label{text-align:center;font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);margin-bottom:12px}
@@ -203,9 +196,6 @@ footer strong{color:rgba(255,255,255,.75)}
   .hero-ctas{flex-direction:column;align-items:center}
   .hero-ctas button{width:100%;max-width:320px}
 
-  /* STATS */
-  .stats-grid{grid-template-columns:repeat(2,1fr)}
-
   /* FEATURES */
   .features-grid{grid-template-columns:1fr}
 
@@ -243,12 +233,8 @@ footer strong{color:rgba(255,255,255,.75)}
   .hero-title{font-size:clamp(22px,7vw,32px);margin-bottom:12px}
   .hero-subtitle{font-size:14px;margin-bottom:24px}
 
-  /* STATS */
-  .stats-grid{grid-template-columns:repeat(2,1fr);gap:10px}
-  .stat-num{font-size:22px}
-
   /* SECTIONS padding */
-  .stats-section,.erp-section,.features-section,.cta-banner{padding:36px 14px}
+  .erp-section,.features-section,.cta-banner{padding:36px 14px}
 
   /* FORM */
   #form-view{padding:16px 12px 60px}
@@ -391,6 +377,76 @@ footer strong{color:rgba(255,255,255,.75)}
 .mp-month.selected{background:var(--blue);color:#fff}
 .mp-clear{width:100%;background:none;border:1px solid var(--gray-200);border-radius:6px;padding:5px;font-size:12px;color:var(--gray-400);cursor:pointer;min-height:unset}
 .mp-clear:hover{border-color:var(--gray-300);color:var(--gray-600)}
+/* ─── NOTIFICATION BELL ─── */
+.notif-bell{position:relative;background:none;border:none;cursor:pointer;padding:6px 8px;border-radius:var(--radius);color:var(--gray-500);font-size:17px;transition:all .15s;min-height:unset}
+.notif-bell:hover{background:var(--gray-100);color:var(--gray-900)}
+.notif-bell.has-unread{color:var(--blue)}
+.notif-count{position:absolute;top:2px;right:2px;background:#DC2626;color:#fff;font-size:10px;font-weight:700;border-radius:10px;padding:1px 5px;min-width:16px;text-align:center;line-height:14px;border:1.5px solid var(--white)}
+
+/* ─── NOTIFICATION DRAWER ─── */
+.notif-drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.2);z-index:400;animation:fadeIn .15s}
+.notif-drawer-panel{position:fixed;top:60px;right:16px;width:360px;max-width:calc(100vw - 32px);background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-lg);box-shadow:var(--shadow-md);z-index:401;display:flex;flex-direction:column;max-height:calc(100vh - 90px);animation:slideDown .18s ease}
+@keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.notif-drawer-header{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--gray-100);flex-shrink:0}
+.notif-drawer-header h3{font-size:15px;font-weight:600}
+.notif-mark-all{background:none;border:none;font-size:12px;color:var(--blue);cursor:pointer;padding:4px 8px;border-radius:4px;min-height:unset}
+.notif-mark-all:hover{background:var(--blue-light)}
+.notif-list{overflow-y:auto;flex:1}
+.notif-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;color:var(--gray-300);gap:10px;text-align:center}
+.notif-empty i{font-size:32px}
+.notif-empty p{font-size:14px;color:var(--gray-400)}
+.notif-item{display:flex;align-items:flex-start;gap:12px;padding:14px 18px;border-bottom:1px solid var(--gray-50);cursor:pointer;transition:background .12s;position:relative}
+.notif-item:hover{background:var(--gray-50)}
+.notif-item.unread{background:var(--blue-light)}
+.notif-item.unread:hover{background:#DBEAFE}
+.notif-dot{width:8px;height:8px;border-radius:50%;background:var(--blue);flex-shrink:0;margin-top:5px}
+.notif-dot.read{background:transparent}
+.notif-icon-wrap{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.notif-body{flex:1;min-width:0}
+.notif-title{font-size:13px;font-weight:600;color:var(--gray-900);margin-bottom:2px}
+.notif-desc{font-size:12px;color:var(--gray-500);line-height:1.5}
+.notif-time{font-size:11px;color:var(--gray-400);margin-top:4px}
+
+/* ─── TOAST ─── */
+#toast-container{position:fixed;bottom:24px;right:24px;z-index:500;display:flex;flex-direction:column;gap:10px;pointer-events:none}
+.toast{background:var(--gray-900);color:#fff;border-radius:var(--radius-lg);padding:14px 18px;display:flex;align-items:flex-start;gap:12px;box-shadow:var(--shadow-md);pointer-events:all;animation:toastIn .25s ease;max-width:320px;cursor:pointer}
+.toast:hover{background:#1E293B}
+@keyframes toastIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes toastOut{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(16px)}}
+.toast-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.toast-body{flex:1;min-width:0}
+.toast-title{font-size:13px;font-weight:600;margin-bottom:2px}
+.toast-desc{font-size:12px;color:rgba(255,255,255,.7);line-height:1.4}
+.toast-close{background:none;border:none;color:rgba(255,255,255,.4);cursor:pointer;font-size:14px;padding:0;min-height:unset;flex-shrink:0}
+.toast-close:hover{color:#fff}
+.pipeline-wrap{padding:16px 20px;background:var(--white);border-bottom:1px solid var(--gray-100);flex-shrink:0}
+.pipeline-label{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-400);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.pipeline-steps{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding-bottom:4px}
+.pipeline-step{display:flex;flex-direction:column;align-items:center;flex:1;min-width:64px;position:relative}
+.pipeline-step:not(:last-child)::after{content:'';position:absolute;top:13px;left:calc(50% + 13px);right:calc(-50% + 13px);height:2px;background:var(--gray-200);z-index:0}
+.pipeline-step.done:not(:last-child)::after,.pipeline-step.current:not(:last-child)::after{background:var(--blue)}
+.pipeline-step.warn:not(:last-child)::after{background:#F97316}
+.ps-dot{width:26px;height:26px;border-radius:50%;border:2px solid var(--gray-300);background:var(--white);display:flex;align-items:center;justify-content:center;font-size:11px;z-index:1;transition:all .2s;position:relative}
+.pipeline-step.done .ps-dot{background:var(--blue);border-color:var(--blue);color:#fff}
+.pipeline-step.current .ps-dot{background:var(--white);border-color:var(--blue);border-width:3px;box-shadow:0 0 0 3px var(--blue-light)}
+.pipeline-step.warn .ps-dot{background:#FFF7ED;border-color:#F97316;animation:pulse-warn 1.5s infinite}
+.pipeline-step.blocked .ps-dot{background:#FEF2F2;border-color:#FECACA}
+@keyframes pulse-warn{0%,100%{box-shadow:0 0 0 0 rgba(249,115,22,.3)}50%{box-shadow:0 0 0 6px rgba(249,115,22,0)}}
+.ps-label{font-size:10px;color:var(--gray-400);margin-top:5px;text-align:center;line-height:1.3;max-width:60px}
+.pipeline-step.done .ps-label{color:var(--blue);font-weight:500}
+.pipeline-step.current .ps-label{color:var(--blue);font-weight:600}
+.pipeline-step.warn .ps-label{color:#F97316;font-weight:600}
+.pipeline-step.blocked .ps-label{color:#DC2626}
+.status-warn-banner{background:#FFF7ED;border:1px solid #FED7AA;border-radius:var(--radius);padding:8px 14px;font-size:12px;color:#92400E;display:flex;align-items:center;gap:8px;margin-top:10px}
+.status-control{padding:14px 20px;border-bottom:1px solid var(--gray-100);background:var(--gray-50);flex-shrink:0}
+.status-control-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--gray-400);margin-bottom:8px}
+.status-select{width:100%;font-size:13px;padding:8px 12px;border:1.5px solid var(--gray-300);border-radius:var(--radius);background:var(--white)}
+.status-select:focus{border-color:var(--blue)}
+.status-timer{font-size:12px;color:var(--gray-400);margin-top:6px;display:flex;align-items:center;gap:5px}
+.status-timer.warn{color:#F97316;font-weight:500}
+.status-timer.overdue{color:#DC2626;font-weight:600}
+
 .rec-gate-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:32px 16px;background:linear-gradient(135deg,var(--gray-50) 0%,var(--blue-light) 100%);overflow-y:auto}
 .rec-gate-card{background:var(--white);border:1px solid var(--gray-100);border-radius:18px;box-shadow:var(--shadow-md);padding:40px 36px;width:100%;max-width:480px;text-align:center}
 .gate-step{display:none}
@@ -446,12 +502,37 @@ footer strong{color:rgba(255,255,255,.75)}
         <button class="lang-btn" onclick="setLang('fr')" id="btn-lang-fr">FR</button>
       </div>
       <button class="btn-ghost btn-sm" id="nav-btn-myprofile" data-i18n="myprofile" onclick="showView('myprofile')" style="display:none">My profile</button>
+      <!-- Notification bell — hidden until profile submitted -->
+      <button class="notif-bell" id="notif-bell" onclick="toggleNotifDrawer()" style="display:none" title="Notifications" aria-label="Notifications">
+        <i class="fa-solid fa-bell"></i>
+        <span class="notif-count" id="notif-count" style="display:none">0</span>
+      </button>
       <button class="btn-ghost btn-sm" onclick="showView('candidate')" id="nav-btn-candidates" data-i18n="candidates">My messages</button>
       <button class="btn-ghost btn-sm" onclick="showView('recruiter')" id="nav-btn-recruiters" data-i18n="recruiters">For recruiters</button>
       <button class="btn-primary btn-sm" onclick="showView('form')" id="nav-btn-submit" data-i18n="submit">Submit your CV</button>
     </div>
   </div>
 </nav>
+
+<!-- ═══════════════════ NOTIFICATION DRAWER ═══════════════════ -->
+<div id="notif-drawer" style="display:none">
+  <div class="notif-drawer-overlay" onclick="closeNotifDrawer()"></div>
+  <div class="notif-drawer-panel">
+    <div class="notif-drawer-header">
+      <h3>Notifications</h3>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button onclick="markAllRead()" class="notif-mark-all">Mark all read</button>
+        <button onclick="closeNotifDrawer()" style="background:none;border:none;cursor:pointer;color:var(--gray-400);font-size:18px;padding:4px;min-height:unset"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+    </div>
+    <div class="notif-list" id="notif-list">
+      <div class="notif-empty"><i class="fa-solid fa-bell-slash"></i><p>No notifications yet</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ TOAST CONTAINER ═══════════════════ -->
+<div id="toast-container"></div>
 
 <!-- ═══════════════════ HOME VIEW ═══════════════════ -->
 <div id="home-view" class="view active">
@@ -464,16 +545,6 @@ footer strong{color:rgba(255,255,255,.75)}
     <div class="hero-ctas">
       <button class="btn-primary" style="padding:13px 30px;font-size:15px" onclick="showView('form')" data-i18n="hero.cta">Build your profile</button>
       <button class="btn-outline" style="padding:13px 24px;font-size:15px" onclick="showView('recruiter')" data-i18n="hero.secondary">I'm a recruiter</button>
-    </div>
-  </section>
-
-  <!-- STATS -->
-  <section class="stats-section">
-    <div class="stats-grid">
-      <div class="stat-card"><div class="stat-num">4,200+</div><div class="stat-label" data-i18n="stats.professionals">ERP professionals</div></div>
-      <div class="stat-card"><div class="stat-num">380+</div><div class="stat-label" data-i18n="stats.recruiters">Active recruiters</div></div>
-      <div class="stat-card"><div class="stat-num">12</div><div class="stat-label" data-i18n="stats.systems">ERP systems covered</div></div>
-      <div class="stat-card"><div class="stat-num">48h</div><div class="stat-label" data-i18n="stats.response">Avg. response time</div></div>
     </div>
   </section>
 
@@ -553,8 +624,7 @@ footer strong{color:rgba(255,255,255,.75)}
                  placeholder="Type a city…"
                  oninput="onCityInput(this.value)"
                  onfocus="showCitySuggestions()"
-                 onblur="hideCitySuggestions()"
-                 disabled />
+                 onblur="hideCitySuggestions()" />
           <div class="geo-spinner" id="city-spinner" style="display:none"><i class="fa-solid fa-circle-notch fa-spin"></i></div>
           <ul class="geo-dropdown" id="city-dropdown"></ul>
         </div>
@@ -669,6 +739,12 @@ footer strong{color:rgba(255,255,255,.75)}
     <div class="form-card" style="margin-bottom:16px">
       <div class="section-header"><i class="fa-solid fa-microchip"></i><h3 data-i18n="sec.erp">ERP systems</h3></div>
       <div id="mp-erp-tags" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+    </div>
+
+    <!-- Selection progress -->
+    <div class="form-card" style="margin-bottom:16px" id="mp-pipeline-card" style="display:none">
+      <div class="section-header"><i class="fa-solid fa-chart-line"></i><h3>Selection progress</h3></div>
+      <div id="mp-pipeline-inner"></div>
     </div>
 
     <!-- Summary -->
@@ -985,7 +1061,6 @@ const TRANSLATIONS = {
     "hero.title":"Your ERP expertise,<br><span>visible to the world.</span>",
     "hero.sub":"Join the dedicated platform where SAP, Oracle, Microsoft Dynamics, and other ERP professionals showcase their careers to leading recruiters.",
     "hero.cta":"Build your profile","hero.secondary":"I'm a recruiter",
-    "stats.professionals":"ERP professionals","stats.recruiters":"Active recruiters","stats.systems":"ERP systems covered","stats.response":"Avg. response time",
     "features.title":"Built for ERP professionals","features.sub":"No generalist noise. Every recruiter on this platform is actively hiring for ERP roles.",
     "feat1.t":"Privacy first","feat1.d":"Your contact details are hidden until a verified recruiter requests access.",
     "feat2.t":"ERP-specific search","feat2.d":"Recruiters filter by system, module, industry, and seniority — only relevant leads reach you.",
@@ -1022,7 +1097,6 @@ const TRANSLATIONS = {
     "hero.title":"La tua competenza ERP,<br><span>visibile al mondo.</span>",
     "hero.sub":"Unisciti alla piattaforma dedicata dove i professionisti di SAP, Oracle, Microsoft Dynamics e altri ERP mettono in mostra la propria carriera ai recruiter più qualificati.",
     "hero.cta":"Crea il tuo profilo","hero.secondary":"Sono un recruiter",
-    "stats.professionals":"Professionisti ERP","stats.recruiters":"Recruiter attivi","stats.systems":"Sistemi ERP coperti","stats.response":"Tempo di risposta medio",
     "features.title":"Costruita per i professionisti ERP","features.sub":"Niente rumore generalista. Ogni recruiter sulla piattaforma assume attivamente per ruoli ERP.",
     "feat1.t":"Privacy prima di tutto","feat1.d":"I tuoi recapiti sono nascosti finché un recruiter verificato non ne richiede l'accesso.",
     "feat2.t":"Ricerca specifica ERP","feat2.d":"I recruiter filtrano per sistema, modulo, settore e seniority — ricevi solo opportunità pertinenti.",
@@ -1059,7 +1133,6 @@ const TRANSLATIONS = {
     "hero.title":"Tu experiencia ERP,<br><span>visible para el mundo.</span>",
     "hero.sub":"Únete a la plataforma dedicada donde los profesionales de SAP, Oracle, Microsoft Dynamics y otros ERP muestran su carrera a los mejores recruiters.",
     "hero.cta":"Crea tu perfil","hero.secondary":"Soy recruiter",
-    "stats.professionals":"Profesionales ERP","stats.recruiters":"Recruiters activos","stats.systems":"Sistemas ERP cubiertos","stats.response":"Tiempo de respuesta medio",
     "features.title":"Creada para profesionales ERP","features.sub":"Sin ruido generalista. Cada recruiter en la plataforma contrata activamente para roles ERP.",
     "feat1.t":"Privacidad primero","feat1.d":"Tus datos de contacto están ocultos hasta que un recruiter verificado solicite acceso.",
     "feat2.t":"Búsqueda específica ERP","feat2.d":"Los recruiters filtran por sistema, módulo, sector y seniority — solo recibes oportunidades relevantes.",
@@ -1096,7 +1169,6 @@ const TRANSLATIONS = {
     "hero.title":"Ihr ERP-Know-how,<br><span>sichtbar für die Welt.</span>",
     "hero.sub":"Treten Sie der dedizierten Plattform bei, auf der SAP-, Oracle-, Microsoft-Dynamics- und andere ERP-Fachleute ihre Karriere führenden Recruitern präsentieren.",
     "hero.cta":"Profil erstellen","hero.secondary":"Ich bin Recruiter",
-    "stats.professionals":"ERP-Fachleute","stats.recruiters":"Aktive Recruiter","stats.systems":"Abgedeckte ERP-Systeme","stats.response":"Durchschn. Antwortzeit",
     "features.title":"Gebaut für ERP-Fachleute","features.sub":"Kein generalistisches Rauschen. Jeder Recruiter auf dieser Plattform stellt aktiv für ERP-Rollen ein.",
     "feat1.t":"Datenschutz zuerst","feat1.d":"Ihre Kontaktdaten bleiben verborgen, bis ein verifizierter Recruiter Zugang anfordert.",
     "feat2.t":"ERP-spezifische Suche","feat2.d":"Recruiter filtern nach System, Modul, Branche und Seniorität — nur relevante Anfragen erreichen Sie.",
@@ -1133,7 +1205,6 @@ const TRANSLATIONS = {
     "hero.title":"Votre expertise ERP,<br><span>visible dans le monde entier.</span>",
     "hero.sub":"Rejoignez la plateforme dédiée où les professionnels SAP, Oracle, Microsoft Dynamics et autres ERP présentent leur carrière aux meilleurs recruteurs.",
     "hero.cta":"Créer mon profil","hero.secondary":"Je suis recruteur",
-    "stats.professionals":"Professionnels ERP","stats.recruiters":"Recruteurs actifs","stats.systems":"Systèmes ERP couverts","stats.response":"Délai de réponse moy.",
     "features.title":"Conçue pour les professionnels ERP","features.sub":"Pas de bruit généraliste. Chaque recruteur sur cette plateforme recrute activement pour des postes ERP.",
     "feat1.t":"Confidentialité avant tout","feat1.d":"Vos coordonnées restent masquées jusqu'à ce qu'un recruteur vérifié en fasse la demande.",
     "feat2.t":"Recherche spécifique ERP","feat2.d":"Les recruteurs filtrent par système, module, secteur et séniorité — seules les opportunités pertinentes vous parviennent.",
@@ -1586,6 +1657,11 @@ function handleSubmit() {
       allCandidateProfiles.push({ ...savedProfile, submittedAt: new Date().toISOString() });
       const mpBtn = document.getElementById('nav-btn-myprofile');
       if (mpBtn) mpBtn.style.display = '';
+      // Show notification bell
+      updateNotifBell();
+      document.getElementById('notif-bell').style.display = 'flex';
+      // Start overdue checker (every 30s in demo; would be server-side in production)
+      startOverdueChecker();
       showView('success');
     } else {
       // Show visible error banner below the submit button
@@ -1626,114 +1702,112 @@ function handleSubmit() {
 // GEO VALIDATION (GeoNames API)
 // ─────────────────────────────────────────
 
-const GEO_USER = 'demo'; // GeoNames free demo user — replace with your username from geonames.org for production
-let geoCountryCode = '';   // ISO 2-letter code of selected country
-let geoCityDebounce = null;
-let geoCityValid   = false;
-let geoCitySuggestions = [];
-let geoSelectedCity = null;
+// ─────────────────────────────────────────
+// GEO VALIDATION — OpenStreetMap Nominatim
+// Free, no API key, no rate-limit issues
+// ─────────────────────────────────────────
 
-// Map country names in the dropdown to ISO codes
+let geoCountryCode   = '';
+let geoCityDebounce  = null;
+let geoCityValid     = false;
+let geoSelectedCity  = null;
+
+// ISO codes map — used to restrict search by country when one is selected
 const COUNTRY_ISO = {
   "Austria":"AT","Belgium":"BE","Canada":"CA","Denmark":"DK","Finland":"FI","France":"FR",
   "Germany":"DE","Italy":"IT","Netherlands":"NL","Norway":"NO","Poland":"PL","Portugal":"PT",
   "Spain":"ES","Sweden":"SE","Switzerland":"CH","United Kingdom":"GB","United States":"US",
-  // IT names
-  "Austria":"AT","Belgio":"BE","Canada":"CA","Danimarca":"DK","Finlandia":"FI","Francia":"FR",
-  "Germania":"DE","Italia":"IT","Paesi Bassi":"NL","Norvegia":"NO","Polonia":"PL","Portogallo":"PT",
-  "Spagna":"ES","Svezia":"SE","Svizzera":"CH","Regno Unito":"GB","Stati Uniti":"US",
-  // ES names
-  "Bélgica":"BE","Dinamarca":"DK","Finlandia":"FI","Francia":"FR","Alemania":"DE",
-  "Países Bajos":"NL","Noruega":"NO","Polonia":"PL","Portugal":"PT","España":"ES",
-  "Suecia":"SE","Suiza":"CH","Reino Unido":"GB","Estados Unidos":"US",
-  // DE names
+  "Belgio":"BE","Danimarca":"DK","Finlandia":"FI","Francia":"FR","Germania":"DE","Italia":"IT",
+  "Paesi Bassi":"NL","Norvegia":"NO","Polonia":"PL","Portogallo":"PT","Spagna":"ES",
+  "Svezia":"SE","Svizzera":"CH","Regno Unito":"GB","Stati Uniti":"US",
+  "Bélgica":"BE","Dinamarca":"DK","Alemania":"DE","Países Bajos":"NL","Noruega":"NO",
+  "España":"ES","Suecia":"SE","Suiza":"CH","Reino Unido":"GB","Estados Unidos":"US",
   "Österreich":"AT","Belgien":"BE","Dänemark":"DK","Finnland":"FI","Frankreich":"FR",
   "Niederlande":"NL","Norwegen":"NO","Spanien":"ES","Schweden":"SE","Schweiz":"CH",
   "Vereinigtes Königreich":"GB","Vereinigte Staaten":"US",
-  // FR names
   "Autriche":"AT","Belgique":"BE","Danemark":"DK","Finlande":"FI","Allemagne":"DE",
   "Pays-Bas":"NL","Norvège":"NO","Pologne":"PL","Espagne":"ES","Suède":"SE",
   "Royaume-Uni":"GB","États-Unis":"US",
-  // Others shared
-  "Other":"","Altro":"","Otro":"","Sonstiges":"","Autre":""
 };
 
 function onCountryChange() {
-  const sel   = document.getElementById('f-country');
-  const cityEl = document.getElementById('f-city');
-  const provEl = document.getElementById('f-province');
-
+  const sel      = document.getElementById('f-country');
+  const cityEl   = document.getElementById('f-city');
+  const provEl   = document.getElementById('f-province');
   const countryName = sel.value;
-  geoCountryCode = COUNTRY_ISO[countryName] || '';
 
-  // Reset city and province
-  cityEl.value = '';
-  provEl.value = '';
-  geoCityValid = false;
+  geoCountryCode = COUNTRY_ISO[countryName] || '';
+  cityEl.value   = '';
+  provEl.value   = '';
+  geoCityValid   = false;
   geoSelectedCity = null;
   setCityStatus('', '');
   setGeoError('');
-  document.getElementById('city-dropdown').innerHTML = '';
-  document.getElementById('city-dropdown').classList.remove('open');
+  closeCityDropdown();
 
-  if (countryName && countryName !== '—') {
-    cityEl.disabled = false;
-    cityEl.placeholder = 'Type a city…';
-  } else {
-    cityEl.disabled = true;
-    cityEl.placeholder = 'Select a country first';
-  }
+  // Hint in placeholder when country is known
+  cityEl.placeholder = countryName && countryName !== '—'
+    ? 'Type a city in ' + countryName + '…'
+    : 'Type a city…';
 }
 
 function onCityInput(val) {
-  geoCityValid = false;
+  geoCityValid    = false;
   geoSelectedCity = null;
   setCityStatus('', '');
   document.getElementById('f-province').value = '';
-
+  setGeoError('');
+  closeCityDropdown();
   clearTimeout(geoCityDebounce);
-  const dropdown = document.getElementById('city-dropdown');
 
-  if (val.length < 2) {
-    dropdown.innerHTML = '';
-    dropdown.classList.remove('open');
+  if (val.trim().length < 2) {
     document.getElementById('city-spinner').style.display = 'none';
     return;
   }
 
   document.getElementById('city-spinner').style.display = 'block';
-
-  geoCityDebounce = setTimeout(() => fetchCitySuggestions(val), 380);
+  geoCityDebounce = setTimeout(() => fetchCitySuggestions(val.trim()), 420);
 }
 
 async function fetchCitySuggestions(query) {
   const spinner  = document.getElementById('city-spinner');
   const dropdown = document.getElementById('city-dropdown');
 
-  const countryParam = geoCountryCode ? `&country=${geoCountryCode}` : '';
-  const url = `https://secure.geonames.org/searchJSON?name_startsWith=${encodeURIComponent(query)}&featureClass=P&maxRows=8&username=${GEO_USER}${countryParam}&style=MEDIUM`;
+  // Build Nominatim URL — free, no key, returns JSON
+  const countryParam = geoCountryCode ? `&countrycodes=${geoCountryCode.toLowerCase()}` : '';
+  const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&addressdetails=1&limit=7&featuretype=city,town,village${countryParam}&accept-language=en`;
 
   try {
-    const res  = await fetch(url);
+    const res  = await fetch(url, { headers: { 'Accept-Language': 'en' } });
+    if (!res.ok) throw new Error('Network response: ' + res.status);
     const data = await res.json();
     spinner.style.display = 'none';
 
-    if (!data.geonames || data.geonames.length === 0) {
-      geoCitySuggestions = [];
-      dropdown.innerHTML = `<li style="color:var(--gray-400);cursor:default;font-style:italic">No cities found</li>`;
+    // Filter to only place types (cities, towns, villages, municipalities)
+    const places = data.filter(p =>
+      ['city','town','village','municipality','suburb','administrative'].includes(p.type) ||
+      ['city','town','village'].includes(p.addresstype)
+    );
+
+    if (places.length === 0) {
+      dropdown.innerHTML = `<li style="color:var(--gray-400);cursor:default;font-style:italic;padding:10px 14px">No cities found for "${escHtml(query)}"</li>`;
       dropdown.classList.add('open');
       return;
     }
 
-    geoCitySuggestions = data.geonames;
     dropdown.innerHTML = '';
-    data.geonames.forEach((place, i) => {
+    places.forEach(place => {
+      const addr     = place.address || {};
+      const cityName = addr.city || addr.town || addr.village || addr.municipality || place.name;
+      const province = addr.state || addr.region || addr.county || '';
+      const country  = addr.country || '';
+      const subText  = [province, country].filter(Boolean).join(', ');
+
       const li = document.createElement('li');
-      const admin = [place.adminName1, place.countryName].filter(Boolean).join(', ');
-      li.innerHTML = `<span style="font-weight:500">${escHtml(place.name)}</span><span class="geo-sub">${escHtml(admin)}</span>`;
-      li.addEventListener('mousedown', (e) => {
+      li.innerHTML = `<span style="font-weight:500">${escHtml(cityName)}</span><span class="geo-sub">${escHtml(subText)}</span>`;
+      li.addEventListener('mousedown', e => {
         e.preventDefault();
-        selectCity(place);
+        selectCity({ name: cityName, province, country, countryCode: addr.country_code?.toUpperCase() || geoCountryCode });
       });
       dropdown.appendChild(li);
     });
@@ -1741,33 +1815,39 @@ async function fetchCitySuggestions(query) {
 
   } catch (err) {
     spinner.style.display = 'none';
-    console.warn('GeoNames error:', err);
-    setGeoError('Could not reach the location service. Please check your connection.');
+    console.warn('Nominatim error:', err);
+    // Fallback: allow free-text entry
+    dropdown.innerHTML = `<li style="color:var(--gray-400);cursor:default;font-style:italic;padding:10px 14px">Location service unavailable — type freely</li>`;
+    dropdown.classList.add('open');
+    // Allow free text without blocking submit
+    geoCityValid = true;
+    document.getElementById('f-province').value = '';
+    setCityStatus('ok', '✓ Entered');
   }
 }
 
 function selectCity(place) {
   const cityEl = document.getElementById('f-city');
   const provEl = document.getElementById('f-province');
-  const dropdown = document.getElementById('city-dropdown');
 
-  cityEl.value  = place.name;
-  provEl.value  = place.adminName1 || '—';
-  geoCityValid  = true;
+  cityEl.value   = place.name;
+  provEl.value   = place.province || '—';
+  geoCityValid   = true;
   geoSelectedCity = place;
 
-  dropdown.classList.remove('open');
+  closeCityDropdown();
   setCityStatus('ok', '✓ Verified');
   setGeoError('');
 
-  // Auto-fill country if not already set
+  // Auto-select country in dropdown if not yet set
   const sel = document.getElementById('f-country');
-  if (!sel.value && place.countryName) {
-    // Try to match by countryName
+  if (!sel.value && place.countryCode) {
     Array.from(sel.options).forEach(opt => {
-      if (COUNTRY_ISO[opt.value] === place.countryCode) sel.value = opt.value;
+      if (COUNTRY_ISO[opt.value] === place.countryCode) {
+        sel.value = opt.value;
+        geoCountryCode = place.countryCode;
+      }
     });
-    geoCountryCode = place.countryCode;
   }
 }
 
@@ -1778,25 +1858,28 @@ function showCitySuggestions() {
 
 function hideCitySuggestions() {
   setTimeout(() => {
-    const dropdown = document.getElementById('city-dropdown');
-    dropdown.classList.remove('open');
-
-    // Validate: if user typed something but didn't select from list
+    closeCityDropdown();
     const cityEl = document.getElementById('f-city');
     if (cityEl.value.trim() && !geoCityValid) {
       setCityStatus('err', '✗ Not verified');
       setGeoError('Please select a city from the suggestions to verify it exists.');
     } else if (!cityEl.value.trim()) {
       setCityStatus('', '');
+      setGeoError('');
     }
-  }, 180);
+  }, 200);
+}
+
+function closeCityDropdown() {
+  const dropdown = document.getElementById('city-dropdown');
+  if (dropdown) { dropdown.innerHTML = ''; dropdown.classList.remove('open'); }
 }
 
 function setCityStatus(type, text) {
   const el = document.getElementById('city-status');
   if (!el) return;
   el.textContent = text;
-  el.className = 'geo-status' + (type ? ' ' + type : '');
+  el.className   = 'geo-status' + (type ? ' ' + type : '');
 }
 
 function setGeoError(msg) {
@@ -1804,8 +1887,12 @@ function setGeoError(msg) {
   const txt = document.getElementById('geo-error-text');
   if (!box || !txt) return;
   if (msg) { txt.textContent = msg; box.style.display = 'block'; }
-  else { box.style.display = 'none'; txt.textContent = ''; }
+  else      { box.style.display = 'none'; txt.textContent = ''; }
 }
+
+// ─────────────────────────────────────────
+// PHONE PREFIXES
+// ─────────────────────────────────────────
 
 // ─────────────────────────────────────────
 // PHONE PREFIXES
@@ -2076,6 +2163,324 @@ function enterRecruiterPortal() {
 }
 
 // ─────────────────────────────────────────
+// NOTIFICATION SYSTEM
+// ─────────────────────────────────────────
+
+const NOTIF_TYPES = {
+  profile_view:    { icon: '👁',  color: '#EFF6FF', iconColor: '#2563EB', title: 'Profile viewed',       desc: (r) => `${r} viewed your profile.` },
+  connection:      { icon: '🤝',  color: '#F0FDF4', iconColor: '#16A34A', title: 'Connection request',   desc: (r) => `${r} sent you a connection request.` },
+  message:         { icon: '💬',  color: '#F0FDF4', iconColor: '#0891B2', title: 'New message',          desc: (r) => `${r} sent you a message.` },
+  stage_change:    { icon: '📊',  color: '#FFF7ED', iconColor: '#F97316', title: 'Status updated',       desc: (s) => `Your selection status changed to: ${s}.` },
+  stage_overdue:   { icon: '⚠️', color: '#FEF2F2', iconColor: '#DC2626', title: 'Status overdue',       desc: () => `No status update in 5+ working days.` },
+};
+
+let notifications = [];
+let notifDrawerOpen = false;
+
+function pushNotification(type, payload = {}) {
+  // Only show candidate notifications if a profile has been submitted
+  if (!savedProfile) return;
+
+  const def = NOTIF_TYPES[type];
+  if (!def) return;
+
+  const notif = {
+    id:      Date.now() + Math.random(),
+    type,
+    title:   def.title,
+    desc:    type === 'stage_change' ? def.desc(payload.stage)
+           : type === 'stage_overdue' ? def.desc()
+           : def.desc(payload.recruiter || 'A recruiter'),
+    icon:    def.icon,
+    color:   def.color,
+    iconColor: def.iconColor,
+    time:    new Date(),
+    read:    false,
+    payload,
+  };
+
+  notifications.unshift(notif);
+  updateNotifBell();
+  renderNotifList();
+  showToast(notif);
+}
+
+function updateNotifBell() {
+  const bell  = document.getElementById('notif-bell');
+  const count = document.getElementById('notif-count');
+  if (!bell || !count) return;
+
+  // Show bell only if profile is submitted
+  bell.style.display = savedProfile ? 'flex' : 'none';
+
+  const unread = notifications.filter(n => !n.read).length;
+  if (unread > 0) {
+    count.style.display = 'block';
+    count.textContent   = unread > 9 ? '9+' : unread;
+    bell.classList.add('has-unread');
+  } else {
+    count.style.display = 'none';
+    bell.classList.remove('has-unread');
+  }
+}
+
+function toggleNotifDrawer() {
+  notifDrawerOpen ? closeNotifDrawer() : openNotifDrawer();
+}
+
+function openNotifDrawer() {
+  notifDrawerOpen = true;
+  document.getElementById('notif-drawer').style.display = 'block';
+  renderNotifList();
+}
+
+function closeNotifDrawer() {
+  notifDrawerOpen = false;
+  document.getElementById('notif-drawer').style.display = 'none';
+}
+
+function markAllRead() {
+  notifications.forEach(n => n.read = true);
+  updateNotifBell();
+  renderNotifList();
+}
+
+function markRead(id) {
+  const n = notifications.find(n => n.id === id);
+  if (n) n.read = true;
+  updateNotifBell();
+  renderNotifList();
+}
+
+function renderNotifList() {
+  const list = document.getElementById('notif-list');
+  if (!list) return;
+
+  if (notifications.length === 0) {
+    list.innerHTML = `<div class="notif-empty"><i class="fa-solid fa-bell-slash"></i><p>No notifications yet</p></div>`;
+    return;
+  }
+
+  list.innerHTML = notifications.map(n => {
+    const timeAgo = formatTimeAgo(n.time);
+    return `<div class="notif-item ${n.read ? '' : 'unread'}" onclick="handleNotifClick(${n.id})">
+      <div class="notif-dot ${n.read ? 'read' : ''}"></div>
+      <div class="notif-icon-wrap" style="background:${n.color}">
+        <span style="font-size:16px">${n.icon}</span>
+      </div>
+      <div class="notif-body">
+        <div class="notif-title">${escHtml(n.title)}</div>
+        <div class="notif-desc">${escHtml(n.desc)}</div>
+        <div class="notif-time"><i class="fa-regular fa-clock" style="margin-right:3px"></i>${timeAgo}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function handleNotifClick(id) {
+  markRead(id);
+  const n = notifications.find(n => n.id === id);
+  if (!n) return;
+  closeNotifDrawer();
+  if (n.type === 'message' || n.type === 'connection') showView('candidate');
+  else if (n.type === 'profile_view') showView('myprofile');
+  else if (n.type === 'stage_change' || n.type === 'stage_overdue') showView('candidate');
+}
+
+function showToast(notif) {
+  const container = document.getElementById('toast-container');
+  if (!container) return;
+
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.id = 'toast-' + notif.id;
+  toast.onclick = () => { removeToast(notif.id); handleNotifClick(notif.id); };
+  toast.innerHTML = `
+    <div class="toast-icon">${notif.icon}</div>
+    <div class="toast-body">
+      <div class="toast-title">${escHtml(notif.title)}</div>
+      <div class="toast-desc">${escHtml(notif.desc)}</div>
+    </div>
+    <button class="toast-close" onclick="event.stopPropagation();removeToast(${notif.id})"><i class="fa-solid fa-xmark"></i></button>`;
+
+  container.appendChild(toast);
+
+  // Auto-dismiss after 6 seconds
+  setTimeout(() => removeToast(notif.id), 6000);
+}
+
+function removeToast(id) {
+  const el = document.getElementById('toast-' + id);
+  if (!el) return;
+  el.style.animation = 'toastOut .25s ease forwards';
+  setTimeout(() => el.remove(), 250);
+}
+
+function formatTimeAgo(date) {
+  const diff = Math.floor((Date.now() - new Date(date)) / 1000);
+  if (diff < 60)  return 'Just now';
+  if (diff < 3600) return Math.floor(diff/60) + 'm ago';
+  if (diff < 86400) return Math.floor(diff/3600) + 'h ago';
+  return Math.floor(diff/86400) + 'd ago';
+}
+
+function formatTimeAgo(date) {
+  const diff = Math.floor((Date.now() - new Date(date)) / 1000);
+  if (diff < 60)  return 'Just now';
+  if (diff < 3600) return Math.floor(diff/60) + 'm ago';
+  if (diff < 86400) return Math.floor(diff/3600) + 'h ago';
+  return Math.floor(diff/86400) + 'd ago';
+}
+
+let overdueCheckerStarted = false;
+const overdueNotified = new Set(); // avoid repeat notifications per conversation
+
+function startOverdueChecker() {
+  if (overdueCheckerStarted) return;
+  overdueCheckerStarted = true;
+  setInterval(() => {
+    Object.entries(conversations).forEach(([candId, conv]) => {
+      if (!conv.opened || !conv.statusChangedAt) return;
+      const timer = getStatusTimer(conv);
+      if (timer && timer.overdue && !overdueNotified.has(candId)) {
+        overdueNotified.add(candId);
+        pushNotification('stage_overdue', {});
+        renderRecCandidateList(); // refresh overdue badges
+      }
+    });
+  }, 30000); // check every 30 seconds
+}
+
+// ─────────────────────────────────────────
+// SELECTION PIPELINE
+// ─────────────────────────────────────────
+
+const PIPELINE_STAGES = [
+  { id: 'contacted',    icon: '✉',  label: 'Contacted'       },
+  { id: 'screening',   icon: '📋', label: 'Screening'        },
+  { id: 'interview1',  icon: '🎤', label: '1st Interview'    },
+  { id: 'interview2',  icon: '🎤', label: '2nd Interview'    },
+  { id: 'assessment',  icon: '📝', label: 'Assessment'       },
+  { id: 'offer',       icon: '📄', label: 'Offer'            },
+  { id: 'hired',       icon: '✅', label: 'Hired'            },
+];
+
+// Working days between two dates (Mon–Fri, no holidays)
+function workingDaysBetween(from, to) {
+  let count = 0;
+  const d = new Date(from);
+  d.setHours(0,0,0,0);
+  const end = new Date(to);
+  end.setHours(0,0,0,0);
+  while (d < end) {
+    d.setDate(d.getDate() + 1);
+    const day = d.getDay();
+    if (day !== 0 && day !== 6) count++;
+  }
+  return count;
+}
+
+// Returns { overdue: bool, daysStalled: number, daysLeft: number }
+function getStatusTimer(conv) {
+  if (!conv || !conv.statusChangedAt) return null;
+  const now       = new Date();
+  const since     = new Date(conv.statusChangedAt);
+  const stalled   = workingDaysBetween(since, now);
+  const daysLeft  = 5 - stalled;
+  return { overdue: stalled >= 5, daysStalled: stalled, daysLeft: Math.max(0, daysLeft) };
+}
+
+// Build the pipeline HTML for a given candidateId (read-only for candidate)
+function buildPipelineHTML(candidateId, role) {
+  const conv = conversations[candidateId];
+  const currentStageId = conv?.stage || 'contacted';
+  const currentIdx = PIPELINE_STAGES.findIndex(s => s.id === currentStageId);
+  const timer = getStatusTimer(conv);
+
+  const stepsHTML = PIPELINE_STAGES.map((stage, i) => {
+    let cls = '';
+    if (i < currentIdx) cls = 'done';
+    else if (i === currentIdx) {
+      cls = (timer && timer.overdue) ? 'warn' : 'current';
+    }
+    const icon = i < currentIdx ? '<i class="fa-solid fa-check" style="font-size:10px"></i>' : stage.icon;
+    return `<div class="pipeline-step ${cls}" title="${stage.label}">
+      <div class="ps-dot">${icon}</div>
+      <div class="ps-label">${stage.label}</div>
+    </div>`;
+  }).join('');
+
+  let warningHTML = '';
+  if (timer && timer.overdue) {
+    warningHTML = `<div class="status-warn-banner">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      <span><strong>Stalled ${timer.daysStalled} working days</strong> — ${role === 'rec'
+        ? 'Please update the selection status to keep the candidate informed.'
+        : 'The recruiter has not updated your status for more than 5 working days.'
+      }</span>
+    </div>`;
+  } else if (timer && timer.daysLeft <= 2) {
+    warningHTML = `<div class="status-warn-banner" style="background:#FFFBEB;border-color:#FDE68A;color:#92400E">
+      <i class="fa-solid fa-clock"></i>
+      <span>${role === 'rec' ? `<strong>${timer.daysLeft} working day${timer.daysLeft !== 1 ? 's' : ''} left</strong> to update status before a reminder is triggered.` : `Status update expected within <strong>${timer.daysLeft} working day${timer.daysLeft !== 1 ? 's' : ''}</strong>.`}</span>
+    </div>`;
+  }
+
+  return `<div class="pipeline-wrap">
+    <div class="pipeline-label">
+      <span>Selection progress</span>
+      <span style="font-size:11px;color:var(--blue);font-weight:500;text-transform:none">
+        Stage ${currentIdx + 1} of ${PIPELINE_STAGES.length}: ${PIPELINE_STAGES[currentIdx].label}
+      </span>
+    </div>
+    <div class="pipeline-steps">${stepsHTML}</div>
+    ${warningHTML}
+  </div>`;
+}
+
+// Build the recruiter status control panel
+function buildStatusControlHTML(candidateId) {
+  const conv  = conversations[candidateId];
+  const stage = conv?.stage || 'contacted';
+  const timer = getStatusTimer(conv);
+
+  let timerHTML = '';
+  if (timer) {
+    if (timer.overdue) {
+      timerHTML = `<div class="status-timer overdue"><i class="fa-solid fa-triangle-exclamation"></i> Overdue: stalled ${timer.daysStalled} working days — update required</div>`;
+    } else if (timer.daysLeft <= 2) {
+      timerHTML = `<div class="status-timer warn"><i class="fa-solid fa-clock"></i> ${timer.daysLeft} working day${timer.daysLeft !== 1 ? 's' : ''} left to update</div>`;
+    } else {
+      timerHTML = `<div class="status-timer"><i class="fa-regular fa-clock"></i> Updated ${timer.daysStalled} working day${timer.daysStalled !== 1 ? 's' : ''} ago</div>`;
+    }
+  }
+
+  const options = PIPELINE_STAGES.map(s =>
+    `<option value="${s.id}" ${s.id === stage ? 'selected' : ''}>${s.icon} ${s.label}</option>`
+  ).join('');
+
+  return `<div class="status-control">
+    <div class="status-control-label">Selection status</div>
+    <select class="status-select" onchange="updateCandidateStage(${candidateId}, this.value)">
+      ${options}
+    </select>
+    ${timerHTML}
+  </div>`;
+}
+
+function updateCandidateStage(candidateId, newStage) {
+  if (!conversations[candidateId]) return;
+  conversations[candidateId].stage = newStage;
+  conversations[candidateId].statusChangedAt = new Date().toISOString();
+  // Notify candidate of stage change
+  const stageDef = PIPELINE_STAGES.find(s => s.id === newStage);
+  if (stageDef) pushNotification('stage_change', { stage: stageDef.label });
+  // Re-render recruiter chat window to refresh timer + pipeline
+  renderRecChatWindow(candidateId);
+  renderRecCandidateList();
+}
+
+// ─────────────────────────────────────────
 // CHAT ENGINE
 // ─────────────────────────────────────────
 
@@ -2139,6 +2544,9 @@ function renderRecCandidateList(q) {
       const conv = conversations[c.id];
       const contacted = conv && conv.opened;
       const unread = conv ? conv.messages.filter(m => m.from === 'cand' && !m.read).length : 0;
+      const timer = getStatusTimer(conv);
+      const isOverdue = contacted && timer && timer.overdue;
+      const isNearDue = contacted && timer && !timer.overdue && timer.daysLeft <= 2;
       const div = document.createElement('div');
       div.className = 'cand-card' + (recActiveCandidateId === c.id ? ' active' : '');
       div.onclick = () => openRecChat(c.id);
@@ -2152,6 +2560,8 @@ function renderRecCandidateList(q) {
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
           <div class="cand-badge-dot ${contacted ? '' : 'grey'}" title="${contacted ? 'Contacted' : 'Not contacted'}"></div>
           ${unread ? `<div class="cand-unread">${unread}</div>` : ''}
+          ${isOverdue ? `<div title="Status overdue" style="font-size:10px;background:#FEF2F2;color:#DC2626;border:1px solid #FECACA;border-radius:10px;padding:1px 6px;font-weight:600;white-space:nowrap">⚠ Overdue</div>` : ''}
+          ${isNearDue ? `<div title="${timer.daysLeft}d left" style="font-size:10px;background:#FFF7ED;color:#F97316;border:1px solid #FED7AA;border-radius:10px;padding:1px 6px;font-weight:600;white-space:nowrap">⏱ ${timer.daysLeft}d</div>` : ''}
         </div>`;
       list.appendChild(div);
     });
@@ -2160,10 +2570,15 @@ function renderRecCandidateList(q) {
 function openRecChat(candidateId) {
   recActiveCandidateId = candidateId;
   if (!conversations[candidateId]) {
-    conversations[candidateId] = { opened: false, messages: [] };
+    conversations[candidateId] = { opened: false, messages: [], stage: 'contacted', statusChangedAt: new Date().toISOString() };
   }
   // Mark cand messages as read
   conversations[candidateId].messages.forEach(m => { if(m.from==='cand') m.read = true; });
+
+  // Fire profile_view notification (simulates recruiter viewing candidate profile)
+  const recName = recruiterProfile?.name ? recruiterProfile.name.split(' ')[0] + ' (Recruiter)' : 'A recruiter';
+  pushNotification('profile_view', { recruiter: recName });
+
   renderRecCandidateList();
   renderRecChatWindow(candidateId);
 }
@@ -2188,6 +2603,8 @@ function renderRecChatWindow(candidateId) {
           <span style="color:var(--gray-500)">${cand.online ? 'Online' : 'Offline'}</span>
         </div>
       </div>
+      ${buildStatusControlHTML(candidateId)}
+      ${buildPipelineHTML(candidateId, 'rec')}
       <div class="chat-messages" id="rec-messages"></div>
       <div class="chat-input-area">
         <div class="chat-input-row">
@@ -2249,13 +2666,24 @@ function recSendMessage(candidateId) {
   const text = input.value.trim();
   if (!text) return;
   const conv = conversations[candidateId];
+  const isFirst = !conv.opened;
   conv.opened = true;
   conv.messages.push({ from: 'rec', text, time: new Date().toISOString(), read: true });
   input.value = '';
   input.style.height = 'auto';
+
+  const recName = recruiterProfile?.name ? recruiterProfile.name.split(' ')[0] + ' (Recruiter)' : 'A recruiter';
+
+  // First message = connection request + message notification
+  if (isFirst) {
+    pushNotification('connection', { recruiter: recName });
+    setTimeout(() => pushNotification('message', { recruiter: recName }), 800);
+  } else {
+    pushNotification('message', { recruiter: recName });
+  }
+
   renderRecCandidateList();
   renderRecChatWindow(candidateId);
-  // Simulate candidate reply after 2–4 s
   simulateCandidateReply(candidateId);
 }
 
@@ -2347,6 +2775,7 @@ function renderCandChatWindow(candidateId) {
           <span style="color:var(--gray-500)">Online</span>
         </div>
       </div>
+      ${buildPipelineHTML(candidateId, 'cand')}
       <div class="chat-messages" id="cand-messages"></div>
       ${canReply
         ? `<div class="chat-input-area">
@@ -2548,6 +2977,36 @@ function renderMyProfile() {
       chip.innerHTML = `<i class="fa-solid ${c.icon}" style="font-size:12px"></i>${escHtml(c.text)}`;
       bar.appendChild(chip);
     });
+  }
+
+  // Selection pipeline — show if candidate has any active conversation
+  const activeCandId = CANDIDATES.find(c => conversations[c.id]?.opened);
+  const pipelineCard = document.getElementById('mp-pipeline-card');
+  const pipelineInner = document.getElementById('mp-pipeline-inner');
+  if (activeCandId && pipelineCard && pipelineInner) {
+    pipelineCard.style.display = 'block';
+    // Build a standalone pipeline (no status-control, just the progress bar)
+    const conv = conversations[activeCandId.id];
+    const stage = conv?.stage || 'contacted';
+    const currentIdx = PIPELINE_STAGES.findIndex(s => s.id === stage);
+    const timer = getStatusTimer(conv);
+
+    const stepsHTML = PIPELINE_STAGES.map((s, i) => {
+      let cls = i < currentIdx ? 'done' : i === currentIdx ? ((timer?.overdue) ? 'warn' : 'current') : '';
+      const icon = i < currentIdx ? '<i class="fa-solid fa-check" style="font-size:10px"></i>' : s.icon;
+      return `<div class="pipeline-step ${cls}"><div class="ps-dot">${icon}</div><div class="ps-label">${s.label}</div></div>`;
+    }).join('');
+
+    let warnHTML = '';
+    if (timer?.overdue) {
+      warnHTML = `<div class="status-warn-banner" style="margin-top:14px"><i class="fa-solid fa-triangle-exclamation"></i><span>The recruiter has not updated your status for <strong>${timer.daysStalled} working days</strong>. They have been reminded.</span></div>`;
+    }
+
+    pipelineInner.innerHTML = `
+      <p style="font-size:13px;color:var(--gray-500);margin-bottom:14px">Current stage: <strong style="color:var(--blue)">${PIPELINE_STAGES[currentIdx].label}</strong></p>
+      <div class="pipeline-steps">${stepsHTML}</div>${warnHTML}`;
+  } else if (pipelineCard) {
+    pipelineCard.style.display = 'none';
   }
 
   // ERP tags
