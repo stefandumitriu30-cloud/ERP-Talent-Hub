@@ -129,6 +129,22 @@ button{font-family:'Inter',sans-serif;cursor:pointer;font-size:14px;border-radiu
 .field-error{font-size:12px;color:#DC2626;margin-top:4px;display:flex;align-items:center;gap:4px}
 .field-error::before{content:'⚠';font-size:11px}
 input.input-error,select.input-error,textarea.input-error{border-color:#DC2626;background:#FEF2F2}
+
+/* ─── GEO FIELDS ─── */
+.geo-row{display:flex;gap:12px;flex-wrap:wrap}
+.geo-row .field{position:relative}
+.geo-dropdown{position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid var(--blue);border-top:none;border-radius:0 0 var(--radius) var(--radius);list-style:none;max-height:200px;overflow-y:auto;z-index:200;box-shadow:var(--shadow-md);margin:0;padding:4px 0;display:none}
+.geo-dropdown.open{display:block}
+.geo-dropdown li{padding:9px 14px;font-size:13px;cursor:pointer;color:var(--gray-700);display:flex;flex-direction:column;gap:2px}
+.geo-dropdown li:hover,.geo-dropdown li.active{background:var(--blue-light);color:var(--blue)}
+.geo-dropdown li .geo-sub{font-size:11px;color:var(--gray-400)}
+.geo-dropdown li:hover .geo-sub{color:var(--blue)}
+.geo-spinner{position:absolute;right:10px;bottom:12px;font-size:14px;color:var(--gray-400)}
+.geo-status{margin-left:6px;font-size:11px;font-weight:500}
+.geo-status.ok{color:#16A34A}
+.geo-status.err{color:#DC2626}
+input:disabled{background:var(--gray-50);color:var(--gray-400);cursor:not-allowed}
+@media(max-width:600px){.geo-row{flex-direction:column}}
 .btn-submit{background:var(--blue);color:#fff;border-color:var(--blue);padding:13px 36px;font-weight:500;font-size:15px;border-radius:var(--radius)}
 .btn-submit:hover{background:var(--blue-dark)}
 .btn-submit:disabled{opacity:.65;cursor:wait}
@@ -358,7 +374,23 @@ footer strong{color:rgba(255,255,255,.75)}
 .chat-date-divider::before,.chat-date-divider::after{content:'';display:inline-block;width:60px;height:1px;background:var(--gray-200);vertical-align:middle;margin:0 8px}
 .msg-status{font-size:10px;color:rgba(255,255,255,.7);text-align:right;margin-top:2px}
 
-/* ─── RECRUITER ACCREDITATION GATE ─── */
+/* ─── MONTH-YEAR PICKER ─── */
+.mp-wrap{position:relative;width:100%}
+.mp-display{display:flex;align-items:center;justify-content:space-between;border:1.5px solid var(--gray-300);border-radius:var(--radius);padding:9px 12px;cursor:pointer;background:var(--white);min-height:44px;user-select:none;transition:border-color .15s}
+.mp-display:hover,.mp-display:focus{border-color:var(--blue);outline:none}
+.mp-val{font-size:14px;color:var(--gray-400)}
+.mp-cal-icon{font-size:13px;color:var(--gray-400)}
+.mp-popup{position:absolute;top:calc(100% + 4px);left:0;z-index:300;background:var(--white);border:1.5px solid var(--blue);border-radius:var(--radius-lg);box-shadow:var(--shadow-md);padding:14px;width:220px}
+.mp-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.mp-nav{background:none;border:none;color:var(--gray-500);cursor:pointer;padding:4px 8px;border-radius:6px;font-size:14px;min-height:unset}
+.mp-nav:hover{background:var(--gray-100);color:var(--gray-900)}
+.mp-year{font-size:15px;font-weight:600;color:var(--gray-900)}
+.mp-months{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-bottom:10px}
+.mp-month{background:none;border:none;border-radius:6px;padding:7px 4px;font-size:12px;font-weight:500;color:var(--gray-600);cursor:pointer;text-align:center;transition:all .12s;min-height:unset}
+.mp-month:hover{background:var(--blue-light);color:var(--blue)}
+.mp-month.selected{background:var(--blue);color:#fff}
+.mp-clear{width:100%;background:none;border:1px solid var(--gray-200);border-radius:6px;padding:5px;font-size:12px;color:var(--gray-400);cursor:pointer;min-height:unset}
+.mp-clear:hover{border-color:var(--gray-300);color:var(--gray-600)}
 .rec-gate-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:32px 16px;background:linear-gradient(135deg,var(--gray-50) 0%,var(--blue-light) 100%);overflow-y:auto}
 .rec-gate-card{background:var(--white);border:1px solid var(--gray-100);border-radius:18px;box-shadow:var(--shadow-md);padding:40px 36px;width:100%;max-width:480px;text-align:center}
 .gate-step{display:none}
@@ -500,10 +532,44 @@ footer strong{color:rgba(255,255,255,.75)}
       <div class="grid-2">
         <div class="field"><label><span data-i18n="f.firstName">First name</span><span class="req">*</span></label><input type="text" id="f-firstName" /></div>
         <div class="field"><label><span data-i18n="f.lastName">Last name</span><span class="req">*</span></label><input type="text" id="f-lastName" /></div>
-        <div class="field"><label><span data-i18n="f.city">City</span><span class="req">*</span></label><input type="text" id="f-city" /></div>
-        <div class="field"><label><span data-i18n="f.country">Country</span><span class="req">*</span></label>
-          <select id="f-country"><option value="">—</option></select>
+      </div>
+
+      <!-- Country → City → Province row -->
+      <div class="geo-row">
+
+        <!-- COUNTRY -->
+        <div class="field" style="flex:1;min-width:0">
+          <label><span data-i18n="f.country">Country</span><span class="req">*</span></label>
+          <select id="f-country" onchange="onCountryChange()"><option value="">—</option></select>
         </div>
+
+        <!-- CITY -->
+        <div class="field" style="flex:1;min-width:0;position:relative">
+          <label>
+            <span data-i18n="f.city">City</span><span class="req">*</span>
+            <span class="geo-status" id="city-status"></span>
+          </label>
+          <input type="text" id="f-city" autocomplete="off"
+                 placeholder="Type a city…"
+                 oninput="onCityInput(this.value)"
+                 onfocus="showCitySuggestions()"
+                 onblur="hideCitySuggestions()"
+                 disabled />
+          <div class="geo-spinner" id="city-spinner" style="display:none"><i class="fa-solid fa-circle-notch fa-spin"></i></div>
+          <ul class="geo-dropdown" id="city-dropdown"></ul>
+        </div>
+
+        <!-- PROVINCE / STATE -->
+        <div class="field" style="flex:1;min-width:0">
+          <label><span data-i18n="f.province">Province / State</span></label>
+          <input type="text" id="f-province" placeholder="—" readonly
+                 style="background:var(--gray-50);color:var(--gray-500);cursor:default" />
+        </div>
+
+      </div>
+      <!-- Geo error -->
+      <div id="geo-error" style="display:none;font-size:12px;color:#DC2626;margin-top:-8px;margin-bottom:8px">
+        <i class="fa-solid fa-triangle-exclamation"></i> <span id="geo-error-text"></span>
       </div>
     </div>
 
@@ -840,11 +906,66 @@ footer strong{color:rgba(255,255,255,.75)}
   </div>
 </div>
 
+<!-- ═══════════════════ ADMIN VIEW ═══════════════════ -->
+<div id="admin-view" class="view portal-view">
+  <div class="portal-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="portal-sidebar">
+      <div class="portal-sidebar-header">
+        <div class="portal-logo-row">
+          <div class="portal-role-badge" style="background:#FEF3C7;color:#92400E;border:1px solid #FDE68A"><i class="fa-solid fa-shield-halved"></i> Admin</div>
+          <button class="btn-ghost btn-sm" onclick="showView('home')"><i class="fa-solid fa-arrow-left"></i></button>
+        </div>
+        <h2 class="portal-title">Admin Dashboard</h2>
+        <div class="portal-tabs" style="margin-bottom:10px">
+          <button class="ptab active" id="admin-tab-cand" onclick="setAdminTab('candidates',this)">Candidates</button>
+          <button class="ptab" id="admin-tab-rec" onclick="setAdminTab('recruiters',this)">Recruiters</button>
+        </div>
+        <div class="portal-search-wrap">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" class="portal-search" id="admin-search" placeholder="Search…" oninput="renderAdminList()" />
+        </div>
+      </div>
+      <div class="candidate-list" id="admin-list"></div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="portal-main" id="admin-detail">
+      <div class="chat-empty-state">
+        <i class="fa-solid fa-shield-halved" style="color:var(--gray-300)"></i>
+        <p>Select a profile to view full details.</p>
+      </div>
+    </main>
+
+  </div>
+</div>
+
+<!-- ─── ADMIN LOGIN MODAL ─── -->
+<div id="admin-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:center;justify-content:center">
+  <div style="background:var(--white);border-radius:var(--radius-lg);padding:36px 32px;width:100%;max-width:380px;box-shadow:var(--shadow-md);margin:16px">
+    <div style="text-align:center;margin-bottom:24px">
+      <div style="width:52px;height:52px;border-radius:50%;background:#FEF3C7;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:22px;color:#92400E"><i class="fa-solid fa-shield-halved"></i></div>
+      <h2 style="font-size:18px;margin-bottom:4px">Admin access</h2>
+      <p style="font-size:13px;color:var(--gray-500)">Enter your administrator password to continue.</p>
+    </div>
+    <div class="field">
+      <label style="font-size:13px;font-weight:500;color:var(--gray-700);display:block;margin-bottom:5px">Password</label>
+      <input type="password" id="admin-pw-input" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkAdminPw()" />
+    </div>
+    <div id="admin-pw-error" style="display:none;font-size:12px;color:#DC2626;margin-top:-8px;margin-bottom:10px"><i class="fa-solid fa-triangle-exclamation"></i> Incorrect password. Try again.</div>
+    <button class="btn-primary" style="width:100%;margin-top:12px" onclick="checkAdminPw()">Login</button>
+    <button class="btn-ghost" style="width:100%;margin-top:6px;font-size:13px" onclick="closeAdminModal()">Cancel</button>
+  </div>
+</div>
+
 <!-- FOOTER -->
 <footer>
   <strong>ERP Talent Hub</strong> &nbsp;·&nbsp; EN · IT · ES · DE · FR
   <br style="margin-bottom:6px">
   <span id="footer-ownership"></span>
+  <br>
+  <button onclick="openAdminModal()" style="background:none;border:none;color:rgba(255,255,255,.12);font-size:11px;cursor:pointer;margin-top:8px;padding:4px 8px;border-radius:4px" title="Admin">⚙</button>
 </footer>
 
 <script>
@@ -875,7 +996,7 @@ const TRANSLATIONS = {
     "sec.personal":"Personal information","sec.contact":"Contact details","sec.summary":"Professional summary",
     "sec.erp":"ERP systems (select all that apply)","sec.experience":"Work experience",
     "sec.education":"Education","sec.certs":"Certifications & licences","sec.awards":"Awards & recognition",
-    "f.firstName":"First name","f.lastName":"Last name","f.city":"City","f.country":"Country",
+    "f.firstName":"First name","f.lastName":"Last name","f.city":"City","f.country":"Country","f.province":"Province / State",
     "f.email":"Email address","f.phone":"Phone number","f.linkedin":"LinkedIn profile URL",
     "f.summary":"Summary","f.summaryPh":"Describe your ERP expertise, the systems you specialise in, your industry focus, and what makes you stand out...",
     "words":"words",
@@ -912,7 +1033,7 @@ const TRANSLATIONS = {
     "sec.personal":"Informazioni personali","sec.contact":"Recapiti","sec.summary":"Sommario professionale",
     "sec.erp":"Sistemi ERP (seleziona tutti quelli applicabili)","sec.experience":"Esperienze lavorative",
     "sec.education":"Formazione","sec.certs":"Certificazioni e licenze","sec.awards":"Premi e riconoscimenti",
-    "f.firstName":"Nome","f.lastName":"Cognome","f.city":"Città","f.country":"Paese",
+    "f.firstName":"Nome","f.lastName":"Cognome","f.city":"Città","f.country":"Paese","f.province":"Provincia / Regione",
     "f.email":"Indirizzo email","f.phone":"Numero di telefono","f.linkedin":"URL profilo LinkedIn",
     "f.summary":"Sommario","f.summaryPh":"Descrivi la tua esperienza ERP, i sistemi in cui sei specializzato, il settore di riferimento e ciò che ti distingue...",
     "words":"parole",
@@ -949,7 +1070,7 @@ const TRANSLATIONS = {
     "sec.personal":"Información personal","sec.contact":"Datos de contacto","sec.summary":"Resumen profesional",
     "sec.erp":"Sistemas ERP (selecciona todos los que apliquen)","sec.experience":"Experiencia laboral",
     "sec.education":"Educación","sec.certs":"Certificaciones y licencias","sec.awards":"Premios y reconocimientos",
-    "f.firstName":"Nombre","f.lastName":"Apellidos","f.city":"Ciudad","f.country":"País",
+    "f.firstName":"Nombre","f.lastName":"Apellidos","f.city":"Ciudad","f.country":"País","f.province":"Provincia / Estado",
     "f.email":"Correo electrónico","f.phone":"Número de teléfono","f.linkedin":"URL de perfil LinkedIn",
     "f.summary":"Resumen","f.summaryPh":"Describe tu experiencia en ERP, los sistemas en los que te especializas, tu sector de enfoque y qué te diferencia...",
     "words":"palabras",
@@ -986,7 +1107,7 @@ const TRANSLATIONS = {
     "sec.personal":"Persönliche Angaben","sec.contact":"Kontaktdaten","sec.summary":"Berufliches Kurzprofil",
     "sec.erp":"ERP-Systeme (alle zutreffenden auswählen)","sec.experience":"Berufserfahrung",
     "sec.education":"Ausbildung","sec.certs":"Zertifizierungen & Lizenzen","sec.awards":"Auszeichnungen & Anerkennungen",
-    "f.firstName":"Vorname","f.lastName":"Nachname","f.city":"Stadt","f.country":"Land",
+    "f.firstName":"Vorname","f.lastName":"Nachname","f.city":"Stadt","f.country":"Land","f.province":"Provinz / Bundesland",
     "f.email":"E-Mail-Adresse","f.phone":"Telefonnummer","f.linkedin":"LinkedIn-Profil-URL",
     "f.summary":"Kurzprofil","f.summaryPh":"Beschreiben Sie Ihre ERP-Expertise, die Systeme, auf die Sie spezialisiert sind, Ihren Branchenfokus und was Sie auszeichnet...",
     "words":"Wörter",
@@ -1023,7 +1144,7 @@ const TRANSLATIONS = {
     "sec.personal":"Informations personnelles","sec.contact":"Coordonnées","sec.summary":"Résumé professionnel",
     "sec.erp":"Systèmes ERP (sélectionnez tous ceux qui s'appliquent)","sec.experience":"Expériences professionnelles",
     "sec.education":"Formation","sec.certs":"Certifications & licences","sec.awards":"Prix & distinctions",
-    "f.firstName":"Prénom","f.lastName":"Nom","f.city":"Ville","f.country":"Pays",
+    "f.firstName":"Prénom","f.lastName":"Nom","f.city":"Ville","f.country":"Pays","f.province":"Province / Région",
     "f.email":"Adresse e-mail","f.phone":"Numéro de téléphone","f.linkedin":"URL du profil LinkedIn",
     "f.summary":"Résumé","f.summaryPh":"Décrivez votre expertise ERP, les systèmes dans lesquels vous êtes spécialisé, votre secteur de prédilection et ce qui vous distingue...",
     "words":"mots",
@@ -1123,6 +1244,96 @@ function buildHomeErpTags() {
 }
 
 // ─────────────────────────────────────────
+// MONTH-YEAR CALENDAR PICKER
+// ─────────────────────────────────────────
+const MONTHS_EN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+function buildMonthPicker(id) {
+  const now = new Date();
+  return `
+    <div class="mp-wrap" id="mpw-${id}">
+      <div class="mp-display" id="mpd-${id}" onclick="toggleMonthPicker('${id}')" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' ')toggleMonthPicker('${id}')">
+        <span class="mp-val" id="mpv-${id}">—</span>
+        <i class="fa-solid fa-calendar-days mp-cal-icon"></i>
+      </div>
+      <input type="hidden" id="${id}" value="" />
+      <div class="mp-popup" id="mpp-${id}" style="display:none">
+        <div class="mp-header">
+          <button type="button" class="mp-nav" onclick="shiftMPYear('${id}',-1)"><i class="fa-solid fa-chevron-left"></i></button>
+          <span class="mp-year" id="mpy-${id}">${now.getFullYear()}</span>
+          <button type="button" class="mp-nav" onclick="shiftMPYear('${id}',1)"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+        <div class="mp-months" id="mpm-${id}">
+          ${MONTHS_EN.map((m,i) => `<button type="button" class="mp-month" data-m="${i+1}" onclick="selectMonth('${id}',this)">${m}</button>`).join('')}
+        </div>
+        <button type="button" class="mp-clear" onclick="clearMonthPicker('${id}')">Clear</button>
+      </div>
+    </div>`;
+}
+
+const mpYears = {}; // track displayed year per picker
+
+function toggleMonthPicker(id) {
+  const popup = document.getElementById('mpp-' + id);
+  const isOpen = popup.style.display !== 'none';
+  // Close all other pickers first
+  document.querySelectorAll('.mp-popup').forEach(p => p.style.display = 'none');
+  if (!isOpen) {
+    const now = new Date();
+    if (!mpYears[id]) mpYears[id] = now.getFullYear();
+    document.getElementById('mpy-' + id).textContent = mpYears[id];
+    highlightSelectedMonth(id);
+    popup.style.display = 'block';
+    // Close on outside click
+    setTimeout(() => {
+      document.addEventListener('click', function closePicker(e) {
+        if (!document.getElementById('mpw-' + id)?.contains(e.target)) {
+          popup.style.display = 'none';
+          document.removeEventListener('click', closePicker);
+        }
+      });
+    }, 10);
+  }
+}
+
+function shiftMPYear(id, delta) {
+  mpYears[id] = (mpYears[id] || new Date().getFullYear()) + delta;
+  document.getElementById('mpy-' + id).textContent = mpYears[id];
+  highlightSelectedMonth(id);
+}
+
+function selectMonth(id, btn) {
+  const month = parseInt(btn.getAttribute('data-m'));
+  const year  = mpYears[id] || new Date().getFullYear();
+  const val   = `${year}-${String(month).padStart(2,'0')}`;
+  document.getElementById(id).value = val;
+  document.getElementById('mpv-' + id).textContent = MONTHS_EN[month-1] + ' ' + year;
+  document.getElementById('mpv-' + id).style.color = 'var(--gray-900)';
+  document.getElementById('mpp-' + id).style.display = 'none';
+  highlightSelectedMonth(id);
+}
+
+function clearMonthPicker(id) {
+  document.getElementById(id).value = '';
+  document.getElementById('mpv-' + id).textContent = '—';
+  document.getElementById('mpv-' + id).style.color = '';
+  document.getElementById('mpp-' + id).style.display = 'none';
+}
+
+function highlightSelectedMonth(id) {
+  const val = document.getElementById(id)?.value;
+  const btns = document.querySelectorAll(`#mpm-${id} .mp-month`);
+  btns.forEach(b => b.classList.remove('selected'));
+  if (val) {
+    const [y, m] = val.split('-').map(Number);
+    if (y === (mpYears[id] || new Date().getFullYear())) {
+      const target = document.querySelector(`#mpm-${id} [data-m="${m}"]`);
+      if (target) target.classList.add('selected');
+    }
+  }
+}
+
+// ─────────────────────────────────────────
 // DYNAMIC ENTRIES
 // ─────────────────────────────────────────
 const entries = { exp: [], edu: [], cert: [], award: [] };
@@ -1157,8 +1368,8 @@ function buildEntryHTML(type, id) {
         <div class="grid-2">
           <div class="field"><label>${t('f.jobTitle')} <span class="req">*</span></label><input type="text" id="exp-title-${p}" /></div>
           <div class="field"><label>${t('f.company')} <span class="req">*</span></label><input type="text" id="exp-co-${p}" /></div>
-          <div class="field"><label>${t('f.startDate')}</label><input type="month" id="exp-start-${p}" /></div>
-          <div class="field exp-end-field-${p}"><label>${t('f.endDate')}</label><input type="month" id="exp-end-${p}" /></div>
+          <div class="field"><label>${t('f.startDate')}</label>${buildMonthPicker('exp-start-' + p)}</div>
+          <div class="field exp-end-field-${p}"><label>${t('f.endDate')}</label>${buildMonthPicker('exp-end-' + p)}</div>
         </div>
         <label class="checkbox-row"><input type="checkbox" id="exp-curr-${p}" onchange="toggleCurrent(${p})"> ${t('f.current')}</label>
         <div class="field"><label>${t('f.description')}</label><textarea id="exp-desc-${p}" rows="3"></textarea></div>
@@ -1305,6 +1516,17 @@ function validateForm() {
     if (!firstError) firstError = emailEl;
   }
 
+  // City geo-verification
+  const cityEl2 = document.getElementById('f-city');
+  if (cityEl2 && cityEl2.value.trim() && !geoCityValid) {
+    cityEl2.classList.add('input-error');
+    const msg = document.createElement('div');
+    msg.className = 'field-error';
+    msg.textContent = 'Please select a city from the suggestions to verify it exists.';
+    cityEl2.closest('.field').appendChild(msg);
+    if (!firstError) firstError = cityEl2;
+  }
+
   if (firstError) {
     firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
     firstError.focus();
@@ -1327,6 +1549,7 @@ function handleSubmit() {
   const lastName   = document.getElementById('f-lastName').value.trim();
   const email      = document.getElementById('f-email').value.trim();
   const city       = document.getElementById('f-city').value.trim();
+  const province   = document.getElementById('f-province')?.value.trim() || '';
   const country    = document.getElementById('f-country').value.trim();
   const phone      = (document.getElementById('f-phone-prefix')?.value || '') +
                      ' ' + (document.getElementById('f-phone')?.value.trim() || '');
@@ -1340,6 +1563,7 @@ function handleSubmit() {
     first_name:  firstName,
     last_name:   lastName,
     city,
+    province,
     country,
     phone,
     linkedin,
@@ -1359,6 +1583,7 @@ function handleSubmit() {
     if (success) {
       // Save profile snapshot and reveal My Profile nav button
       savedProfile = collectProfileData();
+      allCandidateProfiles.push({ ...savedProfile, submittedAt: new Date().toISOString() });
       const mpBtn = document.getElementById('nav-btn-myprofile');
       if (mpBtn) mpBtn.style.display = '';
       showView('success');
@@ -1395,6 +1620,191 @@ function handleSubmit() {
     console.info('EmailJS not configured — skipping send.');
     setTimeout(() => finish(true), 1800);
   }
+}
+
+// ─────────────────────────────────────────
+// GEO VALIDATION (GeoNames API)
+// ─────────────────────────────────────────
+
+const GEO_USER = 'demo'; // GeoNames free demo user — replace with your username from geonames.org for production
+let geoCountryCode = '';   // ISO 2-letter code of selected country
+let geoCityDebounce = null;
+let geoCityValid   = false;
+let geoCitySuggestions = [];
+let geoSelectedCity = null;
+
+// Map country names in the dropdown to ISO codes
+const COUNTRY_ISO = {
+  "Austria":"AT","Belgium":"BE","Canada":"CA","Denmark":"DK","Finland":"FI","France":"FR",
+  "Germany":"DE","Italy":"IT","Netherlands":"NL","Norway":"NO","Poland":"PL","Portugal":"PT",
+  "Spain":"ES","Sweden":"SE","Switzerland":"CH","United Kingdom":"GB","United States":"US",
+  // IT names
+  "Austria":"AT","Belgio":"BE","Canada":"CA","Danimarca":"DK","Finlandia":"FI","Francia":"FR",
+  "Germania":"DE","Italia":"IT","Paesi Bassi":"NL","Norvegia":"NO","Polonia":"PL","Portogallo":"PT",
+  "Spagna":"ES","Svezia":"SE","Svizzera":"CH","Regno Unito":"GB","Stati Uniti":"US",
+  // ES names
+  "Bélgica":"BE","Dinamarca":"DK","Finlandia":"FI","Francia":"FR","Alemania":"DE",
+  "Países Bajos":"NL","Noruega":"NO","Polonia":"PL","Portugal":"PT","España":"ES",
+  "Suecia":"SE","Suiza":"CH","Reino Unido":"GB","Estados Unidos":"US",
+  // DE names
+  "Österreich":"AT","Belgien":"BE","Dänemark":"DK","Finnland":"FI","Frankreich":"FR",
+  "Niederlande":"NL","Norwegen":"NO","Spanien":"ES","Schweden":"SE","Schweiz":"CH",
+  "Vereinigtes Königreich":"GB","Vereinigte Staaten":"US",
+  // FR names
+  "Autriche":"AT","Belgique":"BE","Danemark":"DK","Finlande":"FI","Allemagne":"DE",
+  "Pays-Bas":"NL","Norvège":"NO","Pologne":"PL","Espagne":"ES","Suède":"SE",
+  "Royaume-Uni":"GB","États-Unis":"US",
+  // Others shared
+  "Other":"","Altro":"","Otro":"","Sonstiges":"","Autre":""
+};
+
+function onCountryChange() {
+  const sel   = document.getElementById('f-country');
+  const cityEl = document.getElementById('f-city');
+  const provEl = document.getElementById('f-province');
+
+  const countryName = sel.value;
+  geoCountryCode = COUNTRY_ISO[countryName] || '';
+
+  // Reset city and province
+  cityEl.value = '';
+  provEl.value = '';
+  geoCityValid = false;
+  geoSelectedCity = null;
+  setCityStatus('', '');
+  setGeoError('');
+  document.getElementById('city-dropdown').innerHTML = '';
+  document.getElementById('city-dropdown').classList.remove('open');
+
+  if (countryName && countryName !== '—') {
+    cityEl.disabled = false;
+    cityEl.placeholder = 'Type a city…';
+  } else {
+    cityEl.disabled = true;
+    cityEl.placeholder = 'Select a country first';
+  }
+}
+
+function onCityInput(val) {
+  geoCityValid = false;
+  geoSelectedCity = null;
+  setCityStatus('', '');
+  document.getElementById('f-province').value = '';
+
+  clearTimeout(geoCityDebounce);
+  const dropdown = document.getElementById('city-dropdown');
+
+  if (val.length < 2) {
+    dropdown.innerHTML = '';
+    dropdown.classList.remove('open');
+    document.getElementById('city-spinner').style.display = 'none';
+    return;
+  }
+
+  document.getElementById('city-spinner').style.display = 'block';
+
+  geoCityDebounce = setTimeout(() => fetchCitySuggestions(val), 380);
+}
+
+async function fetchCitySuggestions(query) {
+  const spinner  = document.getElementById('city-spinner');
+  const dropdown = document.getElementById('city-dropdown');
+
+  const countryParam = geoCountryCode ? `&country=${geoCountryCode}` : '';
+  const url = `https://secure.geonames.org/searchJSON?name_startsWith=${encodeURIComponent(query)}&featureClass=P&maxRows=8&username=${GEO_USER}${countryParam}&style=MEDIUM`;
+
+  try {
+    const res  = await fetch(url);
+    const data = await res.json();
+    spinner.style.display = 'none';
+
+    if (!data.geonames || data.geonames.length === 0) {
+      geoCitySuggestions = [];
+      dropdown.innerHTML = `<li style="color:var(--gray-400);cursor:default;font-style:italic">No cities found</li>`;
+      dropdown.classList.add('open');
+      return;
+    }
+
+    geoCitySuggestions = data.geonames;
+    dropdown.innerHTML = '';
+    data.geonames.forEach((place, i) => {
+      const li = document.createElement('li');
+      const admin = [place.adminName1, place.countryName].filter(Boolean).join(', ');
+      li.innerHTML = `<span style="font-weight:500">${escHtml(place.name)}</span><span class="geo-sub">${escHtml(admin)}</span>`;
+      li.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        selectCity(place);
+      });
+      dropdown.appendChild(li);
+    });
+    dropdown.classList.add('open');
+
+  } catch (err) {
+    spinner.style.display = 'none';
+    console.warn('GeoNames error:', err);
+    setGeoError('Could not reach the location service. Please check your connection.');
+  }
+}
+
+function selectCity(place) {
+  const cityEl = document.getElementById('f-city');
+  const provEl = document.getElementById('f-province');
+  const dropdown = document.getElementById('city-dropdown');
+
+  cityEl.value  = place.name;
+  provEl.value  = place.adminName1 || '—';
+  geoCityValid  = true;
+  geoSelectedCity = place;
+
+  dropdown.classList.remove('open');
+  setCityStatus('ok', '✓ Verified');
+  setGeoError('');
+
+  // Auto-fill country if not already set
+  const sel = document.getElementById('f-country');
+  if (!sel.value && place.countryName) {
+    // Try to match by countryName
+    Array.from(sel.options).forEach(opt => {
+      if (COUNTRY_ISO[opt.value] === place.countryCode) sel.value = opt.value;
+    });
+    geoCountryCode = place.countryCode;
+  }
+}
+
+function showCitySuggestions() {
+  const dropdown = document.getElementById('city-dropdown');
+  if (dropdown.children.length > 0) dropdown.classList.add('open');
+}
+
+function hideCitySuggestions() {
+  setTimeout(() => {
+    const dropdown = document.getElementById('city-dropdown');
+    dropdown.classList.remove('open');
+
+    // Validate: if user typed something but didn't select from list
+    const cityEl = document.getElementById('f-city');
+    if (cityEl.value.trim() && !geoCityValid) {
+      setCityStatus('err', '✗ Not verified');
+      setGeoError('Please select a city from the suggestions to verify it exists.');
+    } else if (!cityEl.value.trim()) {
+      setCityStatus('', '');
+    }
+  }, 180);
+}
+
+function setCityStatus(type, text) {
+  const el = document.getElementById('city-status');
+  if (!el) return;
+  el.textContent = text;
+  el.className = 'geo-status' + (type ? ' ' + type : '');
+}
+
+function setGeoError(msg) {
+  const box = document.getElementById('geo-error');
+  const txt = document.getElementById('geo-error-text');
+  if (!box || !txt) return;
+  if (msg) { txt.textContent = msg; box.style.display = 'block'; }
+  else { box.style.display = 'none'; txt.textContent = ''; }
 }
 
 // ─────────────────────────────────────────
@@ -1655,6 +2065,7 @@ function showRejected() {
 
 function enterRecruiterPortal() {
   recruiterVerified = true;
+  verifiedRecruiters.push({ ...recruiterProfile, verifiedAt: new Date().toISOString() });
   document.getElementById('rec-gate').style.display = 'none';
   const portal = document.getElementById('rec-portal');
   portal.style.display = 'flex';
@@ -2031,7 +2442,12 @@ function showView(name) {
     if (notice) notice.style.display = EMAILJS_CONFIGURED ? 'none' : 'block';
   }
   if (name === 'myprofile') renderMyProfile();
-  if (name === 'recruiter') {    // If not yet verified, show gate at step 1; if verified, show portal
+  if (name === 'admin') {
+    if (!adminAuthenticated) { openAdminModal(); return; }
+    initAdminPortal();
+  }
+  if (name === 'recruiter') {
+    // If not yet verified, show gate at step 1; if verified, show portal
     if (!recruiterVerified) {
       document.getElementById('rec-gate').style.display = 'flex';
       document.getElementById('rec-portal').style.display = 'none';
@@ -2054,6 +2470,7 @@ function collectProfileData() {
   const firstName = document.getElementById('f-firstName')?.value.trim() || '';
   const lastName  = document.getElementById('f-lastName')?.value.trim() || '';
   const city      = document.getElementById('f-city')?.value.trim() || '';
+  const province  = document.getElementById('f-province')?.value.trim() || '';
   const country   = document.getElementById('f-country')?.value.trim() || '';
   // Contact
   const email     = document.getElementById('f-email')?.value.trim() || '';
@@ -2096,7 +2513,7 @@ function collectProfileData() {
     awardYear: document.getElementById('award-yr-' + id)?.value || '',
   })).filter(e => e.awardName);
 
-  return { firstName, lastName, city, country, email, phone, linkedin, summary, erp, exps, edus, certs, awards };
+  return { firstName, lastName, city, province, country, email, phone, linkedin, summary, erp, exps, edus, certs, awards };
 }
 
 function renderMyProfile() {
@@ -2112,7 +2529,7 @@ function renderMyProfile() {
   const fn = document.getElementById('mp-fullname');
   if (fn) fn.textContent = fullName;
   const loc = document.getElementById('mp-location');
-  if (loc) loc.innerHTML = `<i class="fa-solid fa-location-dot" style="color:var(--blue);margin-right:5px"></i>${[p.city, p.country].filter(Boolean).join(', ')}`;
+  if (loc) loc.innerHTML = `<i class="fa-solid fa-location-dot" style="color:var(--blue);margin-right:5px"></i>${[p.city, p.province, p.country].filter(Boolean).join(', ')}`;
 
   // Contact bar
   const bar = document.getElementById('mp-contact-bar');
@@ -2210,6 +2627,224 @@ function formatDate(ym) {
   if (!month) return year;
   const d = new Date(parseInt(year), parseInt(month) - 1);
   return d.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' });
+}
+
+// ─────────────────────────────────────────
+// ADMIN PORTAL
+// ─────────────────────────────────────────
+
+const ADMIN_PASSWORD = 'VFT@Admin2026'; // change this to your own password
+let adminAuthenticated = false;
+let adminTab = 'candidates'; // 'candidates' | 'recruiters'
+
+// Store for all submitted candidate profiles
+const allCandidateProfiles = []; // populated on each form submit
+// recruiters come from the CANDIDATES sample array + any verified recruiter sessions
+const verifiedRecruiters  = []; // populated when a recruiter completes gate
+
+function openAdminModal() {
+  const modal = document.getElementById('admin-modal');
+  modal.style.display = 'flex';
+  document.getElementById('admin-pw-input').value = '';
+  document.getElementById('admin-pw-error').style.display = 'none';
+  setTimeout(() => document.getElementById('admin-pw-input').focus(), 80);
+}
+
+function closeAdminModal() {
+  document.getElementById('admin-modal').style.display = 'none';
+}
+
+function checkAdminPw() {
+  const pw = document.getElementById('admin-pw-input').value;
+  if (pw === ADMIN_PASSWORD) {
+    adminAuthenticated = true;
+    closeAdminModal();
+    showView('admin');
+  } else {
+    document.getElementById('admin-pw-error').style.display = 'block';
+    document.getElementById('admin-pw-input').value = '';
+    document.getElementById('admin-pw-input').focus();
+  }
+}
+
+function setAdminTab(tab, el) {
+  adminTab = tab;
+  document.querySelectorAll('#admin-tab-cand,#admin-tab-rec').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderAdminList();
+  // Clear detail
+  document.getElementById('admin-detail').innerHTML = `
+    <div class="chat-empty-state">
+      <i class="fa-solid fa-shield-halved" style="color:var(--gray-300)"></i>
+      <p>Select a profile to view full details.</p>
+    </div>`;
+}
+
+function initAdminPortal() {
+  renderAdminList();
+}
+
+function renderAdminList() {
+  const list  = document.getElementById('admin-list');
+  const query = (document.getElementById('admin-search')?.value || '').toLowerCase();
+  if (!list) return;
+  list.innerHTML = '';
+
+  if (adminTab === 'candidates') {
+    const data = allCandidateProfiles.filter(p =>
+      !query ||
+      (p.firstName + ' ' + p.lastName).toLowerCase().includes(query) ||
+      p.email.toLowerCase().includes(query) ||
+      p.country.toLowerCase().includes(query) ||
+      (p.erp || []).some(e => e.toLowerCase().includes(query))
+    );
+    if (data.length === 0) {
+      list.innerHTML = `<div style="padding:24px;text-align:center;font-size:13px;color:var(--gray-400)">No candidates yet.</div>`;
+      return;
+    }
+    data.forEach((p, i) => {
+      const fullName = p.firstName + ' ' + p.lastName;
+      const color = avatarColor(fullName);
+      const div = document.createElement('div');
+      div.className = 'cand-card';
+      div.onclick = () => showAdminCandidateDetail(p);
+      div.innerHTML = `
+        <div class="cand-avatar" style="background:${color}">${initials(fullName)}</div>
+        <div class="cand-info">
+          <div class="cand-name">${escHtml(fullName)}</div>
+          <div class="cand-meta">${escHtml(p.city)}${p.country ? ', ' + escHtml(p.country) : ''}</div>
+          <div class="cand-meta">${(p.erp||[]).slice(0,2).join(' · ')}</div>
+        </div>`;
+      list.appendChild(div);
+    });
+  } else {
+    const data = verifiedRecruiters.filter(r =>
+      !query ||
+      r.name.toLowerCase().includes(query) ||
+      r.company.toLowerCase().includes(query) ||
+      r.url.toLowerCase().includes(query)
+    );
+    if (data.length === 0) {
+      list.innerHTML = `<div style="padding:24px;text-align:center;font-size:13px;color:var(--gray-400)">No verified recruiters yet.</div>`;
+      return;
+    }
+    data.forEach(r => {
+      const div = document.createElement('div');
+      div.className = 'cand-card';
+      div.onclick = () => showAdminRecruiterDetail(r);
+      div.innerHTML = `
+        <div class="cand-avatar" style="background:${avatarColor(r.name)}">${initials(r.name)}</div>
+        <div class="cand-info">
+          <div class="cand-name">${escHtml(r.name)}</div>
+          <div class="cand-meta">${escHtml(r.company)}</div>
+          <div class="cand-meta" style="color:var(--blue)">linkedin.com/in/${escHtml(r.url)}</div>
+        </div>
+        <span style="font-size:11px;background:#ECFDF5;color:#15803D;border:1px solid #BBF7D0;border-radius:10px;padding:2px 8px;white-space:nowrap">Verified</span>`;
+      list.appendChild(div);
+    });
+  }
+}
+
+function showAdminCandidateDetail(p) {
+  const detail = document.getElementById('admin-detail');
+  const fullName = p.firstName + ' ' + p.lastName;
+  const color = avatarColor(fullName);
+
+  const expHTML = (p.exps || []).map(e => `
+    <div style="margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--gray-100)">
+      <div style="font-weight:600;font-size:14px">${escHtml(e.jobTitle)}</div>
+      <div style="font-size:13px;color:var(--blue)">${escHtml(e.company)}</div>
+      <div style="font-size:12px;color:var(--gray-400);margin-top:2px">${formatDate(e.startDate)} – ${e.current ? 'Present' : formatDate(e.endDate)}</div>
+      ${e.description ? `<p style="font-size:13px;color:var(--gray-600);margin-top:6px;line-height:1.6">${escHtml(e.description)}</p>` : ''}
+    </div>`).join('') || '<p style="color:var(--gray-400);font-size:13px">None provided.</p>';
+
+  const certHTML = (p.certs || []).map(c => `
+    <div style="font-size:13px;margin-bottom:6px"><strong>${escHtml(c.certName)}</strong> · <span style="color:var(--gray-500)">${escHtml(c.issuer)}</span> ${c.certYear ? '· ' + c.certYear : ''}</div>`
+  ).join('') || '<p style="color:var(--gray-400);font-size:13px">None provided.</p>';
+
+  detail.innerHTML = `
+    <div style="padding:28px;overflow-y:auto;height:100%">
+      <!-- Header -->
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:24px;flex-wrap:wrap">
+        <div style="width:52px;height:52px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;flex-shrink:0">${initials(fullName)}</div>
+        <div>
+          <div style="font-size:18px;font-weight:600">${escHtml(fullName)}</div>
+          <div style="font-size:13px;color:var(--gray-500)"><i class="fa-solid fa-location-dot" style="color:var(--blue);margin-right:4px"></i>${[p.city, p.province, p.country].filter(Boolean).join(', ')}</div>
+        </div>
+        <span style="margin-left:auto;font-size:11px;background:#ECFDF5;color:#15803D;border:1px solid #BBF7D0;border-radius:10px;padding:3px 12px;font-weight:600"><i class="fa-solid fa-circle-check"></i> Profile live</span>
+      </div>
+
+      <!-- Contact (visible to admin) -->
+      <div class="form-card" style="margin-bottom:16px">
+        <div class="section-header"><i class="fa-solid fa-address-book"></i><h3>Contact details</h3></div>
+        <div style="display:flex;flex-direction:column;gap:8px;font-size:13px">
+          <div><i class="fa-solid fa-envelope" style="color:var(--blue);width:16px"></i> <a href="mailto:${escHtml(p.email)}" style="color:var(--blue)">${escHtml(p.email)}</a></div>
+          ${p.phone?.trim().length > 2 ? `<div><i class="fa-solid fa-phone" style="color:var(--blue);width:16px"></i> ${escHtml(p.phone)}</div>` : ''}
+          ${p.linkedin ? `<div><i class="fa-brands fa-linkedin" style="color:#0A66C2;width:16px"></i> <a href="${escHtml(p.linkedin)}" target="_blank" style="color:#0A66C2">${escHtml(p.linkedin)}</a></div>` : ''}
+        </div>
+      </div>
+
+      <!-- ERP Systems -->
+      <div class="form-card" style="margin-bottom:16px">
+        <div class="section-header"><i class="fa-solid fa-microchip"></i><h3>ERP Systems</h3></div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          ${(p.erp||[]).map(s => `<span style="font-size:13px;padding:4px 12px;background:var(--blue-light);border:1px solid var(--blue-mid);border-radius:20px;color:var(--blue)">${escHtml(s)}</span>`).join('') || '<span style="color:var(--gray-400);font-size:13px">None selected.</span>'}
+        </div>
+      </div>
+
+      <!-- Summary -->
+      <div class="form-card" style="margin-bottom:16px">
+        <div class="section-header"><i class="fa-solid fa-id-card"></i><h3>Professional summary</h3></div>
+        <p style="font-size:14px;color:var(--gray-700);line-height:1.75">${escHtml(p.summary || '—')}</p>
+      </div>
+
+      <!-- Experience -->
+      <div class="form-card" style="margin-bottom:16px">
+        <div class="section-header"><i class="fa-solid fa-briefcase"></i><h3>Work experience</h3></div>
+        ${expHTML}
+      </div>
+
+      <!-- Certifications -->
+      <div class="form-card">
+        <div class="section-header"><i class="fa-solid fa-certificate"></i><h3>Certifications</h3></div>
+        ${certHTML}
+      </div>
+    </div>`;
+}
+
+function showAdminRecruiterDetail(r) {
+  const detail = document.getElementById('admin-detail');
+  const color  = avatarColor(r.name);
+  detail.innerHTML = `
+    <div style="padding:28px;overflow-y:auto;height:100%">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:24px;flex-wrap:wrap">
+        <div style="width:52px;height:52px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;flex-shrink:0">${initials(r.name)}</div>
+        <div>
+          <div style="font-size:18px;font-weight:600">${escHtml(r.name)}</div>
+          <div style="font-size:13px;color:var(--gray-500)">${escHtml(r.company)}</div>
+        </div>
+        <span style="margin-left:auto;font-size:11px;background:#ECFDF5;color:#15803D;border:1px solid #BBF7D0;border-radius:10px;padding:3px 12px;font-weight:600"><i class="fa-solid fa-circle-check"></i> Verified Recruiter</span>
+      </div>
+      <div class="form-card">
+        <div class="section-header"><i class="fa-brands fa-linkedin" style="color:#0A66C2"></i><h3>LinkedIn Recruiter</h3></div>
+        <div style="font-size:13px;display:flex;flex-direction:column;gap:10px">
+          <div><strong>Full name:</strong> ${escHtml(r.name)}</div>
+          <div><strong>Company / Agency:</strong> ${escHtml(r.company)}</div>
+          <div><strong>LinkedIn URL:</strong> <a href="https://linkedin.com/in/${escHtml(r.url)}" target="_blank" style="color:#0A66C2">linkedin.com/in/${escHtml(r.url)}</a></div>
+          <div><strong>Verified on:</strong> ${new Date(r.verifiedAt).toLocaleString()}</div>
+        </div>
+      </div>
+      <div class="form-card" style="margin-top:16px">
+        <div class="section-header"><i class="fa-solid fa-comments"></i><h3>Conversations opened</h3></div>
+        ${Object.entries(conversations).filter(([,c]) => c.opened).length === 0
+          ? '<p style="font-size:13px;color:var(--gray-400)">No conversations started yet.</p>'
+          : Object.entries(conversations).filter(([,c]) => c.opened).map(([cid, c]) => {
+              const cand = CANDIDATES.find(x => x.id === parseInt(cid));
+              return cand ? `<div style="font-size:13px;margin-bottom:6px"><i class="fa-solid fa-comment" style="color:var(--blue);margin-right:6px"></i>${escHtml(cand.name)} · ${c.messages.length} message${c.messages.length !== 1 ? 's' : ''}</div>` : '';
+            }).join('')
+        }
+      </div>
+    </div>`;
 }
 
 // ─────────────────────────────────────────
