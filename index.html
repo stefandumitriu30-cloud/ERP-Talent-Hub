@@ -4573,7 +4573,9 @@ function toggleMiaSound() {
     btn.classList.add('active');
     icon.className    = 'fa-solid fa-volume-high';
     label.textContent = t('mia.soundOn');
-    miaSpeak("Hi! I'm Mia — great to hear you! I'll guide you through every step. Just ask me anything! 😊");
+    // Read the current greeting in the current language
+    const script = MIA_SCRIPTS[miaContext] || MIA_SCRIPTS['home'];
+    miaSpeak(script.greeting);
   } else {
     btn.classList.remove('active');
     icon.className    = 'fa-solid fa-volume-xmark';
