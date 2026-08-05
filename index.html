@@ -1016,7 +1016,7 @@ input[type=file].photo-input{display:none}
         <span style="display:inline-flex;align-items:center;gap:5px;background:#ECFDF5;border:1px solid #BBF7D0;border-radius:20px;padding:5px 14px;font-size:12px;font-weight:600;color:#15803D">
           <i class="fa-solid fa-circle-check"></i> <span data-i18n="mp.live">Profile live</span>
         </span>
-        <button class="btn-outline btn-sm" onclick="showView('form')" style="font-size:13px">
+        <button class="btn-outline btn-sm" onclick="editProfile()" style="font-size:13px">
           <i class="fa-solid fa-pen" style="margin-right:6px"></i><span data-i18n="mp.edit">Edit profile</span>
         </button>
       </div>
@@ -3266,6 +3266,9 @@ function showView(name) {
     if (notice) notice.style.display = EMAILJS_CONFIGURED ? 'none' : 'block';
   }
   if (name === 'myprofile') renderMyProfile();
+  if (name === 'form' && savedProfile) {
+    setTimeout(() => populateFormFromProfile(savedProfile), 80);
+  }
   if (name === 'admin') initAdminPortal();
   if (name === 'recruiter') {
     if (!recruiterVerified) {
@@ -5038,6 +5041,165 @@ function initMia() {
       miaHintTimer = setTimeout(() => { hint.style.display = 'none'; }, 7000);
     }
   }, 3000);
+}
+
+// ─────────────────────────────────────────
+// EDIT PROFILE — pre-fill form with existing data
+// ─────────────────────────────────────────
+
+function editProfile() {
+  if (!savedProfile) { showView('form'); return; }
+  showView('form');
+  // Wait for DOM to render, then populate
+  setTimeout(() => populateFormFromProfile(savedProfile), 50);
+}
+
+function populateFormFromProfile(p) {
+  if (!p) return;
+
+  // ── Personal info ──
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
+  set('f-firstName', p.firstName);
+  set('f-lastName',  p.lastName);
+
+  // Country — trigger onCountryChange to enable city field
+  const countryEl = document.getElementById('f-country');
+  if (countryEl && p.country) {
+    countryEl.value = p.country;
+    onCountryChange();
+  }
+
+  // City — set directly and mark as verified
+  const cityEl = document.getElementById('f-city');
+  if (cityEl && p.city) {
+    cityEl.value = p.city;
+    geoCityValid = true;
+    setCityStatus('ok', '✓ Verified');
+  }
+
+  // Province — set directly
+  const provEl = document.getElementById('f-province');
+  if (provEl && p.province) provEl.value = p.province;
+
+  // ── Contact ──
+  set('f-linkedin', p.linkedin);
+  set('f-summary',  p.summary);
+
+  // Phone — split prefix and number
+  if (p.phone) {
+    const parts = p.phone.trim().split(' ');
+    const prefix = parts[0];
+    const number = parts.slice(1).join(' ');
+    const prefixEl = document.getElementById('f-phone-prefix');
+    if (prefixEl) prefixEl.value = prefix;
+    set('f-phone', number);
+  }
+
+  // Email (read-only — already set from login)
+  set('f-email', p.email || currentUser?.email || '');
+
+  // ── ERP systems ──
+  selectedErp = new Set(p.erp || []);
+  buildErpToggles();
+
+  // ── Photo ──
+  if (p.photo) {
+    candPhotoBase64 = p.photo;
+    renderCandPhotoPreview(p.photo);
+  }
+
+  // ── Work experience ──
+  if (p.exps && p.exps.length > 0) {
+    // Clear default empty entry
+    entries.exp = [];
+    document.getElementById('exp-list').innerHTML = '';
+    p.exps.forEach(exp => {
+      const id = Date.now() + Math.random();
+      entries.exp.push(id);
+      const div = document.createElement('div');
+      div.className = 'entry-block';
+      div.id = 'entry-exp-' + id;
+      div.innerHTML = buildEntryHTML('exp', id);
+      document.getElementById('exp-list').appendChild(div);
+      // Populate fields
+      setTimeout(() => {
+        const s = (fid, val) => { const el = document.getElementById(fid); if (el) el.value = val || ''; };
+        s('exp-title-' + id, exp.jobTitle);
+        s('exp-co-' + id,    exp.company);
+        s('exp-desc-' + id,  exp.description);
+        // Dates via month picker
+        if (exp.startDate) { document.getElementById('exp-start-' + id).value = exp.startDate; const mpv = document.getElementById('mpv-exp-start-' + id); if (mpv) { const [y,m] = exp.startDate.split('-'); mpv.textContent = MONTHS_EN[parseInt(m)-1] + ' ' + y; mpv.style.color='var(--gray-900)'; } }
+        if (exp.endDate && !exp.current) { document.getElementById('exp-end-' + id).value = exp.endDate; const mpv = document.getElementById('mpv-exp-end-' + id); if (mpv) { const [y,m] = exp.endDate.split('-'); mpv.textContent = MONTHS_EN[parseInt(m)-1] + ' ' + y; mpv.style.color='var(--gray-900)'; } }
+        if (exp.current) { const cb = document.getElementById('exp-curr-' + id); if (cb) { cb.checked = true; toggleCurrent(id); } }
+      }, 60);
+    });
+  }
+
+  // ── Education ──
+  if (p.edus && p.edus.length > 0) {
+    entries.edu = [];
+    document.getElementById('edu-list').innerHTML = '';
+    p.edus.forEach(edu => {
+      const id = Date.now() + Math.random();
+      entries.edu.push(id);
+      const div = document.createElement('div');
+      div.className = 'entry-block';
+      div.id = 'entry-edu-' + id;
+      div.innerHTML = buildEntryHTML('edu', id);
+      document.getElementById('edu-list').appendChild(div);
+      setTimeout(() => {
+        const s = (fid, val) => { const el = document.getElementById(fid); if (el) el.value = val || ''; };
+        s('edu-deg-' + id,  edu.degree);
+        s('edu-inst-' + id, edu.institution);
+        s('edu-yr-' + id,   edu.gradYear);
+      }, 60);
+    });
+  }
+
+  // ── Certifications ──
+  if (p.certs && p.certs.length > 0) {
+    entries.cert = [];
+    document.getElementById('cert-list').innerHTML = '';
+    p.certs.forEach(cert => {
+      const id = Date.now() + Math.random();
+      entries.cert.push(id);
+      const div = document.createElement('div');
+      div.className = 'entry-block';
+      div.id = 'entry-cert-' + id;
+      div.innerHTML = buildEntryHTML('cert', id);
+      document.getElementById('cert-list').appendChild(div);
+      setTimeout(() => {
+        const s = (fid, val) => { const el = document.getElementById(fid); if (el) el.value = val || ''; };
+        s('cert-name-' + id, cert.certName);
+        s('cert-iss-' + id,  cert.issuer);
+        s('cert-yr-' + id,   cert.certYear);
+      }, 60);
+    });
+  }
+
+  // ── Awards ──
+  if (p.awards && p.awards.length > 0) {
+    entries.award = [];
+    document.getElementById('award-list').innerHTML = '';
+    p.awards.forEach(award => {
+      const id = Date.now() + Math.random();
+      entries.award.push(id);
+      const div = document.createElement('div');
+      div.className = 'entry-block';
+      div.id = 'entry-award-' + id;
+      div.innerHTML = buildEntryHTML('award', id);
+      document.getElementById('award-list').appendChild(div);
+      setTimeout(() => {
+        const s = (fid, val) => { const el = document.getElementById(fid); if (el) el.value = val || ''; };
+        s('award-name-' + id, award.awardName);
+        s('award-org-' + id,  award.awardOrg);
+        s('award-yr-' + id,   award.awardYear);
+      }, 60);
+    });
+  }
+
+  // Scroll to top of form
+  window.scrollTo(0, 0);
 }
 
 // ─────────────────────────────────────────
