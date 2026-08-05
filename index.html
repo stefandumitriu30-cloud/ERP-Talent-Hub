@@ -377,7 +377,69 @@ footer strong{color:rgba(255,255,255,.75)}
 .mp-month.selected{background:var(--blue);color:#fff}
 .mp-clear{width:100%;background:none;border:1px solid var(--gray-200);border-radius:6px;padding:5px;font-size:12px;color:var(--gray-400);cursor:pointer;min-height:unset}
 .mp-clear:hover{border-color:var(--gray-300);color:var(--gray-600)}
-/* ─── AUTH MODAL ─── */
+/* ─── MIA AI ASSISTANT ─── */
+.mia-fab{position:fixed;bottom:28px;left:28px;z-index:450;display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+.mia-bubble-wrap{display:flex;align-items:flex-end;gap:10px}
+.mia-avatar-btn{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#7C3AED,#2563EB);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(124,58,237,.4);transition:transform .2s,box-shadow .2s;flex-shrink:0;position:relative}
+.mia-avatar-btn:hover{transform:scale(1.08);box-shadow:0 6px 24px rgba(124,58,237,.5)}
+.mia-avatar-btn img{width:100%;height:100%;border-radius:50%;object-fit:cover}
+.mia-avatar-btn .mia-initials{font-size:18px;font-weight:700;color:#fff;letter-spacing:-.5px}
+.mia-pulse{position:absolute;top:-2px;right:-2px;width:14px;height:14px;border-radius:50%;background:#22C55E;border:2px solid #fff;animation:mia-pulse 2s infinite}
+@keyframes mia-pulse{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.4)}50%{box-shadow:0 0 0 6px rgba(34,197,94,0)}}
+.mia-hint-bubble{background:var(--white);border:1px solid var(--gray-200);border-radius:14px 14px 14px 2px;padding:10px 14px;max-width:220px;box-shadow:var(--shadow-md);animation:slideUp .25s ease;cursor:pointer}
+.mia-hint-bubble p{font-size:12px;color:var(--gray-700);margin:0;line-height:1.5}
+.mia-hint-bubble strong{color:#7C3AED}
+@keyframes slideUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+/* Mia Panel */
+.mia-panel{position:fixed;bottom:100px;left:28px;width:340px;max-width:calc(100vw - 56px);background:var(--white);border:1px solid var(--gray-200);border-radius:18px;box-shadow:0 12px 48px rgba(0,0,0,.15);z-index:451;display:none;flex-direction:column;max-height:520px;overflow:hidden;animation:slideUp .2s ease}
+.mia-panel.open{display:flex}
+.mia-panel-header{background:linear-gradient(135deg,#7C3AED,#2563EB);padding:16px 18px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.mia-header-avatar{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0;border:2px solid rgba(255,255,255,.4)}
+.mia-header-info{flex:1}
+.mia-header-name{font-size:14px;font-weight:600;color:#fff}
+.mia-header-status{font-size:11px;color:rgba(255,255,255,.75);display:flex;align-items:center;gap:4px}
+.mia-header-status::before{content:'';width:6px;height:6px;border-radius:50%;background:#22C55E;display:inline-block}
+.mia-header-actions{display:flex;align-items:center;gap:6px}
+.mia-sound-btn{background:rgba(255,255,255,.15);border:none;border-radius:8px;padding:6px 8px;cursor:pointer;color:#fff;font-size:13px;transition:background .15s;min-height:unset;display:flex;align-items:center;gap:5px}
+.mia-sound-btn:hover{background:rgba(255,255,255,.25)}
+.mia-sound-btn.active{background:rgba(255,255,255,.3)}
+.mia-sound-label{font-size:11px;font-weight:500}
+.mia-close-btn{background:rgba(255,255,255,.15);border:none;border-radius:8px;padding:6px 8px;cursor:pointer;color:#fff;font-size:13px;min-height:unset}
+.mia-close-btn:hover{background:rgba(255,255,255,.25)}
+.mia-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+.mia-msg{display:flex;align-items:flex-start;gap:8px;animation:slideUp .2s ease}
+.mia-msg-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#7C3AED,#2563EB);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0;margin-top:2px}
+.mia-msg-bubble{background:var(--gray-50);border:1px solid var(--gray-100);border-radius:0 12px 12px 12px;padding:10px 13px;font-size:13px;color:var(--gray-800);line-height:1.6;max-width:260px}
+.mia-msg-bubble strong{color:#7C3AED}
+.mia-msg-bubble .mia-step-list{margin-top:8px;padding-left:16px;display:flex;flex-direction:column;gap:4px}
+.mia-msg-bubble .mia-step-list li{font-size:12px;color:var(--gray-600)}
+.mia-typing{display:flex;align-items:center;gap:4px;padding:10px 13px;background:var(--gray-50);border:1px solid var(--gray-100);border-radius:0 12px 12px 12px}
+.mia-typing span{width:6px;height:6px;border-radius:50%;background:#7C3AED;animation:mia-typing 1.2s infinite}
+.mia-typing span:nth-child(2){animation-delay:.2s}
+.mia-typing span:nth-child(3){animation-delay:.4s}
+@keyframes mia-typing{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-4px);opacity:1}}
+.mia-user-msg{flex-direction:row-reverse}
+.mia-user-msg .mia-msg-bubble{background:#7C3AED;color:#fff;border-color:#7C3AED;border-radius:12px 0 12px 12px}
+.mia-input-area{padding:12px 14px;border-top:1px solid var(--gray-100);flex-shrink:0}
+.mia-input-row{display:flex;gap:8px;align-items:flex-end}
+.mia-textarea{flex:1;resize:none;border-radius:var(--radius);font-size:13px;padding:8px 10px;min-height:38px;max-height:90px;border:1.5px solid var(--gray-300);font-family:'Inter',sans-serif;line-height:1.5}
+.mia-textarea:focus{border-color:#7C3AED;outline:none}
+.mia-send-btn{width:36px;height:36px;border-radius:var(--radius);background:#7C3AED;border:none;color:#fff;font-size:14px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;min-height:unset}
+.mia-send-btn:hover{background:#6D28D9}
+.mia-quick-btns{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.mia-quick-btn{background:var(--white);border:1px solid #7C3AED;border-radius:20px;padding:5px 12px;font-size:11px;color:#7C3AED;cursor:pointer;transition:all .12s;min-height:unset;font-weight:500}
+.mia-quick-btn:hover{background:#7C3AED;color:#fff}
+/* Speaking wave */
+.mia-speaking-wave{display:none;align-items:center;gap:2px;margin-left:6px}
+.mia-speaking-wave.active{display:flex}
+.mia-speaking-wave span{width:3px;border-radius:2px;background:rgba(255,255,255,.8);animation:wave .8s infinite ease-in-out}
+.mia-speaking-wave span:nth-child(1){height:8px;animation-delay:0s}
+.mia-speaking-wave span:nth-child(2){height:14px;animation-delay:.1s}
+.mia-speaking-wave span:nth-child(3){height:10px;animation-delay:.2s}
+.mia-speaking-wave span:nth-child(4){height:16px;animation-delay:.3s}
+.mia-speaking-wave span:nth-child(5){height:8px;animation-delay:.4s}
+@keyframes wave{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.8)}}
+@media(max-width:480px){.mia-panel{left:8px;right:8px;width:auto;bottom:88px}.mia-fab{left:16px;bottom:20px}}
 .auth-modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:600;display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
 .auth-modal{background:var(--white);border-radius:18px;box-shadow:0 24px 64px rgba(0,0,0,.18);width:100%;max-width:420px;overflow:hidden;animation:slideDown .2s ease}
 .auth-modal-header{background:var(--blue);padding:28px 32px 24px;text-align:center}
@@ -1202,6 +1264,50 @@ input[type=file].photo-input{display:none}
       </div>
     </main>
 
+  </div>
+</div>
+
+<!-- ═══════════════════ MIA AI ASSISTANT ═══════════════════ -->
+
+<!-- Mia Chat Panel -->
+<div id="mia-panel" class="mia-panel">
+  <div class="mia-panel-header">
+    <div class="mia-header-avatar">M</div>
+    <div class="mia-header-info">
+      <div class="mia-header-name">Mia</div>
+      <div class="mia-header-status">Your ERP Talent Hub guide</div>
+    </div>
+    <div class="mia-header-actions">
+      <button class="mia-sound-btn" id="mia-sound-btn" onclick="toggleMiaSound()" title="Toggle voice">
+        <i class="fa-solid fa-volume-xmark" id="mia-sound-icon"></i>
+        <span class="mia-sound-label" id="mia-sound-label">Sound off</span>
+      </button>
+      <div class="mia-speaking-wave" id="mia-wave">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+      <button class="mia-close-btn" onclick="closeMiaPanel()" title="Close"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+  </div>
+  <div class="mia-messages" id="mia-messages"></div>
+  <div class="mia-input-area">
+    <div class="mia-quick-btns" id="mia-quick-btns"></div>
+    <div class="mia-input-row">
+      <textarea class="mia-textarea" id="mia-input" rows="1" placeholder="Ask Mia anything…" onkeydown="miaInputKey(event)"></textarea>
+      <button class="mia-send-btn" onclick="miaSendUserMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+    </div>
+  </div>
+</div>
+
+<!-- Mia FAB -->
+<div class="mia-fab" id="mia-fab">
+  <div class="mia-bubble-wrap">
+    <button class="mia-avatar-btn" onclick="toggleMiaPanel()" title="Chat with Mia" aria-label="Open Mia assistant">
+      <span class="mia-initials">M</span>
+      <div class="mia-pulse"></div>
+    </button>
+    <div class="mia-hint-bubble" id="mia-hint" onclick="toggleMiaPanel()" style="display:none">
+      <p id="mia-hint-text">👋 Hi! I'm <strong>Mia</strong>, your guide. Click me to get started!</p>
+    </div>
   </div>
 </div>
 
@@ -2244,6 +2350,8 @@ function gotoStep(n) {
   document.querySelectorAll('.gate-step').forEach(s => s.classList.remove('active'));
   const target = document.getElementById('gate-step-' + n);
   if (target) target.classList.add('active');
+  if (n === 1) setMiaContext('gate1');
+  if (n === 2) setMiaContext('gate2');
 }
 
 function validateGateUrl() {
@@ -3079,6 +3187,10 @@ function showView(name) {
   if (target) target.classList.add('active');
   window.scrollTo(0, 0);
 
+  // Update Mia context
+  const miaCtxMap = { home:'home', form:'form', myprofile:'myprofile', candidate:'candidate', recruiter:'recruiter', success:'success', admin:'admin' };
+  setMiaContext(miaCtxMap[name] || 'home');
+
   if (name === 'success') {
     const notice = document.getElementById('emailjs-setup-notice');
     if (notice) notice.style.display = EMAILJS_CONFIGURED ? 'none' : 'block';
@@ -3553,6 +3665,7 @@ function openAuthModal(mode = 'login', role = null) {
   switchAuthTab(mode);
   if (role) selectAuthRole(role);
   setTimeout(() => document.getElementById('auth-email').focus(), 80);
+  setMiaContext(mode === 'login' ? 'login' : 'register');
 }
 
 function closeAuthModal() {
@@ -3964,6 +4077,482 @@ function renderAvatar(container, photoSrc, initText, color, size = 52, fontSize 
 }
 
 // ─────────────────────────────────────────
+// MIA — AI ONBOARDING ASSISTANT
+// ─────────────────────────────────────────
+
+let miaOpen        = false;
+let miaSoundOn     = false;
+let miaSpeaking    = false;
+let miaCurrentUtterance = null;
+let miaHintTimer   = null;
+let miaContext     = 'home'; // tracks current page context
+
+// ── Context-aware scripts per view/step ──────────────────
+const MIA_SCRIPTS = {
+  home: {
+    greeting: "Hi! I'm **Mia**, your personal guide on ERP Talent Hub 👋\n\nThis platform connects **ERP professionals** with **verified recruiters**. Whether you're looking for a new opportunity or searching for talent, I'll walk you through every step.",
+    hint: "👋 I'm Mia! Need help getting started?",
+    quick: ["I'm a candidate","I'm a recruiter","How does it work?","Tell me about privacy"],
+  },
+  register: {
+    greeting: "Let's create your account! 🎉\n\nFirst, tell me: are you an **ERP Professional** looking for opportunities, or a **Recruiter** searching for talent?\n\nThen fill in your name, email and a secure password (at least 6 characters).",
+    hint: "🔐 Need help registering?",
+    quick: ["What's the difference between roles?","Is my data secure?","Can I change my role later?"],
+  },
+  login: {
+    greeting: "Welcome back! 👋\n\nEnter your **email** and **password** to access your profile.\n\nIf you've forgotten your password, contact the platform administrator.",
+    hint: "🔑 Need help logging in?",
+    quick: ["I forgot my password","I can't find my account"],
+  },
+  form: {
+    greeting: "Let's build your **ERP profile**! 📋\n\nHere's what to fill in:\n1. **Personal info** — name, city, country and province\n2. **Contact details** — email, phone, LinkedIn\n3. **Professional summary** — 200–500 words about your expertise\n4. **ERP systems** — select all the platforms you know\n5. **Work experience** — from most recent to oldest\n6. **Education, certifications & awards**\n\nTake your time — the more complete your profile, the more recruiters will find you!",
+    hint: "📋 I can help you fill in your profile!",
+    quick: ["What should I write in the summary?","How do I add work experience?","Which ERP systems should I select?","Can I edit my profile later?"],
+  },
+  myprofile: {
+    greeting: "This is **your profile** as recruiters will see it 👤\n\nYour contact details are **hidden** until a recruiter requests access and you accept.\n\nYou can edit your profile at any time using the **Edit profile** button. Keep it up to date to maximise your visibility!",
+    hint: "👤 Want to know how recruiters see you?",
+    quick: ["How do I edit my profile?","Who can see my contact details?","What is the selection pipeline?"],
+  },
+  recruiter: {
+    greeting: "Welcome to the **Recruiter Portal**! 🏢\n\nTo access the ERP talent pool, you first need to **verify your LinkedIn Recruiter account**.\n\nThis ensures that all recruiters on the platform are genuine professionals. The verification takes less than a minute.",
+    hint: "🔒 Need help with recruiter verification?",
+    quick: ["What is LinkedIn Recruiter?","Why do I need to verify?","What can I do after verification?"],
+  },
+  candidate: {
+    greeting: "This is your **Messages inbox** 💬\n\nRecruiters will contact you here. Remember: **only verified recruiters can start a conversation** — you can reply once they write first.\n\nYou'll also see your **selection pipeline** here — showing exactly which stage you're at in the hiring process.",
+    hint: "💬 Questions about your messages?",
+    quick: ["How does the chat work?","What is the selection pipeline?","When will recruiters contact me?","What do the pipeline stages mean?"],
+  },
+  gate1: {
+    greeting: "To access the talent pool, I need to **verify your LinkedIn Recruiter licence** 🔍\n\nThis is a 3-step process:\n1. Enter your LinkedIn Recruiter profile URL\n2. We check your account type\n3. Access granted!\n\nClick **Connect with LinkedIn Recruiter** to begin.",
+    hint: "🔍 Need help with verification?",
+    quick: ["What is a LinkedIn Recruiter account?","My profile URL — where do I find it?"],
+  },
+  gate2: {
+    greeting: "Almost there! Please enter:\n\n• Your **LinkedIn profile username** (the part after linkedin.com/in/)\n• Your **full name** as it appears on LinkedIn\n• Your **company or agency** name\n• Optionally, a **profile photo**\n\nThen click **Verify** and I'll check your account!",
+    hint: "❓ How to find your LinkedIn username?",
+    quick: ["Where do I find my LinkedIn username?","What if verification fails?"],
+  },
+  success: {
+    greeting: "Congratulations! 🎉 Your profile is now **live** on ERP Talent Hub!\n\nVerified recruiters can now discover you. Here's what happens next:\n1. Recruiters browse profiles and contact you first\n2. You receive a notification when someone views your profile\n3. You reply in the chat once they open the conversation\n4. Track your selection progress in the pipeline\n\nGood luck! I'm always here if you need guidance 💙",
+    hint: "🎉 Your profile is live! What's next?",
+    quick: ["What happens next?","How will I know if a recruiter is interested?","How do I see my profile?"],
+  },
+  admin: {
+    greeting: "Welcome to the **Admin Dashboard**, Admin! 🛡️\n\nHere you can:\n• View **all registered candidates** and their full profiles\n• View **all verified recruiters** and their LinkedIn details\n• Monitor **conversations** opened between recruiters and candidates\n• Track **selection pipeline** progress\n\nUse the tabs and search to filter users.",
+    hint: "🛡️ Admin guide — click for a quick overview",
+    quick: ["How do I see a candidate's full profile?","How do I count registered users?","How do I see recruiter details?"],
+  },
+};
+
+// ── Fallback AI responses (when no context match) ────────
+const MIA_FALLBACKS = {
+  "how does it work": "ERP Talent Hub works in 3 steps:\n1. **Candidates** register and build their profile\n2. **Verified recruiters** browse the talent pool and contact candidates\n3. **Candidates reply** once a recruiter opens the conversation\n\nYour contact details are always private until you accept a recruiter's request.",
+  "privacy": "Your privacy is our priority 🔒\n\nYour email, phone number and LinkedIn URL are **never shown publicly**. They are only shared with a specific recruiter after they request access and you accept.\n\nOnly verified LinkedIn Recruiter accounts can access the talent pool.",
+  "candidate": "As an **ERP Professional**, you:\n• Build a detailed profile with your experience, certifications and systems\n• Get discovered by verified recruiters\n• Control who sees your contact details\n• Track your selection progress in real time\n\nRegister by clicking **Register** in the top-right corner!",
+  "recruiter": "As a **Recruiter**, you:\n• Verify your LinkedIn Recruiter account to access the talent pool\n• Browse ERP professionals filtered by system, module and seniority\n• Contact candidates directly — you always write first\n• Manage selection stages for each candidate\n\nClick **For recruiters** to get started!",
+  "summary": "Your **professional summary** should be 200–500 words and cover:\n• The **ERP systems** you specialise in (SAP, Oracle, Dynamics…)\n• Your **industry experience** (manufacturing, finance, retail…)\n• Your **key achievements** and projects\n• What makes you **stand out** from other consultants\n\nBe specific — recruiters search by module and industry!",
+  "experience": "For each **work experience** entry:\n• Enter your **job title** and **company name**\n• Select **start and end dates** using the calendar picker\n• Tick **Current position** if you're still there\n• Write a short description of your **responsibilities and achievements**\n\nAdd entries from your **most recent role** going backwards.",
+  "erp systems": "Select **all ERP systems** you have real experience with:\n• SAP S/4HANA, SAP ECC — if you know ABAP, FI/CO, MM, WM, SD…\n• Oracle Fusion, Oracle EBS — finance and supply chain\n• Microsoft Dynamics 365, AX — if you've done implementations\n• Workday — HCM specialists\n• NetSuite, Infor, Sage, IFS — tick all that apply\n\nThe more you select, the more searches you'll appear in!",
+  "pipeline": "The **selection pipeline** has 7 stages:\n1. ✉ **Contacted** — recruiter opened a conversation\n2. 📋 **Screening** — initial profile review\n3. 🎤 **1st Interview** — first interview scheduled\n4. 🎤 **2nd Interview** — second round\n5. 📝 **Assessment** — technical test\n6. 📄 **Offer** — offer extended\n7. ✅ **Hired** — process complete!\n\nYou'll see your current stage in the Messages section.",
+  "linkedin username": "Your LinkedIn **username** is the part in your profile URL after `/in/`.\n\nFor example, if your profile is:\n`linkedin.com/in/sarah-johnson-rec`\n\nYour username is: **sarah-johnson-rec**\n\nFind it by opening LinkedIn → click your profile picture → click **View profile** → look at the URL in your browser.",
+  "edit": "To **edit your profile**, go to **My profile** from the top-right menu → click the **Edit profile** button. This takes you back to the form with all your existing data ready to update. Don't forget to click **Publish profile** again after making changes!",
+  "notification": "You'll receive **notifications** (the 🔔 bell icon) when:\n• A recruiter **views your profile**\n• A recruiter sends you a **connection request**\n• You receive a **new message**\n• Your **selection status changes**\n• A recruiter's status update is **overdue** (5+ working days)\n\nNotifications appear as toasts and are stored in the bell drawer.",
+  "password": "If you've forgotten your password, please contact the platform administrator at **admin@erp-talent-hub.com**. In a future update, a self-service password reset will be available.",
+  "role": "You choose your role (**ERP Professional** or **Recruiter**) when you register. Currently roles cannot be changed after registration — please contact the administrator if you registered with the wrong role.",
+  "default": "I'm not sure I understand your question, but I'm here to help! 😊\n\nYou can ask me about:\n• How to **register or log in**\n• How to **fill in your profile**\n• How the **chat and pipeline** work\n• **Privacy** and data protection\n• **Recruiter verification**\n\nWhat would you like to know?",
+};
+
+// ── Core functions ────────────────────────────────────────
+
+function openMiaPanel() {
+  miaOpen = true;
+  document.getElementById('mia-panel').classList.add('open');
+  document.getElementById('mia-hint').style.display = 'none';
+  clearTimeout(miaHintTimer);
+  if (document.getElementById('mia-messages').children.length === 0) {
+    miaGreet(miaContext);
+  }
+}
+
+function closeMiaPanel() {
+  miaOpen = false;
+  document.getElementById('mia-panel').classList.remove('open');
+  stopMiaSpeech();
+}
+
+function toggleMiaPanel() {
+  miaOpen ? closeMiaPanel() : openMiaPanel();
+}
+
+function miaGreet(ctx) {
+  const script = MIA_SCRIPTS[ctx] || MIA_SCRIPTS['home'];
+  const msgs   = document.getElementById('mia-messages');
+  msgs.innerHTML = '';
+  setTimeout(() => {
+    showMiaTyping();
+    setTimeout(() => {
+      hideMiaTyping();
+      appendMiaMessage(script.greeting);
+      setMiaQuickBtns(script.quick || []);
+      if (miaSoundOn) miaSpeak(script.greeting.replace(/\*\*/g, ''));
+    }, 900);
+  }, 200);
+}
+
+function setMiaContext(ctx) {
+  miaContext = ctx;
+  // Update hint bubble
+  const script = MIA_SCRIPTS[ctx] || MIA_SCRIPTS['home'];
+  document.getElementById('mia-hint-text').innerHTML = script.hint || "👋 Need help? I'm Mia!";
+  // If panel is open, re-greet with new context
+  if (miaOpen) {
+    document.getElementById('mia-messages').innerHTML = '';
+    miaGreet(ctx);
+  } else {
+    // Show hint bubble briefly
+    clearTimeout(miaHintTimer);
+    const hint = document.getElementById('mia-hint');
+    hint.style.display = 'block';
+    miaHintTimer = setTimeout(() => { hint.style.display = 'none'; }, 5000);
+  }
+}
+
+function appendMiaMessage(text, isUser = false) {
+  const msgs = document.getElementById('mia-messages');
+  const row  = document.createElement('div');
+  row.className = 'mia-msg' + (isUser ? ' mia-user-msg' : '');
+
+  const avatar = document.createElement('div');
+  avatar.className = 'mia-msg-avatar';
+  avatar.textContent = isUser ? (currentUser?.name?.[0] || 'U') : 'M';
+  if (isUser) avatar.style.background = avatarColor(currentUser?.name || 'U');
+
+  const bubble = document.createElement('div');
+  bubble.className = 'mia-msg-bubble';
+  bubble.innerHTML = formatMiaText(text);
+
+  row.appendChild(avatar);
+  row.appendChild(bubble);
+  msgs.appendChild(row);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function formatMiaText(text) {
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n(\d+)\.\s/g, (m, n) => `<br><span style="color:#7C3AED;font-weight:600">${n}.</span> `)
+    .replace(/\n•\s/g, '<br>• ')
+    .replace(/\n/g, '<br>');
+}
+
+let miaTypingEl = null;
+function showMiaTyping() {
+  const msgs = document.getElementById('mia-messages');
+  const row  = document.createElement('div');
+  row.className = 'mia-msg';
+  row.id = 'mia-typing-row';
+  const avatar = document.createElement('div');
+  avatar.className = 'mia-msg-avatar'; avatar.textContent = 'M';
+  const typing = document.createElement('div');
+  typing.className = 'mia-typing';
+  typing.innerHTML = '<span></span><span></span><span></span>';
+  row.appendChild(avatar); row.appendChild(typing);
+  msgs.appendChild(row);
+  msgs.scrollTop = msgs.scrollHeight;
+  miaTypingEl = row;
+}
+function hideMiaTyping() {
+  if (miaTypingEl) { miaTypingEl.remove(); miaTypingEl = null; }
+}
+
+function setMiaQuickBtns(btns) {
+  const container = document.getElementById('mia-quick-btns');
+  container.innerHTML = '';
+  btns.forEach(label => {
+    const btn = document.createElement('button');
+    btn.className = 'mia-quick-btn';
+    btn.textContent = label;
+    btn.onclick = () => { miaHandleQuestion(label); };
+    container.appendChild(btn);
+  });
+}
+
+function miaInputKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); miaSendUserMessage(); }
+}
+
+function miaSendUserMessage() {
+  const input = document.getElementById('mia-input');
+  const text  = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  miaHandleQuestion(text);
+}
+
+async function miaHandleQuestion(question) {
+  appendMiaMessage(question, true);
+  setMiaQuickBtns([]);
+  showMiaTyping();
+
+  // Try to find a local answer first (instant)
+  const localAnswer = findLocalAnswer(question);
+  if (localAnswer) {
+    setTimeout(() => {
+      hideMiaTyping();
+      appendMiaMessage(localAnswer);
+      const script = MIA_SCRIPTS[miaContext];
+      if (script?.quick) setMiaQuickBtns(script.quick);
+      if (miaSoundOn) miaSpeak(localAnswer.replace(/\*\*/g,''));
+    }, 700);
+    return;
+  }
+
+  // Otherwise call Claude API for a real AI answer
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1000,
+        system: `You are Mia, a friendly and professional AI assistant embedded in ERP Talent Hub — a platform that connects ERP professionals with verified recruiters. Your job is to guide users step by step through the platform.
+
+The platform has these sections:
+- HOME: landing page with hero, features, ERP systems list
+- REGISTER/LOGIN: auth modal where users choose role (ERP Professional or Recruiter)
+- CV FORM: candidates fill in personal info (city verified via OpenStreetMap), contact details, professional summary, ERP systems, work experience (with calendar date picker), education, certifications, awards, and a profile photo
+- MY PROFILE: read-only view of submitted profile, visible only to the candidate
+- RECRUITER PORTAL: recruiters must first verify their LinkedIn Recruiter account via a 4-step gate, then access the talent pool
+- CANDIDATE INBOX: candidates see messages from recruiters, and their selection pipeline (7 stages: Contacted, Screening, 1st Interview, 2nd Interview, Assessment, Offer, Hired)
+- ADMIN DASHBOARD: admin-only view of all candidates and recruiters (login: admin@erp-talent-hub.com / VFT@Admin2026)
+- NOTIFICATIONS: bell icon shows profile views, connection requests, messages, status changes
+
+Current page context: ${miaContext}
+Current user role: ${currentUser?.role || 'guest'}
+User name: ${currentUser?.name || 'visitor'}
+
+Keep answers concise (max 120 words), warm, and practical. Use **bold** for emphasis. Use line breaks for readability. Never mention competitor platforms. If you don't know something specific about the platform, be honest and suggest contacting the admin.`,
+        messages: [{ role: 'user', content: question }],
+      }),
+    });
+    const data = await response.json();
+    const answer = data.content?.[0]?.text || MIA_FALLBACKS['default'];
+    hideMiaTyping();
+    appendMiaMessage(answer);
+    const script = MIA_SCRIPTS[miaContext];
+    if (script?.quick) setMiaQuickBtns(script.quick);
+    if (miaSoundOn) miaSpeak(answer.replace(/\*\*/g,''));
+  } catch(err) {
+    hideMiaTyping();
+    const fallback = MIA_FALLBACKS['default'];
+    appendMiaMessage(fallback);
+    if (miaSoundOn) miaSpeak(fallback);
+  }
+}
+
+function findLocalAnswer(question) {
+  const q = question.toLowerCase();
+  for (const [key, answer] of Object.entries(MIA_FALLBACKS)) {
+    if (key === 'default') continue;
+    if (q.includes(key)) return answer;
+  }
+  // Context match
+  if (q.includes('summary') || q.includes('sommario') || q.includes('résumé') || q.includes('zusammenfassung')) return MIA_FALLBACKS['summary'];
+  if (q.includes('experience') || q.includes('esperienza') || q.includes('erfahrung')) return MIA_FALLBACKS['experience'];
+  if (q.includes('edit') || q.includes('modif') || q.includes('änder')) return MIA_FALLBACKS['edit'];
+  if (q.includes('notif') || q.includes('bell') || q.includes('alert')) return MIA_FALLBACKS['notification'];
+  if (q.includes('password') || q.includes('forgot')) return MIA_FALLBACKS['password'];
+  if (q.includes('pipeline') || q.includes('stage') || q.includes('step')) return MIA_FALLBACKS['pipeline'];
+  if (q.includes('linkedin') && q.includes('username')) return MIA_FALLBACKS['linkedin username'];
+  return null;
+}
+
+// ── Text-to-speech (feminine voice) ──────────────────────
+// ─────────────────────────────────────────
+// ELEVENLABS VOICE CONFIGURATION
+// ─────────────────────────────────────────
+// Mia uses ElevenLabs for a realistic, sweet, expressive voice.
+// Free tier: 10,000 characters/month — plenty for onboarding.
+//
+// To activate:
+//   1. Go to elevenlabs.io → sign up free
+//   2. Go to your Profile → API Keys → copy your key
+//   3. Go to Voices → choose a voice (recommended: "Aria", "Charlotte" or "Elli")
+//      → click the voice → copy the Voice ID from the URL or sidebar
+//   4. Paste both values below
+
+const ELEVENLABS_API_KEY = 'sk_3b29203b4b56d27973db646aefdd12fae3b3be1f167e1e45';
+const ELEVENLABS_VOICE_ID = 'pFZP5JQG7iQjIQuC4Bku';  // "Lily" — sweet, warm, expressive (default)
+// Other great feminine voice IDs:
+//   Aria:      9BWtsMINqrJLrRacOk9x
+//   Charlotte: XB0fDUnXU5powFXDhCwa
+//   Elli:      MF3mGyEYCl7XYWbV9V6O
+//   Grace:     oWAxZDx7w5VEj9dCyTzz
+//   Lily:      pFZP5JQG7iQjIQuC4Bku  ← current
+
+const ELEVENLABS_READY = ELEVENLABS_API_KEY !== 'YOUR_ELEVENLABS_API_KEY';
+
+let miaAudioQueue   = [];
+let miaAudioPlaying = false;
+let miaCurrentAudio = null;
+
+function toggleMiaSound() {
+  miaSoundOn = !miaSoundOn;
+  const btn   = document.getElementById('mia-sound-btn');
+  const icon  = document.getElementById('mia-sound-icon');
+  const label = document.getElementById('mia-sound-label');
+  if (miaSoundOn) {
+    btn.classList.add('active');
+    icon.className    = 'fa-solid fa-volume-high';
+    label.textContent = 'Sound on';
+    miaSpeak("Hi! I'm Mia — great to hear you! I'll guide you through every step. Just ask me anything! 😊");
+  } else {
+    btn.classList.remove('active');
+    icon.className    = 'fa-solid fa-volume-xmark';
+    label.textContent = 'Sound off';
+    stopMiaSpeech();
+  }
+}
+
+async function miaSpeak(text) {
+  if (!miaSoundOn) return;
+  stopMiaSpeech();
+
+  // Clean markdown for speech
+  const clean = text
+    .replace(/\*\*(.*?)\*\*/g, '$1')
+    .replace(/\n\d+\.\s/g, '. ')
+    .replace(/\n•\s/g, ', ')
+    .replace(/\n/g, ' ')
+    .replace(/https?:\/\/\S+/g, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+
+  if (!clean) return;
+
+  if (ELEVENLABS_READY) {
+    await miaElevenLabsSpeak(clean);
+  } else {
+    miaBrowserSpeak(clean); // graceful fallback
+  }
+}
+
+async function miaElevenLabsSpeak(text) {
+  try {
+    document.getElementById('mia-wave').classList.add('active');
+
+    const response = await fetch(
+      `https://api.elevenlabs.io/v1/text-to-speech/${ELEVENLABS_VOICE_ID}/stream`,
+      {
+        method: 'POST',
+        headers: {
+          'xi-api-key': ELEVENLABS_API_KEY,
+          'Content-Type': 'application/json',
+          'Accept': 'audio/mpeg',
+        },
+        body: JSON.stringify({
+          text,
+          model_id: 'eleven_turbo_v2_5', // fastest + highest quality
+          voice_settings: {
+            stability: 0.45,        // lower = more expressive, varied
+            similarity_boost: 0.82, // keeps voice consistent
+            style: 0.35,            // adds warmth and personality
+            use_speaker_boost: true,
+          },
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      console.warn('ElevenLabs error:', response.status, await response.text());
+      document.getElementById('mia-wave').classList.remove('active');
+      miaBrowserSpeak(text); // fallback to browser TTS
+      return;
+    }
+
+    const blob = await response.blob();
+    const url  = URL.createObjectURL(blob);
+    const audio = new Audio(url);
+    miaCurrentAudio = audio;
+
+    audio.onended = () => {
+      document.getElementById('mia-wave').classList.remove('active');
+      URL.revokeObjectURL(url);
+      miaCurrentAudio = null;
+    };
+    audio.onerror = () => {
+      document.getElementById('mia-wave').classList.remove('active');
+      miaCurrentAudio = null;
+    };
+
+    await audio.play();
+
+  } catch(err) {
+    console.warn('ElevenLabs TTS failed, falling back to browser voice:', err);
+    document.getElementById('mia-wave').classList.remove('active');
+    miaBrowserSpeak(text);
+  }
+}
+
+function miaBrowserSpeak(text) {
+  if (!window.speechSynthesis) return;
+  stopMiaSpeech();
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.rate   = 0.90;
+  utterance.pitch  = 1.18;
+  utterance.volume = 0.95;
+  utterance.lang   = 'en-US';
+
+  // Best available feminine voice
+  const voices = window.speechSynthesis.getVoices();
+  const femVoice = voices.find(v =>
+    /samantha|karen|victoria|moira|fiona|tessa|alice|aria|charlotte|elli|grace|lily|zira|hazel|susan|helen|google uk english female/i.test(v.name)
+  ) || voices.find(v => v.lang.startsWith('en') && !v.name.toLowerCase().includes('male'))
+    || voices[0];
+  if (femVoice) utterance.voice = femVoice;
+
+  utterance.onstart = () => document.getElementById('mia-wave').classList.add('active');
+  utterance.onend   = () => document.getElementById('mia-wave').classList.remove('active');
+  utterance.onerror = () => document.getElementById('mia-wave').classList.remove('active');
+
+  miaCurrentUtterance = utterance;
+  window.speechSynthesis.speak(utterance);
+}
+
+function stopMiaSpeech() {
+  // Stop ElevenLabs audio
+  if (miaCurrentAudio) {
+    miaCurrentAudio.pause();
+    miaCurrentAudio.src = '';
+    miaCurrentAudio = null;
+  }
+  // Stop browser TTS
+  window.speechSynthesis?.cancel();
+  document.getElementById('mia-wave')?.classList.remove('active');
+  miaCurrentUtterance = null;
+}
+
+// ── Show Mia hint on page load (after 3 seconds) ─────────
+function initMia() {
+  // Preload browser voices
+  if (window.speechSynthesis) {
+    window.speechSynthesis.getVoices();
+    window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+  }
+  // Show hint bubble after 3 seconds
+  setTimeout(() => {
+    if (!miaOpen) {
+      const hint = document.getElementById('mia-hint');
+      hint.style.display = 'block';
+      miaHintTimer = setTimeout(() => { hint.style.display = 'none'; }, 7000);
+    }
+  }, 3000);
+}
+
+// ─────────────────────────────────────────
 // INIT
 // ─────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
@@ -4013,6 +4602,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   addEntry('edu');
   addEntry('cert');
   addEntry('award');
+  initMia();
 });
 </script>
 </body>
