@@ -4238,6 +4238,14 @@ async function logoutUser() {
   savedProfile = null; candPhotoBase64 = null; recPhotoBase64 = null;
   recruiterVerified = false; recruiterProfile = {};
   notifications = [];
+  // Reset Mia chat
+  const msgs = document.getElementById('mia-messages');
+  if (msgs) msgs.innerHTML = '';
+  setMiaQuickBtns([]);
+  stopMiaSpeech();
+  miaOpen = false;
+  document.getElementById('mia-panel')?.classList.remove('open');
+  setMiaContext('home');
   closeUserDropdown(); renderNav(); showView('home');
 }
 
@@ -4800,8 +4808,15 @@ Be concise (max 100 words), practical, warm and add a tiny touch of humour when 
 // Pre-built answers for quick buttons — keyed by exact button label per language
 function getPrebuiltAnswer(label) {
   const answers = {
+    // ── Notifications (all languages) ──
+    "How do notifications work?":       "The 🔔 **bell icon** in the top nav shows all your notifications. You receive one when:\n• A recruiter **views your profile** 👁\n• A recruiter sends a **connection request** 🤝\n• You receive a **new message** 💬\n• Your **selection status changes** 📊\n• A recruiter's status is **overdue** (5+ working days without update) ⚠️\n\nEach notification is clickable — it takes you directly to the relevant section. Unread notifications show a red badge on the bell!",
+    "Come funzionano le notifiche?":    "L'icona 🔔 **campanella** in alto mostra tutte le tue notifiche. Ne ricevi una quando:\n• Un recruiter **visualizza il tuo profilo** 👁\n• Un recruiter invia una **richiesta di contatto** 🤝\n• Ricevi un **nuovo messaggio** 💬\n• Il tuo **stato di selezione cambia** 📊\n• Lo stato di un recruiter è **scaduto** (5+ giorni lavorativi senza aggiornamento) ⚠️\n\nOgni notifica è cliccabile — ti porta direttamente alla sezione corrispondente. Le notifiche non lette mostrano un badge rosso sulla campanella!",
+    "¿Cómo funcionan las notificaciones?": "El icono 🔔 **campana** en la barra superior muestra todas tus notificaciones. Recibes una cuando:\n• Un recruiter **ve tu perfil** 👁\n• Un recruiter envía una **solicitud de conexión** 🤝\n• Recibes un **nuevo mensaje** 💬\n• Tu **estado de selección cambia** 📊\n• El estado de un recruiter lleva **5+ días hábiles sin actualizar** ⚠️\n\n¡Cada notificación es clicable y te lleva directamente a la sección correspondiente!",
+    "Wie funktionieren Benachrichtigungen?": "Das 🔔 **Glockensymbol** oben zeigt alle Benachrichtigungen. Sie erhalten eine wenn:\n• Ein Recruiter **Ihr Profil ansieht** 👁\n• Ein Recruiter eine **Kontaktanfrage sendet** 🤝\n• Sie eine **neue Nachricht** erhalten 💬\n• Sich Ihr **Auswahlstatus ändert** 📊\n• Ein Recruiter-Status **5+ Werktage** ohne Update ist ⚠️\n\nJede Benachrichtigung ist anklickbar und führt direkt zum relevanten Bereich!",
+    "Comment fonctionnent les notifications ?": "L'icône 🔔 **cloche** en haut affiche toutes vos notifications. Vous en recevez une quand :\n• Un recruteur **consulte votre profil** 👁\n• Un recruteur envoie une **demande de connexion** 🤝\n• Vous recevez un **nouveau message** 💬\n• Votre **statut de sélection change** 📊\n• Le statut d'un recruteur est **en retard** (5+ jours ouvrés sans mise à jour) ⚠️\n\nChaque notification est cliquable et vous amène directement à la section concernée !",
+
     // ── EN ──
-    "I'm a candidate":          "As an **ERP Professional**, you register, build your profile, and get discovered by verified recruiters. Your contact details stay private until a recruiter requests access. Click **Register** to get started! 🚀",
+    "I\'m a candidate":          "As an **ERP Professional**, you register, build your profile, and get discovered by verified recruiters. Your contact details stay private until a recruiter requests access. Click **Register** to get started! 🚀",
     "I'm a recruiter":          "As a **Recruiter**, you verify your LinkedIn Recruiter account, then browse ERP professionals by system, module and seniority. You always contact candidates first. Click **For recruiters** to begin! 💼",
     "How does it work?":        "ERP Talent Hub in 3 steps:\n1. **Candidates** register and build their profile\n2. **Verified recruiters** browse and contact candidates\n3. **Candidates reply** once a recruiter writes first\n\nSimple, private, and ERP-focused! 🎯",
     "Tell me about privacy":    "Your **email, phone and LinkedIn** are never shown publicly 🔒\n\nThey're only shared with a specific recruiter after they request access and you accept. Only verified LinkedIn Recruiter accounts can reach you.",
