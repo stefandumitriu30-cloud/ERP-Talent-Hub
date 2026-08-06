@@ -1,6 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#2563EB" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <!-- iOS PWA support -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="ERP Talent Hub" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <link rel="apple-touch-startup-image" href="icon-512.png" />
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>ERP Talent Hub</title>
@@ -5495,6 +5506,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   addEntry('award');
   initMia();
 });
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/ERP-Talent-Hub/sw.js')
+      .then(reg => console.log('SW registered:', reg.scope))
+      .catch(err => console.warn('SW registration failed:', err));
+  });
+}
 </script>
 </body>
 </html>
