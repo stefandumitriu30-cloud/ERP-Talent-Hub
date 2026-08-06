@@ -4717,12 +4717,15 @@ function setMiaLang(lang) {
   MIA_FALLBACKS = MIA_FALLBACKS_ALL[lang] || MIA_FALLBACKS_ALL['en'];
 
   // Clear any cached post-login greeting (it was in the old language)
-  // so openMiaPanel will generate a fresh one in the new language
   if (miaPostLoginData) {
     miaPostLoginData = null;
-    // Re-generate post-login greeting in the new language if user is logged in
     if (currentUser) setTimeout(() => miaPostLoginGreet(currentUser), 100);
   }
+
+  // Always clear messages so next open starts fresh in the new language
+  const msgs = document.getElementById('mia-messages');
+  if (msgs) msgs.innerHTML = '';
+  setMiaQuickBtns([]);
 
   // Refresh all Mia UI strings
   const guideEl = document.getElementById('mia-header-status');
