@@ -5098,7 +5098,7 @@ function getPrebuiltAnswer(label) {
 //   4. Paste both values below
 
 const ELEVENLABS_API_KEY = 'sk_3b29203b4b56d27973db646aefdd12fae3b3be1f167e1e45';
-const ELEVENLABS_VOICE_ID = 'pFZP5JQG7iQjIQuC4Bku';  // "Lily" — sweet, warm, expressive (default)
+const ELEVENLABS_VOICE_ID = '9BWtsMINqrJLrRacOk9x';  // "Aria" — young, warm, ironic, cheerful — multilingual
 // Other great feminine voice IDs:
 //   Aria:      9BWtsMINqrJLrRacOk9x
 //   Charlotte: XB0fDUnXU5powFXDhCwa
@@ -5173,9 +5173,9 @@ async function miaElevenLabsSpeak(text) {
           model_id: 'eleven_turbo_v2_5',
           language_code: currentLang === 'it' ? 'it' : currentLang === 'es' ? 'es' : currentLang === 'de' ? 'de' : currentLang === 'fr' ? 'fr' : 'en',
           voice_settings: {
-            stability: 0.45,
-            similarity_boost: 0.82,
-            style: 0.35,
+            stability: 0.35,        // bassa = più spontanea, varia, gioviale
+            similarity_boost: 0.80,
+            style: 0.55,            // alta = personalità marcata, ironica, vivace
             use_speaker_boost: true,
           },
         }),
