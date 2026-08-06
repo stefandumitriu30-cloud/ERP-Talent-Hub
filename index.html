@@ -1607,9 +1607,9 @@ function setLang(lang) {
   currentLang = lang;
   document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('btn-lang-' + lang).classList.add('active');
+  setMiaLang(lang);    // ← first: update MIA_SCRIPTS before anything triggers miaGreet
   applyTranslations();
   rebuildDynamicParts();
-  setMiaLang(lang);
 }
 
 function applyTranslations() {
