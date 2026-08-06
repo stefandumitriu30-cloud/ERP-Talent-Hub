@@ -4226,6 +4226,124 @@ function loginSuccess(user) {
   showView(target);
 }
 
+function loginSuccess(user) {
+  currentUser = user;
+  saveSession(user);
+  closeAuthModal();
+  renderNav();
+  if (user.role === 'candidate' && user.profileData) {
+    savedProfile = user.profileData;
+    if (user.photo) candPhotoBase64 = user.photo;
+  }
+  if (user.role === 'recruiter' && user.recruiterData) {
+    recruiterProfile = user.recruiterData;
+    recruiterVerified = true;
+    if (user.photo) recPhotoBase64 = user.photo;
+  }
+  const target = pendingNavTarget || defaultViewForRole(user.role);
+  pendingNavTarget = null;
+  showView(target);
+
+  // Mia proactive post-login greeting (after short delay to let view render)
+  setTimeout(() => miaPostLoginGreet(user), 1200);
+}
+
+function miaPostLoginGreet(user) {
+  const firstName = user.name?.split(' ')[0] || '';
+  const lang = currentLang || 'en';
+
+  const greetings = {
+    en: {
+      candidate_new:      `Welcome, **${firstName}**! 👋 I'm Mia, your guide. You haven't built your profile yet — let me walk you through it!\n\nFill in your ERP expertise and let verified recruiters find you. Shall we start?`,
+      candidate_existing: `Welcome back, **${firstName}**! 👋 Your profile is live and recruiters can find you.\n\nHere's what you can do:\n• Check your **messages** for recruiter contact\n• View your **selection pipeline** progress\n• **Edit your profile** to keep it up to date\n\nAsk me anything!`,
+      recruiter:          `Welcome back, **${firstName}**! 👋 Ready to find the right ERP talent?\n\nIn your portal you can:\n• **Browse** the full ERP talent pool\n• **Search** by system, module or location\n• **Open conversations** with candidates\n• **Track selection stages** for each candidate\n\nAsk me anything!`,
+      admin:              `Welcome back, **${firstName}**! 🛡️ Here's your admin overview:\n• Check the **Candidates tab** for all registered ERP professionals\n• Check the **Recruiters tab** for all verified LinkedIn Recruiters\n• Click any profile to see **full contact details** and CV\n\nNeed help with anything?`,
+    },
+    it: {
+      candidate_new:      `Benvenuto, **${firstName}**! 👋 Sono Mia, la tua guida. Non hai ancora creato il tuo profilo — ti accompagno passo per passo!\n\nInserisci la tua esperienza ERP e fatti trovare dai recruiter verificati. Iniziamo?`,
+      candidate_existing: `Bentornato, **${firstName}**! 👋 Il tuo profilo è attivo e i recruiter possono trovarti.\n\nEcco cosa puoi fare:\n• Controlla i tuoi **messaggi** per eventuali contatti\n• Vedi l'avanzamento nel **pipeline di selezione**\n• **Modifica il profilo** per tenerlo aggiornato\n\nChiedimi pure!`,
+      recruiter:          `Bentornato, **${firstName}**! 👋 Pronto a trovare i migliori talenti ERP?\n\nNel tuo portale puoi:\n• **Navigare** tutto il pool di talenti ERP\n• **Cercare** per sistema, modulo o posizione\n• **Aprire conversazioni** con i candidati\n• **Monitorare le fasi di selezione** per ogni candidato\n\nChiedimi pure!`,
+      admin:              `Bentornato, **${firstName}**! 🛡️ Ecco la panoramica admin:\n• **Scheda Candidati** — tutti i professionisti ERP registrati\n• **Scheda Recruiter** — tutti i recruiter LinkedIn verificati\n• Clicca qualsiasi profilo per vedere i **dettagli completi**\n\nHai bisogno di aiuto?`,
+    },
+    es: {
+      candidate_new:      `¡Bienvenido, **${firstName}**! 👋 Soy Mia, tu guía. Todavía no has creado tu perfil — ¡te acompaño paso a paso!\n\nIntroduce tu experiencia ERP y deja que los recruiters verificados te encuentren. ¿Empezamos?`,
+      candidate_existing: `¡Bienvenido de vuelta, **${firstName}**! 👋 Tu perfil está activo y los recruiters pueden encontrarte.\n\nEsto es lo que puedes hacer:\n• Revisa tus **mensajes** para ver contactos de recruiters\n• Ve el progreso en tu **pipeline de selección**\n• **Edita tu perfil** para mantenerlo actualizado\n\n¡Pregúntame lo que quieras!`,
+      recruiter:          `¡Bienvenido de vuelta, **${firstName}**! 👋 ¿Listo para encontrar el mejor talento ERP?\n\nEn tu portal puedes:\n• **Navegar** todo el pool de talento ERP\n• **Buscar** por sistema, módulo o ubicación\n• **Abrir conversaciones** con candidatos\n• **Seguir las fases de selección**\n\n¡Pregúntame lo que quieras!`,
+      admin:              `¡Bienvenido de vuelta, **${firstName}**! 🛡️\n• **Pestaña Candidatos** — todos los profesionales ERP registrados\n• **Pestaña Recruiters** — todos los recruiters verificados\n• Haz clic en cualquier perfil para ver **detalles completos**`,
+    },
+    de: {
+      candidate_new:      `Willkommen, **${firstName}**! 👋 Ich bin Mia, Ihre Führerin. Sie haben noch kein Profil erstellt — ich begleite Sie Schritt für Schritt!\n\nGeben Sie Ihre ERP-Expertise ein und lassen Sie sich von verifizierten Recruitern finden.`,
+      candidate_existing: `Willkommen zurück, **${firstName}**! 👋 Ihr Profil ist aktiv und Recruiter können Sie finden.\n\nDas können Sie tun:\n• **Nachrichten** auf Recruiter-Kontakte prüfen\n• Fortschritt in der **Auswahlpipeline** ansehen\n• **Profil bearbeiten** um es aktuell zu halten\n\nFragen Sie mich gerne!`,
+      recruiter:          `Willkommen zurück, **${firstName}**! 👋 Bereit, die besten ERP-Talente zu finden?\n\nIn Ihrem Portal können Sie:\n• Den **ERP-Talentpool** durchsuchen\n• Nach System, Modul oder Standort **filtern**\n• **Gespräche öffnen** mit Kandidaten\n• **Auswahlstufen verfolgen**\n\nFragen Sie mich gerne!`,
+      admin:              `Willkommen zurück, **${firstName}**! 🛡️\n• **Kandidaten-Reiter** — alle registrierten ERP-Fachleute\n• **Recruiter-Reiter** — alle verifizierten LinkedIn Recruiter\n• Klicken Sie ein Profil für **vollständige Details**`,
+    },
+    fr: {
+      candidate_new:      `Bienvenue, **${firstName}**! 👋 Je suis Mia, votre guide. Vous n'avez pas encore créé votre profil — je vous accompagne pas à pas !\n\nRenseignez votre expertise ERP et faites-vous découvrir par les recruteurs vérifiés.`,
+      candidate_existing: `Bienvenue, **${firstName}**! 👋 Votre profil est en ligne et les recruteurs peuvent vous trouver.\n\nVoici ce que vous pouvez faire :\n• Consultez vos **messages** pour les contacts recruteurs\n• Voyez votre progression dans le **pipeline de sélection**\n• **Modifiez votre profil** pour le garder à jour\n\nPosez-moi vos questions !`,
+      recruiter:          `Bienvenue, **${firstName}**! 👋 Prêt à trouver les meilleurs talents ERP ?\n\nDans votre portail vous pouvez :\n• **Parcourir** tout le vivier de talents ERP\n• **Rechercher** par système, module ou localisation\n• **Ouvrir des conversations** avec les candidats\n• **Suivre les phases de sélection**\n\nPosez-moi vos questions !`,
+      admin:              `Bienvenue, **${firstName}**! 🛡️\n• **Onglet Candidats** — tous les professionnels ERP inscrits\n• **Onglet Recruteurs** — tous les recruteurs LinkedIn vérifiés\n• Cliquez un profil pour les **détails complets**`,
+    },
+  };
+
+  const msgs = greetings[lang] || greetings['en'];
+  let greeting, quick;
+
+  if (user.role === 'admin') {
+    greeting = msgs.admin;
+    quick = lang === 'it'
+      ? ["Come vedo il profilo completo?","Come conto gli utenti?","Come vedo i recruiter?"]
+      : lang === 'es' ? ["¿Cómo veo el perfil completo?","¿Cómo cuento usuarios?"]
+      : lang === 'de' ? ["Wie sehe ich das vollständige Profil?","Wie zähle ich Benutzer?"]
+      : lang === 'fr' ? ["Comment voir le profil complet ?","Comment compter les utilisateurs ?"]
+      : ["How do I see a candidate's full profile?","How do I count registered users?","How do I see recruiter details?"];
+  } else if (user.role === 'recruiter') {
+    greeting = msgs.recruiter;
+    quick = lang === 'it'
+      ? ["Come cerco i candidati?","Come avvio una conversazione?","Quali sono le fasi di selezione?","Cosa significa il badge Scaduto?"]
+      : lang === 'es' ? ["¿Cómo busco candidatos?","¿Cómo inicio una conversación?","¿Cuáles son las fases de selección?"]
+      : lang === 'de' ? ["Wie suche ich nach Kandidaten?","Wie starte ich ein Gespräch?","Was sind die Auswahlstufen?"]
+      : lang === 'fr' ? ["Comment rechercher des candidats ?","Comment démarrer une conversation ?","Quelles sont les phases de sélection ?"]
+      : ["How do I search for candidates?","How do I start a conversation?","What are the selection stages?","What does the Overdue badge mean?"];
+  } else {
+    // Candidate
+    const hasProfile = !!user.profileData;
+    greeting = hasProfile ? msgs.candidate_existing : msgs.candidate_new;
+    quick = hasProfile
+      ? (lang === 'it' ? ["Come funzionano le notifiche?","Cos'è il pipeline di selezione?","Come modifico il profilo?","Come funziona la chat?"]
+       : lang === 'es' ? ["¿Cómo funcionan las notificaciones?","¿Qué es el pipeline de selección?","¿Cómo edito mi perfil?"]
+       : lang === 'de' ? ["Wie funktionieren Benachrichtigungen?","Was ist die Auswahlpipeline?","Wie bearbeite ich mein Profil?"]
+       : lang === 'fr' ? ["Comment fonctionnent les notifications ?","Qu'est-ce que le pipeline de sélection ?","Comment modifier mon profil ?"]
+       : ["How do notifications work?","What is the selection pipeline?","How do I edit my profile?","How does the chat work?"])
+      : (lang === 'it' ? ["Cosa scrivo nel sommario?","Come aggiungo un'esperienza?","Quali sistemi ERP seleziono?","Posso aggiungere una foto?"]
+       : lang === 'es' ? ["¿Qué escribo en el resumen?","¿Cómo añado experiencia?","¿Qué sistemas ERP selecciono?"]
+       : lang === 'de' ? ["Was schreibe ich ins Kurzprofil?","Wie füge ich Erfahrung hinzu?","Welche ERP-Systeme wähle ich?"]
+       : lang === 'fr' ? ["Que dois-je écrire dans le résumé ?","Comment ajouter une expérience ?","Quels systèmes ERP sélectionner ?"]
+       : ["What should I write in the summary?","How do I add work experience?","Which ERP systems should I select?","Can I add a profile photo?"]);
+  }
+
+  // Show hint bubble with role-specific message, let user open Mia manually
+  const hintEl = document.getElementById('mia-hint');
+  const hintTextEl = document.getElementById('mia-hint-text');
+  if (hintEl && hintTextEl) {
+    const hintMsgs = {
+      en: { candidate_new: '👋 Hi! I\'m Mia — let me help you build your profile!', candidate_existing: '👋 Welcome back! Check your messages and pipeline here 💬', recruiter: '👋 Your talent pool is ready — I\'ll guide you! 🎯', admin: '🛡️ Admin dashboard ready — I\'ll show you around!' },
+      it: { candidate_new: '👋 Ciao! Sono Mia — ti aiuto a creare il profilo!', candidate_existing: '👋 Bentornato! Controlla messaggi e pipeline 💬', recruiter: '👋 Il pool è pronto — ti guido! 🎯', admin: '🛡️ Dashboard admin pronta!' },
+      es: { candidate_new: '👋 ¡Hola! Soy Mia — ¡te ayudo a crear tu perfil!', candidate_existing: '👋 ¡Bienvenido! Revisa mensajes y pipeline 💬', recruiter: '👋 ¡El pool está listo — te guío! 🎯', admin: '🛡️ Panel admin listo!' },
+      de: { candidate_new: '👋 Hallo! Ich bin Mia — ich helfe Ihnen beim Profil!', candidate_existing: '👋 Willkommen zurück! Nachrichten & Pipeline prüfen 💬', recruiter: '👋 Ihr Talentpool wartet — ich führe Sie! 🎯', admin: '🛡️ Admin-Dashboard bereit!' },
+      fr: { candidate_new: '👋 Bonjour ! Je suis Mia — je vous aide à créer votre profil !', candidate_existing: '👋 Bienvenue ! Consultez vos messages et pipeline 💬', recruiter: '👋 Le vivier est prêt — je vous guide ! 🎯', admin: '🛡️ Tableau de bord admin prêt !' },
+    };
+    const hintMap = hintMsgs[lang] || hintMsgs['en'];
+    const hintKey = user.role === 'admin' ? 'admin' : user.role === 'recruiter' ? 'recruiter' : user.profileData ? 'candidate_existing' : 'candidate_new';
+    hintTextEl.innerHTML = hintMap[hintKey] || hintMap['candidate_new'];
+    hintEl.style.display = 'block';
+    clearTimeout(miaHintTimer);
+    miaHintTimer = setTimeout(() => { hintEl.style.display = 'none'; }, 7000);
+  }
+
+  // Store post-login greeting so openMiaPanel uses it instead of generic context greeting
+  miaPostLoginData = { greeting, quick };
+}
+
 function defaultViewForRole(role) {
   if (role === 'admin')     return 'admin';
   if (role === 'recruiter') return 'recruiter';
@@ -4244,6 +4362,7 @@ async function logoutUser() {
   setMiaQuickBtns([]);
   stopMiaSpeech();
   miaOpen = false;
+  miaPostLoginData = null;
   document.getElementById('mia-panel')?.classList.remove('open');
   setMiaContext('home');
   closeUserDropdown(); renderNav(); showView('home');
@@ -4448,7 +4567,8 @@ let miaSoundOn     = false;
 let miaSpeaking    = false;
 let miaCurrentUtterance = null;
 let miaHintTimer   = null;
-let miaContext     = 'home'; // tracks current page context
+let miaContext     = 'home';
+let miaPostLoginData = null; // stores post-login greeting until user opens Mia // tracks current page context
 
 // ── Context-aware scripts per view/step ──────────────────
 // ─────────────────────────────────────────
@@ -4624,7 +4744,25 @@ function openMiaPanel() {
   document.getElementById('mia-panel').classList.add('open');
   document.getElementById('mia-hint').style.display = 'none';
   clearTimeout(miaHintTimer);
-  if (document.getElementById('mia-messages').children.length === 0) {
+
+  const msgs = document.getElementById('mia-messages');
+
+  // If we have a post-login greeting waiting, use it
+  if (miaPostLoginData && msgs.children.length === 0) {
+    const { greeting, quick } = miaPostLoginData;
+    miaPostLoginData = null; // consume it
+    showMiaTyping();
+    setTimeout(() => {
+      hideMiaTyping();
+      appendMiaMessage(greeting);
+      setMiaQuickBtns(quick);
+      if (miaSoundOn) miaSpeak(greeting);
+    }, 700);
+    return;
+  }
+
+  // Otherwise normal context greeting
+  if (msgs.children.length === 0) {
     miaGreet(miaContext);
   }
 }
