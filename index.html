@@ -1,17 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-  <!-- PWA -->
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#2563EB" />
-  <meta name="mobile-web-app-capable" content="yes" />
-  <!-- iOS PWA support -->
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="apple-mobile-web-app-title" content="ERP Talent Hub" />
-  <link rel="apple-touch-icon" href="icon-192.png" />
-  <link rel="apple-touch-startup-image" href="icon-512.png" />
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>ERP Talent Hub</title>
@@ -4727,6 +4716,14 @@ function setMiaLang(lang) {
   MIA_SCRIPTS   = MIA_SCRIPTS_ALL[lang]  || MIA_SCRIPTS_ALL['en'];
   MIA_FALLBACKS = MIA_FALLBACKS_ALL[lang] || MIA_FALLBACKS_ALL['en'];
 
+  // Clear any cached post-login greeting (it was in the old language)
+  // so openMiaPanel will generate a fresh one in the new language
+  if (miaPostLoginData) {
+    miaPostLoginData = null;
+    // Re-generate post-login greeting in the new language if user is logged in
+    if (currentUser) setTimeout(() => miaPostLoginGreet(currentUser), 100);
+  }
+
   // Refresh all Mia UI strings
   const guideEl = document.getElementById('mia-header-status');
   if (guideEl) guideEl.textContent = t('mia.guide');
@@ -4774,7 +4771,7 @@ function openMiaPanel() {
     return;
   }
 
-  // Otherwise normal context greeting
+  // Normal context greeting in current language
   if (msgs.children.length === 0) {
     miaGreet(miaContext);
   }
@@ -5506,16 +5503,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   addEntry('award');
   initMia();
 });
-</script>
-
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/ERP-Talent-Hub/sw.js')
-      .then(reg => console.log('SW registered:', reg.scope))
-      .catch(err => console.warn('SW registration failed:', err));
-  });
-}
 </script>
 </body>
 </html>
