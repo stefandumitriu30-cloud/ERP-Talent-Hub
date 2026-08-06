@@ -4726,6 +4726,7 @@ function setMiaLang(lang) {
   const msgs = document.getElementById('mia-messages');
   if (msgs) msgs.innerHTML = '';
   setMiaQuickBtns([]);
+  miaLastLang = lang; // keep tracker in sync
 
   // Refresh all Mia UI strings
   const guideEl = document.getElementById('mia-header-status');
@@ -4752,6 +4753,8 @@ function setMiaLang(lang) {
 
 // ── Core functions ────────────────────────────────────────
 
+let miaLastLang = 'en'; // tracks which language was active when Mia last greeted
+
 function openMiaPanel() {
   miaOpen = true;
   document.getElementById('mia-panel').classList.add('open');
@@ -4760,10 +4763,17 @@ function openMiaPanel() {
 
   const msgs = document.getElementById('mia-messages');
 
+  // If language changed since last greeting — always start fresh
+  if (currentLang !== miaLastLang) {
+    msgs.innerHTML = '';
+    miaPostLoginData = null;
+  }
+  miaLastLang = currentLang;
+
   // If we have a post-login greeting waiting, use it
   if (miaPostLoginData && msgs.children.length === 0) {
     const { greeting, quick } = miaPostLoginData;
-    miaPostLoginData = null; // consume it
+    miaPostLoginData = null;
     showMiaTyping();
     setTimeout(() => {
       hideMiaTyping();
@@ -4774,7 +4784,7 @@ function openMiaPanel() {
     return;
   }
 
-  // Normal context greeting in current language
+  // Always greet fresh in current language
   if (msgs.children.length === 0) {
     miaGreet(miaContext);
   }
@@ -4809,12 +4819,19 @@ function setMiaContext(ctx) {
   miaContext = ctx;
   // Update hint bubble
   const script = MIA_SCRIPTS[ctx] || MIA_SCRIPTS['home'];
-  document.getElementById('mia-hint-text').innerHTML = script.hint || "👋 Need help? I'm Mia!";
-  // If panel is open, re-greet with new context
+  const hintEl = document.getElementById('mia-hint-text');
+  if (hintEl) hintEl.innerHTML = script.hint || "👋 Need help? I'm Mia!";
+
   if (miaOpen) {
+    // Panel is open — re-greet immediately in current language
     document.getElementById('mia-messages').innerHTML = '';
+    setMiaQuickBtns([]);
     miaGreet(ctx);
   } else {
+    // Panel is closed — clear any stale messages so next open starts fresh
+    const msgs = document.getElementById('mia-messages');
+    if (msgs) msgs.innerHTML = '';
+    setMiaQuickBtns([]);
     // Show hint bubble briefly
     clearTimeout(miaHintTimer);
     const hint = document.getElementById('mia-hint');
