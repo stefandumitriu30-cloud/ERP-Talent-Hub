@@ -688,6 +688,7 @@ input[type=file].photo-input{display:none}
     </a>
     <div class="nav-right">
       <div class="lang-switcher" role="group" aria-label="Language selector">
+        <button id="dark-toggle" onclick="toggleDarkMode()" title="Toggle dark mode" aria-label="Toggle dark mode" style="background:none;border:none;cursor:pointer;color:var(--gray-500);font-size:17px;padding:6px 8px;border-radius:var(--radius);min-height:44px;transition:color .2s"><i class="fa-solid fa-moon" id="dark-icon"></i></button>
         <button class="lang-btn active" onclick="setLang('en')" id="btn-lang-en">EN</button>
         <button class="lang-btn" onclick="setLang('it')" id="btn-lang-it">IT</button>
         <button class="lang-btn" onclick="setLang('es')" id="btn-lang-es">ES</button>
@@ -5628,8 +5629,7 @@ function populateFormFromProfile(p) {
 // INIT
 // ─────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
-
-  // ── Check FIRST if arriving from a password reset email ──────────
+  initDarkMode(); // apply dark/light before anything renders
   // Must run before session restore so Supabase doesn't auto-login
   const isRecovery = await checkPasswordResetToken();
   if (isRecovery) {
