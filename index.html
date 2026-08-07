@@ -600,69 +600,67 @@ input[type=file].photo-input{display:none}
 
 /* ── DARK MODE ─────────────────────────────────────────── */
 [data-theme="dark"] {
-  --white:    #1E2535;
-  --gray-50:  #252D3D;
-  --gray-100: #2D3748;
-  --gray-300: #4A5568;
-  --gray-400: #718096;
-  --gray-500: #A0AEC0;
-  --gray-700: #CBD5E1;
-  --gray-900: #F1F5F9;
-  --blue-light: #1E2D4D;
-  --blue-mid:   #1E3A6E;
-  --teal-light: #0D2926;
-  --shadow-sm: 0 1px 3px rgba(0,0,0,.3);
-  --shadow-md: 0 4px 16px rgba(0,0,0,.4);
+  --white:#1E2535; --gray-50:#252D3D; --gray-100:#2D3748; --gray-300:#4A5568;
+  --gray-400:#718096; --gray-500:#A0AEC0; --gray-700:#CBD5E1; --gray-900:#F1F5F9;
+  --blue-light:#1E2D4D; --blue-mid:#1E3A6E; --teal-light:#0D2926;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.3); --shadow-md:0 4px 16px rgba(0,0,0,.4);
 }
-[data-theme="dark"] body { background: #161D2E; }
-[data-theme="dark"] .nav-wrap { background: #1E2535; border-bottom: 1px solid #2D3748; }
-[data-theme="dark"] .auth-modal { background: #1E2535; }
-[data-theme="dark"] .auth-modal-body { background: #1E2535; }
-[data-theme="dark"] input,[data-theme="dark"] select,[data-theme="dark"] textarea {
-  background: #252D3D; color: var(--gray-900); border-color: #4A5568;
-}
-[data-theme="dark"] .portal-card,[data-theme="dark"] .profile-card,[data-theme="dark"] .feature-card {
-  background: #1E2535; border-color: #2D3748;
-}
-[data-theme="dark"] .nav-user-dropdown { background: #1E2535; border-color: #2D3748; }
-[data-theme="dark"] .notif-drawer { background: #1E2535; }
-[data-theme="dark"] .chat-window { background: #1E2535; }
-[data-theme="dark"] .chat-topbar { background: #252D3D; border-color: #2D3748; }
-[data-theme="dark"] .msg-bubble.them { background: #252D3D; border-color: #2D3748; }
-[data-theme="dark"] .msg-bubble.mine { background: var(--blue); }
-[data-theme="dark"] .chat-input-area { background: #252D3D; border-color: #2D3748; }
-[data-theme="dark"] .mia-panel { background: #1E2535; }
-[data-theme="dark"] .mia-header { background: linear-gradient(135deg,#1E3A6E,#1E40AF); }
-[data-theme="dark"] .mia-message:not(.user) .mia-bubble { background: #252D3D; color: var(--gray-900); }
-[data-theme="dark"] .mia-quick-btn { background: #252D3D; border-color: #4A5568; color: var(--gray-900); }
-[data-theme="dark"] .portal-search { background: #252D3D; border-color: #4A5568; }
-[data-theme="dark"] .cand-card { background: #1E2535; border-color: #2D3748; }
-[data-theme="dark"] .cand-card:hover { background: #252D3D; }
-[data-theme="dark"] .cand-card.active { background: #1E3A6E; }
-[data-theme="dark"] footer { background: #0F1520; }
-[data-theme="dark"] .hero-section { background: linear-gradient(135deg,#1E2535 0%,#1E3A6E 50%,#1E2535 100%); }
-[data-theme="dark"] .auth-field input,[data-theme="dark"] .auth-field select { background: #252D3D; }
-[data-theme="dark"] .erp-tag { background: #1E3A6E; color: #93C5FD; border-color: #2D4A8A; }
-[data-theme="dark"] .section-card { background: #1E2535; }
-[data-theme="dark"] .change-pw-modal .auth-modal,
-[data-theme="dark"] .delete-account-modal .auth-modal { background: #1E2535; }
+[data-theme="dark"] body{background:#161D2E}
+[data-theme="dark"] .nav-wrap{background:#1E2535;border-bottom:1px solid #2D3748}
+[data-theme="dark"] .auth-modal,[data-theme="dark"] .auth-modal-body{background:#1E2535}
+[data-theme="dark"] input,[data-theme="dark"] select,[data-theme="dark"] textarea{background:#252D3D;color:var(--gray-900);border-color:#4A5568}
+[data-theme="dark"] .portal-card,[data-theme="dark"] .feature-card,[data-theme="dark"] .section-card{background:#1E2535;border-color:#2D3748}
+[data-theme="dark"] .nav-user-dropdown{background:#1E2535;border-color:#2D3748}
+[data-theme="dark"] .notif-drawer{background:#1E2535}
+[data-theme="dark"] .chat-window{background:#1E2535}
+[data-theme="dark"] .chat-topbar{background:#252D3D;border-color:#2D3748}
+[data-theme="dark"] .msg-bubble.them{background:#252D3D;border-color:#2D3748}
+[data-theme="dark"] .chat-input-area{background:#252D3D;border-color:#2D3748}
+[data-theme="dark"] .mia-panel{background:#1E2535}
+[data-theme="dark"] .mia-message:not(.user) .mia-bubble{background:#252D3D;color:var(--gray-900)}
+[data-theme="dark"] .mia-quick-btn{background:#252D3D;border-color:#4A5568;color:var(--gray-900)}
+[data-theme="dark"] .portal-search{background:#252D3D;border-color:#4A5568}
+[data-theme="dark"] .cand-card{background:#1E2535;border-color:#2D3748}
+[data-theme="dark"] .cand-card:hover{background:#252D3D}
+[data-theme="dark"] .cand-card.active{background:#1E3A6E}
+[data-theme="dark"] footer{background:#0F1520}
+[data-theme="dark"] .erp-tag{background:#1E3A6E;color:#93C5FD;border-color:#2D4A8A}
 
 
-/* ── ADVANCED SEARCH ───────────────────────────────────── */
-.adv-filters { padding: 10px 14px; border-bottom: 1px solid var(--gray-100); display: flex; flex-direction: column; gap: 6px; }
-.adv-filter-row { display: flex; gap: 6px; }
-.adv-filter-row select { font-size: 12px; padding: 5px 8px; min-height: 32px; border-radius: var(--radius); border: 1.5px solid var(--gray-300); color: var(--gray-700); background: var(--white); flex: 1; }
-.adv-filter-row select:focus { outline: none; border-color: var(--blue); }
-.adv-clear-btn { font-size: 11px; color: var(--blue); cursor: pointer; background: none; border: none; padding: 0; text-align: right; }
+/* ── ONBOARDING TOUR ───────────────────────────────────── */
+.onboarding-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9000;display:flex;align-items:center;justify-content:center;animation:fadeIn .3s ease}
+.onboarding-card{background:var(--white);border-radius:var(--radius-lg);padding:36px 32px;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);position:relative}
+.onboarding-icon{font-size:48px;margin-bottom:16px}
+.onboarding-step{font-size:12px;color:var(--gray-400);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.onboarding-title{font-size:20px;font-weight:700;color:var(--gray-900);margin-bottom:12px}
+.onboarding-desc{font-size:14px;color:var(--gray-500);line-height:1.6;margin-bottom:24px}
+.onboarding-dots{display:flex;justify-content:center;gap:6px;margin-bottom:24px}
+.onboarding-dot{width:8px;height:8px;border-radius:50%;background:var(--gray-200);transition:background .2s}
+.onboarding-dot.active{background:var(--blue)}
+.onboarding-actions{display:flex;gap:10px;justify-content:center}
+.onboarding-skip{background:none;border:none;color:var(--gray-400);font-size:13px;cursor:pointer;padding:10px}
+.onboarding-next{background:var(--blue);color:#fff;border:none;border-radius:var(--radius);padding:12px 28px;font-size:14px;font-weight:600;cursor:pointer;transition:background .2s}
+.onboarding-next:hover{background:var(--blue-dark)}
 
 
-/* ── TYPING INDICATOR ──────────────────────────────────── */
-.typing-indicator { display: flex; align-items: center; gap: 4px; padding: 10px 14px; }
-.typing-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--gray-400); animation: typingPulse 1.4s infinite; }
-.typing-dot:nth-child(2) { animation-delay: .2s; }
-.typing-dot:nth-child(3) { animation-delay: .4s; }
-@keyframes typingPulse { 0%,80%,100%{transform:scale(0.7);opacity:.5} 40%{transform:scale(1);opacity:1} }
-.typing-bubble { background: var(--gray-100); border-radius: 12px 12px 12px 4px; padding: 6px 12px; display: inline-flex; }
+/* ── PROFILE STATS ─────────────────────────────────────── */
+.stats-bar{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+.stat-card{flex:1;min-width:100px;background:var(--blue-light);border:1px solid var(--blue-mid);border-radius:var(--radius);padding:14px 16px;text-align:center}
+.stat-value{font-size:24px;font-weight:700;color:var(--blue)}
+.stat-label{font-size:11px;color:var(--gray-500);margin-top:2px;font-weight:500;text-transform:uppercase;letter-spacing:.3px}
+
+
+/* ── PROFILE SCORE ─────────────────────────────────────── */
+.score-bar-wrap{height:8px;background:var(--gray-100);border-radius:4px;overflow:hidden;margin:8px 0}
+.score-bar-fill{height:100%;border-radius:4px;transition:width .6s ease}
+.score-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600}
+
+
+.adv-filters{padding:8px 14px 10px;border-bottom:1px solid var(--gray-100);display:flex;flex-direction:column;gap:6px}
+.adv-filter-row{display:flex;gap:6px}
+.adv-filter-row select{font-size:12px;padding:5px 8px;min-height:32px;border-radius:var(--radius);border:1.5px solid var(--gray-300);color:var(--gray-700);background:var(--white);flex:1}
+.adv-clear-btn{font-size:11px;color:var(--blue);cursor:pointer;background:none;border:none;padding:0;align-self:flex-end}
+@keyframes typingPulse{0%,80%,100%{transform:scale(0.7);opacity:.5}40%{transform:scale(1);opacity:1}}
 
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -716,9 +714,15 @@ input[type=file].photo-input{display:none}
           <div class="nav-user-dropdown-item" id="dd-admin" onclick="closeUserDropdown();showView('admin')" style="display:none">
             <i class="fa-solid fa-shield-halved"></i> Admin dashboard
           </div>
+          <div class="nav-user-dropdown-item" id="dd-change-password" onclick="closeUserDropdown();openChangePasswordModal()" style="display:none">
+            <i class="fa-solid fa-key"></i> Change password
+          </div>
           <hr style="border:none;border-top:1px solid var(--gray-100);margin:4px 0">
           <div class="nav-user-dropdown-item danger" onclick="logoutUser()">
             <i class="fa-solid fa-right-from-bracket"></i> Logout
+          </div>
+          <div class="nav-user-dropdown-item danger" id="dd-delete-account" onclick="closeUserDropdown();openDeleteAccountModal()" style="display:none">
+            <i class="fa-solid fa-trash"></i> Delete account
           </div>
         </div>
       </div>
@@ -848,6 +852,78 @@ input[type=file].photo-input{display:none}
         <span id="rp-success-text">Password updated! You are now logged in.</span>
       </div>
       <button class="auth-submit" id="rp-submit-btn" onclick="submitNewPassword()">Update password</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════ ONBOARDING TOUR ═══════════════════ -->
+<div id="onboarding-overlay" class="onboarding-overlay" style="display:none">
+  <div class="onboarding-card">
+    <div class="onboarding-icon" id="ob-icon">👋</div>
+    <div class="onboarding-step" id="ob-step">Step 1 of 4</div>
+    <div class="onboarding-title" id="ob-title">Welcome to ERP Talent Hub!</div>
+    <div class="onboarding-desc" id="ob-desc">The dedicated platform connecting ERP professionals with verified recruiters. Let us show you around in 30 seconds.</div>
+    <div class="onboarding-dots" id="ob-dots">
+      <div class="onboarding-dot active"></div>
+      <div class="onboarding-dot"></div>
+      <div class="onboarding-dot"></div>
+      <div class="onboarding-dot"></div>
+    </div>
+    <div class="onboarding-actions">
+      <button class="onboarding-skip" onclick="skipOnboarding()">Skip</button>
+      <button class="onboarding-next" id="ob-btn" onclick="nextOnboardingStep()">Next →</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════ CHANGE PASSWORD MODAL ═══════════════════ -->
+<div id="change-pw-modal" style="display:none" class="auth-modal-overlay" onclick="if(event.target===this)closeChangePasswordModal()">
+  <div class="auth-modal">
+    <div class="auth-modal-header"><h2>Change password</h2><p>Choose a new secure password</p></div>
+    <div class="auth-modal-body">
+      <div class="auth-field"><label>Current password</label><input type="password" id="cp-current" placeholder="••••••••" onkeydown="if(event.key==='Enter')submitChangePassword()" /></div>
+      <div class="auth-field"><label>New password</label><input type="password" id="cp-new" placeholder="••••••••" onkeydown="if(event.key==='Enter')submitChangePassword()" /></div>
+      <div class="auth-field"><label>Confirm new password</label><input type="password" id="cp-confirm" placeholder="••••••••" onkeydown="if(event.key==='Enter')submitChangePassword()" /></div>
+      <div class="auth-error" id="cp-error"></div>
+      <div id="cp-success" style="display:none;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:var(--radius);padding:12px;font-size:13px;color:#15803D;margin-bottom:12px;text-align:center"><i class="fa-solid fa-circle-check"></i> Password updated successfully!</div>
+      <button class="auth-submit" id="cp-btn" onclick="submitChangePassword()">Update password</button>
+      <p class="auth-footer-note"><a onclick="closeChangePasswordModal()" style="cursor:pointer">Cancel</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ DELETE ACCOUNT MODAL ═══════════════════ -->
+<div id="delete-account-modal" style="display:none" class="auth-modal-overlay" onclick="if(event.target===this)closeDeleteAccountModal()">
+  <div class="auth-modal">
+    <div class="auth-modal-header" style="background:linear-gradient(135deg,#DC2626,#B91C1C)"><h2>Delete account</h2><p>This action is permanent and cannot be undone</p></div>
+    <div class="auth-modal-body">
+      <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:var(--radius);padding:14px;margin-bottom:18px;font-size:13px;color:#DC2626"><i class="fa-solid fa-triangle-exclamation" style="margin-right:6px"></i><strong>Warning:</strong> Deleting your account will permanently remove all your data.</div>
+      <div class="auth-field"><label>Type your password to confirm</label><input type="password" id="da-password" placeholder="••••••••" /></div>
+      <div class="auth-field"><label>Type <strong>DELETE</strong> to confirm</label><input type="text" id="da-confirm" placeholder="DELETE" /></div>
+      <div class="auth-error" id="da-error"></div>
+      <button class="auth-submit" id="da-btn" onclick="submitDeleteAccount()" style="background:#DC2626">Delete my account permanently</button>
+      <p class="auth-footer-note"><a onclick="closeDeleteAccountModal()" style="cursor:pointer">Cancel</a></p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════ ONBOARDING TOUR ═══════════════════ -->
+<div id="onboarding-overlay" class="onboarding-overlay" style="display:none">
+  <div class="onboarding-card">
+    <div class="onboarding-icon" id="ob-icon">👋</div>
+    <div class="onboarding-step" id="ob-step">Step 1 of 4</div>
+    <div class="onboarding-title" id="ob-title">Welcome to ERP Talent Hub!</div>
+    <div class="onboarding-desc" id="ob-desc">The dedicated platform connecting ERP professionals with verified recruiters.</div>
+    <div class="onboarding-dots" id="ob-dots">
+      <div class="onboarding-dot active"></div><div class="onboarding-dot"></div>
+      <div class="onboarding-dot"></div><div class="onboarding-dot"></div>
+    </div>
+    <div class="onboarding-actions">
+      <button class="onboarding-skip" onclick="skipOnboarding()">Skip</button>
+      <button class="onboarding-next" id="ob-btn" onclick="nextOnboardingStep()">Next →</button>
     </div>
   </div>
 </div>
@@ -1086,12 +1162,16 @@ input[type=file].photo-input{display:none}
         <button class="btn-outline btn-sm" onclick="editProfile()" style="font-size:13px">
           <i class="fa-solid fa-pen" style="margin-right:6px"></i><span data-i18n="mp.edit">Edit profile</span>
         </button>
-        <button class="btn-outline btn-sm" onclick="downloadProfilePDF()" style="font-size:13px;color:#DC2626;border-color:#FECACA" title="Download profile as PDF">
-          <i class="fa-solid fa-file-pdf" style="margin-right:6px"></i>Download PDF
+        <button class="btn-outline btn-sm" onclick="downloadProfilePDF()" style="font-size:13px" title="Download profile as PDF">
+          <i class="fa-solid fa-file-pdf" style="margin-right:6px;color:#DC2626"></i>Download PDF
         </button>
       </div>
     </div>
 
+    <!-- Profile stats -->
+    <div id="profile-stats-bar" class="stats-bar" style="margin-bottom:16px"></div>
+    <!-- Profile score -->
+    <div id="profile-score-section"></div>
     <!-- Contact bar -->
     <div id="mp-contact-bar" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:24px"></div>
 
@@ -1315,7 +1395,7 @@ input[type=file].photo-input{display:none}
             <input type="text" class="portal-search" id="rec-search" placeholder="Search candidates…" oninput="filterCandidates(this.value)" />
         <div class="adv-filters" id="adv-filters">
           <div class="adv-filter-row">
-            <select id="filter-erp" onchange="renderRecCandidateList()" title="Filter by ERP system">
+            <select id="filter-erp" onchange="renderRecCandidateList()" title="Filter by ERP">
               <option value="">All ERP systems</option>
               <option>SAP S/4HANA</option><option>SAP ECC</option><option>Oracle Cloud</option>
               <option>Oracle EBS</option><option>Microsoft Dynamics</option><option>Workday</option>
@@ -1331,12 +1411,10 @@ input[type=file].photo-input{display:none}
           <div class="adv-filter-row">
             <select id="filter-exp" onchange="renderRecCandidateList()" title="Filter by experience">
               <option value="">Any experience</option>
-              <option value="1">1+ years</option>
-              <option value="3">3+ years</option>
-              <option value="5">5+ years</option>
-              <option value="10">10+ years</option>
+              <option value="1">1+ years</option><option value="3">3+ years</option>
+              <option value="5">5+ years</option><option value="10">10+ years</option>
             </select>
-            <button class="adv-clear-btn" onclick="clearAdvFilters()">✕ Clear filters</button>
+            <button class="adv-clear-btn" onclick="clearAdvFilters()">✕ Clear</button>
           </div>
         </div>
           </div>
@@ -2694,6 +2772,10 @@ function pushNotification(type, payload = {}) {
   updateNotifBell();
   renderNotifList();
   showToast(notif);
+  // Update stats for profile views and contacts
+  if (type === 'profile_view') { profileStats.views++; profileStats.thisWeek++; renderProfileStats(); try { const s=JSON.parse(localStorage.getItem('erpth_stats')||'{}'); s.views=(s.views||0)+1; s.thisWeek=(s.thisWeek||0)+1; localStorage.setItem('erpth_stats',JSON.stringify(s)); } catch(e){} }
+  if (type === 'connection') { profileStats.contacts++; try { const s=JSON.parse(localStorage.getItem('erpth_stats')||'{}'); s.contacts=(s.contacts||0)+1; localStorage.setItem('erpth_stats',JSON.stringify(s)); } catch(e){} }
+  if (document.hidden || !document.hasFocus()) sendNativeNotification(def.title, desc, '/ERP-Talent-Hub/');
 }
 
 function updateNotifBell() {
@@ -3019,23 +3101,17 @@ function filterCandidates(q) {
 }
 
 function renderRecCandidateList(q) {
-  const search   = (q || document.getElementById('rec-search')?.value || '').toLowerCase();
-  const filterErp     = document.getElementById('filter-erp')?.value     || '';
-  const filterCountry = document.getElementById('filter-country')?.value || '';
-  const filterExp     = parseInt(document.getElementById('filter-exp')?.value || '0');
+  const search = (q || document.getElementById('rec-search')?.value || '').toLowerCase();
   const list = document.getElementById('rec-candidate-list');
   if (!list) return;
   list.innerHTML = '';
   CANDIDATES
     .filter(c => {
-      const matchSearch  = !search  || c.name.toLowerCase().includes(search) || c.role.toLowerCase().includes(search) || (c.systems||[]).some(s => s.toLowerCase().includes(search));
-      const matchErp     = !filterErp     || (c.systems||[]).some(s => s.includes(filterErp));
-      const matchCountry = !filterCountry || (c.location||'').includes(filterCountry);
-      const matchExp     = !filterExp     || (c.yearsExp || 0) >= filterExp;
+      const matchSearch = !search || c.name.toLowerCase().includes(search) || c.role.toLowerCase().includes(search);
       const conv = conversations[c.id];
       const contacted = conv && conv.opened;
       const matchTab = recTabFilter === 'all' || (recTabFilter === 'contacted' && contacted) || (recTabFilter === 'new' && !contacted);
-      return matchSearch && matchErp && matchCountry && matchExp && matchTab;
+      return matchSearch && matchTab;
     })
     .forEach(c => {
       const conv = conversations[c.id];
@@ -3044,16 +3120,11 @@ function renderRecCandidateList(q) {
       const timer = getStatusTimer(conv);
       const isOverdue = contacted && timer && timer.overdue;
       const isNearDue = contacted && timer && !timer.overdue && timer.daysLeft <= 2;
-      const online = isUserOnline(c.id);
       const div = document.createElement('div');
       div.className = 'cand-card' + (recActiveCandidateId === c.id ? ' active' : '');
-      div.setAttribute('data-presence-id', c.id);
       div.onclick = () => openRecChat(c.id);
       div.innerHTML = `
-        <div style="position:relative;flex-shrink:0">
-          <div class="cand-avatar" style="background:${avatarColor(c.name)}">${initials(c.name)}</div>
-          <div class="presence-dot" style="position:absolute;bottom:0;right:0;width:10px;height:10px;border-radius:50%;background:${online?'#22C55E':'#94A3B8'};border:2px solid var(--white)" title="${online?'Online':'Offline'}"></div>
-        </div>
+        <div class="cand-avatar" style="background:${avatarColor(c.name)}">${initials(c.name)}</div>
         <div class="cand-info">
           <div class="cand-name">${c.name}</div>
           <div class="cand-meta">${c.role}</div>
@@ -3115,7 +3186,7 @@ function renderRecChatWindow(candidateId) {
       <div class="chat-messages" id="rec-messages"></div>
       <div class="chat-input-area">
         <div class="chat-input-row">
-          <textarea class="chat-textarea" id="rec-input" rows="1" placeholder="Write a message…" onkeydown="recInputKey(event,${candidateId})" oninput="onChatInput(${candidateId})"></textarea>
+          <textarea class="chat-textarea" id="rec-input" rows="1" placeholder="Write a message…" onkeydown="recInputKey(event,${candidateId})"></textarea>
           <button class="chat-send-btn" onclick="recSendMessage(${candidateId})" title="Send"><i class="fa-solid fa-paper-plane"></i></button>
         </div>
         ${!conv.opened ? `<div style="font-size:11px;color:var(--gray-400);margin-top:6px;text-align:center"><i class="fa-solid fa-info-circle"></i> You are opening this conversation for the first time. The candidate will be able to reply after you send your first message.</div>` : ''}
@@ -3289,7 +3360,7 @@ function renderCandChatWindow(candidateId) {
       ${canReply
         ? `<div class="chat-input-area">
             <div class="chat-input-row">
-              <textarea class="chat-textarea" id="cand-input" rows="1" placeholder="Write a reply…" onkeydown="candInputKey(event,${candidateId})" oninput="onChatInput(${candidateId})"></textarea>
+              <textarea class="chat-textarea" id="cand-input" rows="1" placeholder="Write a reply…" onkeydown="candInputKey(event,${candidateId})"></textarea>
               <button class="chat-send-btn" onclick="candSendMessage(${candidateId})" title="Send"><i class="fa-solid fa-paper-plane"></i></button>
             </div>
            </div>`
@@ -3401,7 +3472,7 @@ function showView(name) {
     const notice = document.getElementById('emailjs-setup-notice');
     if (notice) notice.style.display = EMAILJS_CONFIGURED ? 'none' : 'block';
   }
-  if (name === 'myprofile') renderMyProfile();
+  if (name === 'myprofile') { renderMyProfile(); loadProfileStats(); setTimeout(renderProfileScore, 200); }
   if (name === 'form' && savedProfile) {
     setTimeout(() => populateFormFromProfile(savedProfile), 80);
   }
@@ -4353,6 +4424,8 @@ function loginSuccess(user) {
   pendingNavTarget = null;
   showView(target);
 
+  if (user.id) initPresence(user.id);
+  if (user.role === 'candidate') { initPushNotifications(); }
   // Mia proactive post-login greeting (after short delay to let view render)
   setTimeout(() => miaPostLoginGreet(user), 1200);
 }
@@ -4500,6 +4573,8 @@ function renderNav() {
   document.getElementById('dd-messages').style.display         = currentUser.role === 'candidate' ? 'flex' : 'none';
   document.getElementById('dd-recruiter-portal').style.display = currentUser.role === 'recruiter' ? 'flex' : 'none';
   document.getElementById('dd-admin').style.display            = currentUser.role === 'admin'     ? 'flex' : 'none';
+  const cpEl = document.getElementById('dd-change-password'); if(cpEl) cpEl.style.display = currentUser.role !== 'admin' ? 'flex' : 'none';
+  const daEl = document.getElementById('dd-delete-account');  if(daEl) daEl.style.display = currentUser.role !== 'admin' ? 'flex' : 'none';
   if (bell) bell.style.display = currentUser.role === 'candidate' ? 'flex' : 'none';
 }
 
@@ -5601,7 +5676,7 @@ function toggleDarkMode() {
 function setDarkMode(dark) {
   document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
   const icon = document.getElementById('dark-icon');
-  if (icon) { icon.className = dark ? 'fa-solid fa-sun' : 'fa-solid fa-moon'; }
+  if (icon) icon.className = dark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
   try { localStorage.setItem('erpth_theme', dark ? 'dark' : 'light'); } catch(e) {}
 }
 function initDarkMode() {
@@ -5613,27 +5688,236 @@ function initDarkMode() {
 }
 
 // ─────────────────────────────────────────
-// ONLINE / OFFLINE STATUS (Supabase Presence)
+// ONBOARDING TOUR
+// ─────────────────────────────────────────
+const ONBOARDING_STEPS = [
+  { icon: '👋', title: 'Welcome to ERP Talent Hub!', desc: 'The dedicated platform connecting ERP professionals with verified recruiters. Let us show you around in 30 seconds.' },
+  { icon: '👤', title: 'Build your ERP profile', desc: 'Create a detailed profile showcasing your SAP, Oracle or Microsoft Dynamics expertise. Recruiters search by system, location and experience.' },
+  { icon: '🤝', title: 'Get contacted by verified recruiters', desc: 'Only verified LinkedIn Recruiter accounts can contact you — no spam. Your email and phone stay private until you decide to share them.' },
+  { icon: '📊', title: 'Track your selection pipeline', desc: 'Monitor your progress across all 7 selection stages in real time. Get notified at every step — from first contact to offer. Good luck! 🚀' },
+];
+let onboardingStep = 0;
+
+function showOnboarding() {
+  try { if (localStorage.getItem('erpth_onboarded')) return; } catch(e) {}
+  onboardingStep = 0;
+  renderOnboardingStep();
+  document.getElementById('onboarding-overlay').style.display = 'flex';
+}
+
+function renderOnboardingStep() {
+  const s = ONBOARDING_STEPS[onboardingStep];
+  document.getElementById('ob-icon').textContent  = s.icon;
+  document.getElementById('ob-title').textContent = s.title;
+  document.getElementById('ob-desc').textContent  = s.desc;
+  document.getElementById('ob-step').textContent  = `Step ${onboardingStep+1} of ${ONBOARDING_STEPS.length}`;
+  document.getElementById('ob-btn').textContent   = onboardingStep === ONBOARDING_STEPS.length - 1 ? "Let's go! 🚀" : 'Next →';
+  const dots = document.getElementById('ob-dots').children;
+  for (let i = 0; i < dots.length; i++) dots[i].classList.toggle('active', i === onboardingStep);
+}
+
+function nextOnboardingStep() {
+  if (onboardingStep < ONBOARDING_STEPS.length - 1) {
+    onboardingStep++;
+    renderOnboardingStep();
+  } else {
+    skipOnboarding();
+  }
+}
+
+function skipOnboarding() {
+  document.getElementById('onboarding-overlay').style.display = 'none';
+  try { localStorage.setItem('erpth_onboarded', '1'); } catch(e) {}
+}
+
+// ─────────────────────────────────────────
+// PROFILE STATS
+// ─────────────────────────────────────────
+let profileStats = { views: 0, contacts: 0, thisWeek: 0 };
+
+function incrementProfileView() {
+  profileStats.views++;
+  profileStats.thisWeek++;
+  renderProfileStats();
+  try {
+    const saved = JSON.parse(localStorage.getItem('erpth_stats') || '{}');
+    saved.views = (saved.views || 0) + 1;
+    saved.thisWeek = (saved.thisWeek || 0) + 1;
+    saved.lastWeek = saved.lastWeekDate || new Date().toISOString().split('T')[0];
+    localStorage.setItem('erpth_stats', JSON.stringify(saved));
+  } catch(e) {}
+}
+
+function loadProfileStats() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('erpth_stats') || '{}');
+    // Reset weekly counter if new week
+    const today = new Date();
+    const savedDate = saved.lastWeekDate ? new Date(saved.lastWeekDate) : today;
+    const daysDiff = Math.floor((today - savedDate) / (1000*60*60*24));
+    if (daysDiff >= 7) { saved.thisWeek = 0; saved.lastWeekDate = today.toISOString().split('T')[0]; }
+    profileStats.views    = saved.views    || 0;
+    profileStats.contacts = saved.contacts || 0;
+    profileStats.thisWeek = saved.thisWeek || 0;
+  } catch(e) {}
+  renderProfileStats();
+}
+
+function renderProfileStats() {
+  const container = document.getElementById('profile-stats-bar');
+  if (!container) return;
+  container.innerHTML = `
+    <div class="stat-card">
+      <div class="stat-value">${profileStats.views}</div>
+      <div class="stat-label">Profile views</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">${profileStats.contacts}</div>
+      <div class="stat-label">Recruiter contacts</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">${profileStats.thisWeek}</div>
+      <div class="stat-label">This week</div>
+    </div>`;
+}
+
+// Update stats when profile_view notification fires
+const _origPushNotification = typeof pushNotification !== 'undefined' ? pushNotification : null;
+
+// ─────────────────────────────────────────
+// PROFILE COMPLETENESS SCORE (Mia)
+// ─────────────────────────────────────────
+function calcProfileScore(profile) {
+  if (!profile) return { score: 0, missing: [], color: '#DC2626' };
+  const checks = [
+    { key: 'photo',    label: 'Profile photo',      val: !!profile.photo || !!window.candPhotoBase64 },
+    { key: 'summary',  label: 'Professional summary', val: (profile.summary||'').length >= 100 },
+    { key: 'erp',      label: 'ERP systems',         val: (profile.erp||[]).length >= 2 },
+    { key: 'exps',     label: 'Work experience',     val: (profile.exps||[]).length >= 1 },
+    { key: 'edus',     label: 'Education',           val: (profile.edus||[]).length >= 1 },
+    { key: 'phone',    label: 'Phone number',        val: !!(profile.phone||'').replace(/\s/g,'').length > 5 },
+    { key: 'linkedin', label: 'LinkedIn profile',    val: !!(profile.linkedin||'').length > 5 },
+    { key: 'city',     label: 'Location',            val: !!(profile.city||'').length > 1 },
+  ];
+  const passed = checks.filter(c => c.val).length;
+  const score  = Math.round((passed / checks.length) * 100);
+  const missing = checks.filter(c => !c.val).map(c => c.label);
+  const color = score >= 80 ? '#16A34A' : score >= 50 ? '#F97316' : '#DC2626';
+  return { score, missing, color, passed, total: checks.length };
+}
+
+function renderProfileScore() {
+  const container = document.getElementById('profile-score-section');
+  if (!container || !window.savedProfile) return;
+  const { score, missing, color, passed, total } = calcProfileScore(window.savedProfile);
+  const emoji = score >= 80 ? '🌟' : score >= 50 ? '⚡' : '🔧';
+  container.innerHTML = `
+    <div style="margin-bottom:20px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <span style="font-size:14px;font-weight:600;color:var(--gray-700)">${emoji} Profile completeness</span>
+        <span class="score-badge" style="background:${color}22;color:${color};border:1px solid ${color}44">${score}% — ${passed}/${total}</span>
+      </div>
+      <div class="score-bar-wrap"><div class="score-bar-fill" style="width:${score}%;background:${color}"></div></div>
+      ${missing.length ? `<div style="margin-top:10px;font-size:12px;color:var(--gray-500)">Missing: ${missing.map(m=>`<span style="background:var(--gray-100);border-radius:10px;padding:2px 8px;margin:2px;display:inline-block">${m}</span>`).join('')}</div>` : '<div style="margin-top:8px;font-size:12px;color:#16A34A;font-weight:600">✓ Profile complete! Recruiters can find you easily.</div>'}
+    </div>`;
+}
+
+// ─────────────────────────────────────────
+// PDF PROFILE DOWNLOAD
+// ─────────────────────────────────────────
+function downloadProfilePDF() {
+  if (!savedProfile) { showToast({ id: Date.now(), icon: '⚠️', title: 'No profile', desc: 'Complete your profile first.', color:'#FFF7ED', iconColor:'#F97316' }); return; }
+  const p = savedProfile;
+  const name = `${p.firstName||''} ${p.lastName||''}`.trim();
+  const content = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${name} — ERP Talent Hub</title>
+  <style>
+    body{font-family:Arial,sans-serif;font-size:13px;color:#1a1a1a;margin:40px;line-height:1.6}
+    h1{font-size:22px;color:#2563EB;margin:0 0 4px}
+    .sub{font-size:13px;color:#555;margin-bottom:16px}
+    .contact{font-size:12px;color:#555;margin-bottom:20px}
+    h2{font-size:12px;font-weight:700;color:#2563EB;border-bottom:1.5px solid #2563EB;padding-bottom:4px;margin:20px 0 10px;text-transform:uppercase;letter-spacing:.5px}
+    p{margin:0 0 8px}
+    .tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+    .tag{background:#EFF6FF;color:#1D4ED8;border:1px solid #BFDBFE;border-radius:4px;padding:2px 8px;font-size:11px}
+    .exp{margin-bottom:10px} .exp-t{font-weight:700} .exp-s{font-size:11px;color:#666}
+    .footer{font-size:10px;color:#999;margin-top:40px;text-align:center;border-top:1px solid #eee;padding-top:12px}
+  </style></head><body>
+  <h1>${name}</h1><div class="sub">ERP Professional</div>
+  <div class="contact">${p.city||''}${p.country?', '+p.country:''} &nbsp;|&nbsp; ${p.email||''} &nbsp;|&nbsp; ${p.phone||''}</div>
+  <h2>Professional Summary</h2><p>${(p.summary||'').replace(/\n/g,'<br>')}</p>
+  <h2>ERP Systems</h2><div class="tags">${(p.erp||[]).map(e=>'<span class="tag">'+e+'</span>').join('')}</div>
+  ${(p.exps||[]).length?'<h2>Experience</h2>'+(p.exps||[]).map(e=>`<div class="exp"><div class="exp-t">${e.jobTitle} — ${e.company}</div><div class="exp-s">${e.startDate||''}${e.current?' – Present':e.endDate?' – '+e.endDate:''}</div><p>${(e.description||'').replace(/\n/g,'<br>')}</p></div>`).join(''):''}
+  ${(p.edus||[]).length?'<h2>Education</h2>'+(p.edus||[]).map(e=>`<p>${e.degree} — ${e.institution} ${e.gradYear||''}</p>`).join(''):''}
+  ${(p.certs||[]).length?'<h2>Certifications</h2>'+(p.certs||[]).map(c=>`<p>${c.certName} — ${c.issuer||''} ${c.certYear||''}</p>`).join(''):''}
+  <div class="footer">Generated from ERP Talent Hub · stefandumitriu30-cloud.github.io/ERP-Talent-Hub</div>
+  </body></html>`;
+  const win = window.open('', '_blank');
+  if (win) { win.document.write(content); win.document.close(); setTimeout(() => win.print(), 500); }
+  showToast({ id: Date.now(), icon: '📄', title: 'Profile ready!', desc: 'Use Print → Save as PDF to download.', color:'#F0FDF4', iconColor:'#16A34A' });
+}
+
+// ─────────────────────────────────────────
+// REALTIME CHAT ENGINE (Supabase)
+// ─────────────────────────────────────────
+let realtimeSubscription = null;
+
+async function saveMessageToDB(candidateId, from, text) {
+  if (!SUPABASE_READY || !sb()) return;
+  try {
+    await sb().from('messages').insert({
+      candidate_id: String(candidateId),
+      recruiter_id: currentUser?.id || 'anon',
+      from_role: from, text,
+      created_at: new Date().toISOString(),
+    });
+  } catch(e) { console.warn('saveMessageToDB:', e); }
+}
+
+async function loadMessagesFromDB(candidateId) {
+  if (!SUPABASE_READY || !sb()) return;
+  try {
+    const { data, error } = await sb().from('messages').select('*')
+      .eq('candidate_id', String(candidateId)).order('created_at', { ascending: true });
+    if (error || !data) return;
+    if (!conversations[candidateId]) conversations[candidateId] = { opened: false, messages: [], stage: 'contacted', statusChangedAt: new Date().toISOString() };
+    conversations[candidateId].messages = data.map(m => ({ from: m.from_role, text: m.text, time: m.created_at, read: true }));
+    if (data.length > 0) conversations[candidateId].opened = true;
+  } catch(e) { console.warn('loadMessagesFromDB:', e); }
+}
+
+function subscribeToMessages(candidateId, onNewMessage) {
+  if (!SUPABASE_READY || !sb()) return;
+  if (realtimeSubscription) { realtimeSubscription.unsubscribe(); realtimeSubscription = null; }
+  realtimeSubscription = sb().channel(`messages:${candidateId}`)
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `candidate_id=eq.${candidateId}` }, payload => {
+      const m = payload.new;
+      const conv = conversations[candidateId];
+      if (!conv) return;
+      const exists = conv.messages.find(msg => msg.time === m.created_at && msg.text === m.text);
+      if (!exists) { conv.messages.push({ from: m.from_role, text: m.text, time: m.created_at, read: false }); onNewMessage(m); }
+    }).subscribe();
+}
+
+// ─────────────────────────────────────────
+// ONLINE / OFFLINE STATUS
 // ─────────────────────────────────────────
 let presenceChannel = null;
 const onlineUsers = new Set();
 
 function initPresence(userId) {
   if (!SUPABASE_READY || !sb()) return;
-  if (presenceChannel) { presenceChannel.unsubscribe(); }
+  if (presenceChannel) presenceChannel.unsubscribe();
   presenceChannel = sb().channel('presence', { config: { presence: { key: userId } } })
     .on('presence', { event: 'sync' }, () => {
       const state = presenceChannel.presenceState();
       onlineUsers.clear();
-      Object.values(state).forEach(presences => presences.forEach(p => onlineUsers.add(p.user_id)));
+      Object.values(state).forEach(ps => ps.forEach(p => onlineUsers.add(p.user_id)));
       updateOnlineIndicators();
     })
     .on('presence', { event: 'join' }, ({ key }) => { onlineUsers.add(key); updateOnlineIndicators(); })
     .on('presence', { event: 'leave' }, ({ key }) => { onlineUsers.delete(key); updateOnlineIndicators(); })
     .subscribe(async status => {
-      if (status === 'SUBSCRIBED') {
-        await presenceChannel.track({ user_id: userId, online_at: new Date().toISOString() });
-      }
+      if (status === 'SUBSCRIBED') await presenceChannel.track({ user_id: userId, online_at: new Date().toISOString() });
     });
 }
 
@@ -5645,20 +5929,10 @@ function leavePresence() {
 function isUserOnline(userId) { return onlineUsers.has(String(userId)); }
 
 function updateOnlineIndicators() {
-  // Update status dots in recruiter candidate list
   document.querySelectorAll('[data-presence-id]').forEach(el => {
-    const id = el.getAttribute('data-presence-id');
     const dot = el.querySelector('.presence-dot');
-    if (dot) dot.style.background = isUserOnline(id) ? '#22C55E' : '#94A3B8';
+    if (dot) dot.style.background = isUserOnline(el.getAttribute('data-presence-id')) ? '#22C55E' : '#94A3B8';
   });
-  // Update chat topbar status
-  const statusEl = document.querySelector('.chat-topbar-status span');
-  const dotEl    = document.querySelector('.chat-topbar-status .status-dot');
-  if (statusEl && recActiveCandidateId) {
-    const online = isUserOnline(recActiveCandidateId);
-    if (dotEl) { dotEl.className = 'status-dot ' + (online ? 'online' : ''); dotEl.style.background = online ? '#22C55E' : '#94A3B8'; }
-    statusEl.textContent = online ? 'Online' : 'Offline';
-  }
 }
 
 // ─────────────────────────────────────────
@@ -5673,8 +5947,7 @@ function initTypingChannel(candidateId) {
   typingChannel = sb().channel(`typing:${candidateId}`)
     .on('broadcast', { event: 'typing' }, ({ payload }) => {
       if (payload.userId !== currentUser?.id) showTypingIndicator(payload.isTyping);
-    })
-    .subscribe();
+    }).subscribe();
 }
 
 function broadcastTyping(candidateId, isTyping) {
@@ -5688,14 +5961,10 @@ function showTypingIndicator(show) {
     const box = document.getElementById('rec-messages') || document.getElementById('cand-messages');
     if (!box) return;
     const row = document.createElement('div');
-    row.id = 'chat-typing-row';
-    row.className = 'msg-row';
-    row.innerHTML = '<div class="msg-avatar" style="background:var(--gray-200)"><i class="fa-solid fa-user" style="font-size:12px;color:var(--gray-500)"></i></div><div><div class="typing-bubble"><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div></div>';
-    box.appendChild(row);
-    box.scrollTop = box.scrollHeight;
-  } else if (!show && existing) {
-    existing.remove();
-  }
+    row.id = 'chat-typing-row'; row.className = 'msg-row';
+    row.innerHTML = '<div class="msg-avatar" style="background:var(--gray-200)"><i class="fa-solid fa-user" style="font-size:12px;color:var(--gray-500)"></i></div><div><div style="background:var(--gray-100);border-radius:12px 12px 12px 4px;padding:8px 14px;display:inline-flex;gap:4px;align-items:center"><span class="typing-dot" style="width:7px;height:7px;border-radius:50%;background:var(--gray-400);animation:typingPulse 1.4s infinite;display:inline-block"></span><span class="typing-dot" style="width:7px;height:7px;border-radius:50%;background:var(--gray-400);animation:typingPulse 1.4s infinite .2s;display:inline-block"></span><span class="typing-dot" style="width:7px;height:7px;border-radius:50%;background:var(--gray-400);animation:typingPulse 1.4s infinite .4s;display:inline-block"></span></div></div>';
+    box.appendChild(row); box.scrollTop = box.scrollHeight;
+  } else if (!show && existing) { existing.remove(); }
 }
 
 function onChatInput(candidateId) {
@@ -5705,59 +5974,126 @@ function onChatInput(candidateId) {
 }
 
 // ─────────────────────────────────────────
-// PROFILE PDF DOWNLOAD
+// CHANGE PASSWORD
 // ─────────────────────────────────────────
-function downloadProfilePDF() {
-  if (!savedProfile) { showToast({ id: Date.now(), icon: '⚠️', title: 'No profile', desc: 'Complete your profile first.', color:'#FFF7ED', iconColor:'#F97316' }); return; }
-  const p = savedProfile;
-  const name = `${p.firstName || ''} ${p.lastName || ''}`.trim();
-  const erps = (p.erp || []).join(', ') || '—';
-  const exps = (p.exps || []).map(e => `${e.jobTitle} @ ${e.company} (${e.startDate || ''}${e.current ? ' – Present' : e.endDate ? ' – ' + e.endDate : ''})`).join('\n');
-  const edus = (p.edus || []).map(e => `${e.degree} – ${e.institution} ${e.gradYear || ''}`).join('\n');
+function openChangePasswordModal() {
+  ['cp-current','cp-new','cp-confirm'].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('cp-error').classList.remove('show');
+  document.getElementById('cp-success').style.display = 'none';
+  document.getElementById('cp-btn').disabled = false;
+  document.getElementById('cp-btn').textContent = 'Update password';
+  document.getElementById('change-pw-modal').style.display = 'flex';
+  setTimeout(() => document.getElementById('cp-current').focus(), 80);
+}
+function closeChangePasswordModal() { document.getElementById('change-pw-modal').style.display = 'none'; }
 
-  const html_content = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${name} — ERP Talent Hub</title>
-  <style>
-    body{font-family:Arial,sans-serif;font-size:13px;color:#1a1a1a;margin:40px;line-height:1.6}
-    h1{font-size:22px;color:#2563EB;margin:0 0 4px}
-    .subtitle{font-size:13px;color:#555;margin-bottom:16px}
-    .contact{font-size:12px;color:#555;margin-bottom:20px}
-    h2{font-size:13px;font-weight:700;color:#2563EB;border-bottom:1.5px solid #2563EB;padding-bottom:4px;margin:20px 0 10px;text-transform:uppercase;letter-spacing:.5px}
-    p{margin:0 0 10px}
-    .erp-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
-    .erp-tag{background:#EFF6FF;color:#1D4ED8;border:1px solid #BFDBFE;border-radius:4px;padding:2px 8px;font-size:11px}
-    .exp-item{margin-bottom:10px}
-    .exp-title{font-weight:700;font-size:13px}
-    .exp-sub{font-size:11px;color:#666}
-    .footer{font-size:10px;color:#999;margin-top:40px;text-align:center;border-top:1px solid #eee;padding-top:12px}
-    @media print{body{margin:20px}}
-  </style></head><body>
-  <h1>${name}</h1>
-  <div class="subtitle">ERP Professional</div>
-  <div class="contact">${p.city || ''}${p.country ? ', ' + p.country : ''} &nbsp;|&nbsp; ${p.email || ''} &nbsp;|&nbsp; ${p.phone || ''}</div>
-  <h2>Professional Summary</h2><p>${(p.summary || '').replace(/\n/g,'<br>')}</p>
-  <h2>ERP Systems</h2><div class="erp-tags">${(p.erp||[]).map(e=>'<span class="erp-tag">'+e+'</span>').join('')}</div>
-  ${(p.exps||[]).length ? '<h2>Experience</h2>' + (p.exps||[]).map(e=>`<div class="exp-item"><div class="exp-title">${e.jobTitle} — ${e.company}</div><div class="exp-sub">${e.startDate||''}${e.current?' – Present':e.endDate?' – '+e.endDate:''}</div><p>${(e.description||'').replace(/\n/g,'<br>')}</p></div>`).join('') : ''}
-  ${(p.edus||[]).length ? '<h2>Education</h2>' + (p.edus||[]).map(e=>`<p>${e.degree} — ${e.institution} ${e.gradYear||''}</p>`).join('') : ''}
-  ${(p.certs||[]).length ? '<h2>Certifications</h2>' + (p.certs||[]).map(c=>`<p>${c.certName} — ${c.issuer||''} ${c.certYear||''}</p>`).join('') : ''}
-  <div class="footer">Generated from ERP Talent Hub · erp-talent-hub.netlify.app</div>
-  </body></html>`;
-
-  const blob = new Blob([html_content], { type: 'text/html' });
-  const url  = URL.createObjectURL(blob);
-  const win  = window.open(url, '_blank');
-  if (win) {
-    win.onload = () => { win.focus(); win.print(); };
+async function submitChangePassword() {
+  const current = document.getElementById('cp-current').value;
+  const newPw   = document.getElementById('cp-new').value;
+  const confirm = document.getElementById('cp-confirm').value;
+  const errEl   = document.getElementById('cp-error');
+  errEl.classList.remove('show');
+  if (!current || !newPw || !confirm) { errEl.textContent = 'Please fill in all fields.'; errEl.classList.add('show'); return; }
+  if (newPw.length < 6) { errEl.textContent = 'New password must be at least 6 characters.'; errEl.classList.add('show'); return; }
+  if (newPw !== confirm) { errEl.textContent = 'Passwords do not match.'; errEl.classList.add('show'); return; }
+  if (current === newPw) { errEl.textContent = 'New password must be different from current password.'; errEl.classList.add('show'); return; }
+  const btn = document.getElementById('cp-btn');
+  btn.disabled = true; btn.textContent = 'Updating…';
+  try {
+    const { error: signInErr } = await sb().auth.signInWithPassword({ email: currentUser.email, password: current });
+    if (signInErr) throw new Error('Current password is incorrect.');
+    const { error } = await sb().auth.updateUser({ password: newPw });
+    if (error) throw error;
+    document.getElementById('cp-success').style.display = 'block';
+    btn.style.display = 'none';
+    setTimeout(() => closeChangePasswordModal(), 2500);
+  } catch(err) {
+    btn.disabled = false; btn.textContent = 'Update password';
+    errEl.textContent = err.message || 'An error occurred.'; errEl.classList.add('show');
   }
-  showToast({ id: Date.now(), icon: '📄', title: 'Profile ready!', desc: 'Use browser Print → Save as PDF to download.', color:'#F0FDF4', iconColor:'#16A34A' });
+}
+
+// ─────────────────────────────────────────
+// DELETE ACCOUNT
+// ─────────────────────────────────────────
+function openDeleteAccountModal() {
+  ['da-password','da-confirm'].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('da-error').classList.remove('show');
+  document.getElementById('da-btn').disabled = false;
+  document.getElementById('da-btn').textContent = 'Delete my account permanently';
+  document.getElementById('delete-account-modal').style.display = 'flex';
+  setTimeout(() => document.getElementById('da-password').focus(), 80);
+}
+function closeDeleteAccountModal() { document.getElementById('delete-account-modal').style.display = 'none'; }
+
+async function submitDeleteAccount() {
+  const password = document.getElementById('da-password').value;
+  const confirm  = document.getElementById('da-confirm').value;
+  const errEl    = document.getElementById('da-error');
+  errEl.classList.remove('show');
+  if (!password) { errEl.textContent = 'Please enter your password.'; errEl.classList.add('show'); return; }
+  if (confirm !== 'DELETE') { errEl.textContent = 'Please type DELETE to confirm.'; errEl.classList.add('show'); return; }
+  const btn = document.getElementById('da-btn');
+  btn.disabled = true; btn.textContent = 'Deleting…';
+  try {
+    const { error: signInErr } = await sb().auth.signInWithPassword({ email: currentUser.email, password });
+    if (signInErr) throw new Error('Incorrect password.');
+    await sb().from('profiles').delete().eq('id', currentUser.id);
+    await sb().auth.signOut();
+    closeDeleteAccountModal();
+    showToast({ id: Date.now(), icon: '✅', title: 'Account deleted', desc: 'Your account has been permanently removed.', color:'#F0FDF4', iconColor:'#16A34A' });
+    currentUser = null; saveSession(null);
+    savedProfile = null; candPhotoBase64 = null; recPhotoBase64 = null;
+    recruiterVerified = false; recruiterProfile = {};
+    notifications = []; renderNav(); showView('home');
+  } catch(err) {
+    btn.disabled = false; btn.textContent = 'Delete my account permanently';
+    errEl.textContent = err.message || 'An error occurred.'; errEl.classList.add('show');
+  }
+}
+
+// ─────────────────────────────────────────
+// WEB PUSH NOTIFICATIONS
+// ─────────────────────────────────────────
+async function initPushNotifications() {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    const existing = await reg.pushManager.getSubscription();
+    if (existing) { pushSubscription = existing; }
+  } catch(e) { console.warn('Push init:', e); }
+}
+let pushSubscription = null;
+
+async function requestPushPermission() {
+  if (!('Notification' in window)) return false;
+  if (Notification.permission === 'granted') return true;
+  if (Notification.permission === 'denied') { showToast({ id: Date.now(), icon: '🔕', title: 'Notifications blocked', desc: 'Enable notifications in your browser settings.', color:'#FFF7ED', iconColor:'#F97316' }); return false; }
+  return (await Notification.requestPermission()) === 'granted';
+}
+
+async function enablePushNotifications() {
+  const granted = await requestPushPermission();
+  if (!granted) return;
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    reg.showNotification('ERP Talent Hub 🔔', { body: "Push notifications enabled! You'll be notified of new messages.", icon: '/ERP-Talent-Hub/icon-192.png' });
+    showToast({ id: Date.now(), icon: '🔔', title: 'Notifications enabled!', desc: "You'll receive alerts for new messages.", color:'#F0FDF4', iconColor:'#16A34A' });
+  } catch(e) { console.warn('Push enable:', e); }
+}
+
+function sendNativeNotification(title, body, url) {
+  if (Notification.permission !== 'granted') return;
+  navigator.serviceWorker.ready.then(reg => {
+    reg.showNotification(title, { body, icon: '/ERP-Talent-Hub/icon-192.png', badge: '/ERP-Talent-Hub/icon-192.png', data: { url: url || '/ERP-Talent-Hub/' }, vibrate: [200, 100, 200] });
+  });
 }
 
 // ─────────────────────────────────────────
 // ADVANCED FILTER HELPERS
 // ─────────────────────────────────────────
 function clearAdvFilters() {
-  ['filter-erp','filter-country','filter-exp'].forEach(id => {
-    const el = document.getElementById(id); if(el) el.value = '';
-  });
+  ['filter-erp','filter-country','filter-exp'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
   renderRecCandidateList();
 }
 
