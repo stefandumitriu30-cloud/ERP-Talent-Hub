@@ -3951,12 +3951,12 @@ function showAdminCandidateDetail(p) {
   const langsHTML = (p.langs && p.langs.length) ? `
     <div class="form-card" style="margin-bottom:16px">
       <div class="section-header"><i class="fa-solid fa-language"></i><h3>Languages</h3></div>
-      ${p.langs.map(l => `
+      ${p.langs.map(l=>`
         <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:7px 0;border-bottom:1px solid var(--gray-100)">
           <div style="font-size:14px;font-weight:600">${escHtml(l.langName)}</div>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
-            ${l.spoken  ? `<span style="display:inline-flex;align-items:center;gap:4px;background:var(--blue-light);border:1px solid var(--blue-mid);border-radius:12px;padding:3px 10px;font-size:12px;color:var(--blue)"><i class="fa-solid fa-microphone" style="font-size:10px"></i>Spoken: <strong>${escHtml(l.spoken)}</strong></span>` : ''}
-            ${l.written ? `<span style="display:inline-flex;align-items:center;gap:4px;background:var(--blue-light);border:1px solid var(--blue-mid);border-radius:12px;padding:3px 10px;font-size:12px;color:var(--blue)"><i class="fa-solid fa-pen" style="font-size:10px"></i>Written: <strong>${escHtml(l.written)}</strong></span>` : ''}
+            ${l.spoken?`<span style="display:inline-flex;align-items:center;gap:4px;background:var(--blue-light);border:1px solid var(--blue-mid);border-radius:12px;padding:3px 10px;font-size:12px;color:var(--blue)"><i class="fa-solid fa-microphone" style="font-size:10px"></i>Spoken: <strong>${escHtml(l.spoken)}</strong></span>`:''}
+            ${l.written?`<span style="display:inline-flex;align-items:center;gap:4px;background:var(--blue-light);border:1px solid var(--blue-mid);border-radius:12px;padding:3px 10px;font-size:12px;color:var(--blue)"><i class="fa-solid fa-pen" style="font-size:10px"></i>Written: <strong>${escHtml(l.written)}</strong></span>`:''}
           </div>
         </div>`).join('')}
     </div>` : '';
@@ -5996,60 +5996,34 @@ function renderProfileScore() {
 // PDF PROFILE DOWNLOAD
 // ─────────────────────────────────────────
 function downloadProfilePDF(lang) {
-  if (!savedProfile) { showToast({ id: Date.now(), icon: '⚠️', title: 'No profile', desc: 'Complete your profile first.', color:'#FFF7ED', iconColor:'#F97316' }); return; }
+  if (!savedProfile) {
+    showToast({ id:Date.now(), icon:'⚠️', title:'No profile', desc:'Complete your profile first.', color:'#FFF7ED', iconColor:'#F97316' });
+    return;
+  }
   if (!lang) { openPdfLangPicker(); return; }
 
   const L = {
-    en: { prof:'ERP Professional',   summary:'Professional Summary', erp:'ERP Systems',    exp:'Experience',       edu:'Education',   cert:'Certifications', awards:'Awards',       langs:'Languages', langSpoken:'Spoken', langWritten:'Written', present:'Present', footer:'Generated from ERP Talent Hub',  toasting:'Translating…' },
-    it: { prof:'Professionista ERP',  summary:'Sommario Professionale', erp:'Sistemi ERP', exp:'Esperienza',       edu:'Formazione',  cert:'Certificazioni', awards:'Premi',        langs:'Lingue',    langSpoken:'Parlato', langWritten:'Scritto', present:'Presente', footer:'Generato da ERP Talent Hub',   toasting:'Traduzione in corso…' },
-    es: { prof:'Profesional ERP',     summary:'Resumen Profesional',  erp:'Sistemas ERP',  exp:'Experiencia',      edu:'Educación',   cert:'Certificaciones',awards:'Premios',      langs:'Idiomas',   langSpoken:'Oral',    langWritten:'Escrito', present:'Presente', footer:'Generado por ERP Talent Hub',  toasting:'Traduciendo…' },
-    de: { prof:'ERP-Fachmann',        summary:'Berufliches Profil',   erp:'ERP-Systeme',   exp:'Berufserfahrung',  edu:'Ausbildung',  cert:'Zertifizierungen',awards:'Auszeichnungen',langs:'Sprachen', langSpoken:'Mündlich',langWritten:'Schriftlich',present:'Heute', footer:'Erstellt von ERP Talent Hub',  toasting:'Wird übersetzt…' },
-    fr: { prof:'Professionnel ERP',   summary:'Résumé Professionnel', erp:'Systèmes ERP',  exp:'Expérience',       edu:'Formation',   cert:'Certifications', awards:'Distinctions',  langs:'Langues',   langSpoken:'Oral',    langWritten:'Écrit',   present:'Présent',  footer:'Généré par ERP Talent Hub',    toasting:'Traduction en cours…' },
-    pt: { prof:'Profissional ERP',    summary:'Resumo Profissional',  erp:'Sistemas ERP',  exp:'Experiência',      edu:'Educação',    cert:'Certificações',  awards:'Prémios',       langs:'Idiomas',   langSpoken:'Oral',    langWritten:'Escrito', present:'Presente', footer:'Gerado pelo ERP Talent Hub',   toasting:'A traduzir…' },
+    en: { prof:'ERP Professional',   summary:'Professional Summary',  erp:'ERP Systems',     exp:'Experience',      edu:'Education',  cert:'Certifications', awards:'Awards',         langs:'Languages',  langSpoken:'Spoken',    langWritten:'Written',     present:'Present',  footer:'Generated from ERP Talent Hub',  toasting:'Generating PDF…' },
+    it: { prof:'Professionista ERP',  summary:'Sommario Professionale',erp:'Sistemi ERP',     exp:'Esperienza',      edu:'Formazione', cert:'Certificazioni', awards:'Premi',          langs:'Lingue',     langSpoken:'Parlato',   langWritten:'Scritto',     present:'Presente', footer:'Generato da ERP Talent Hub',     toasting:'Traduzione in corso…' },
+    es: { prof:'Profesional ERP',     summary:'Resumen Profesional',   erp:'Sistemas ERP',    exp:'Experiencia',     edu:'Educación',  cert:'Certificaciones',awards:'Premios',        langs:'Idiomas',    langSpoken:'Oral',      langWritten:'Escrito',     present:'Presente', footer:'Generado por ERP Talent Hub',    toasting:'Traduciendo…' },
+    de: { prof:'ERP-Fachmann',        summary:'Berufliches Profil',    erp:'ERP-Systeme',     exp:'Berufserfahrung', edu:'Ausbildung', cert:'Zertifizierungen',awards:'Auszeichnungen',langs:'Sprachen',   langSpoken:'Mündlich',  langWritten:'Schriftlich', present:'Heute',    footer:'Erstellt von ERP Talent Hub',    toasting:'Wird übersetzt…' },
+    fr: { prof:'Professionnel ERP',   summary:'Résumé Professionnel',  erp:'Systèmes ERP',    exp:'Expérience',      edu:'Formation',  cert:'Certifications', awards:'Distinctions',   langs:'Langues',    langSpoken:'Oral',      langWritten:'Écrit',       present:'Présent',  footer:'Généré par ERP Talent Hub',      toasting:'Traduction en cours…' },
+    pt: { prof:'Profissional ERP',    summary:'Resumo Profissional',   erp:'Sistemas ERP',    exp:'Experiência',     edu:'Educação',   cert:'Certificações',  awards:'Prémios',        langs:'Idiomas',    langSpoken:'Oral',      langWritten:'Escrito',     present:'Presente', footer:'Gerado pelo ERP Talent Hub',     toasting:'A traduzir…' },
   };
-  const lb = L[lang] || L['en'];
-  const langNames = { en:'English', it:'Italian', es:'Spanish', de:'German', fr:'French', pt:'Portuguese' };
+  const lb       = L[lang] || L.en;
+  const langName = { en:'English', it:'Italian', es:'Spanish', de:'German', fr:'French', pt:'Portuguese' }[lang] || 'English';
 
   closePdfLangPicker();
-  showToast({ id:'pdf-gen', icon:'⏳', title: lb.toasting, desc:'', color:'#EFF6FF', iconColor:'#2563EB' });
-  _generatePDF(savedProfile, lb, lang, langNames[lang] || 'English');
+  showToast({ id:'pdf-gen', icon:'⏳', title:lb.toasting, desc:'', color:'#EFF6FF', iconColor:'#2563EB' });
+
+  // Always translate when target is not English; build PDF async
+  _buildPDF(JSON.parse(JSON.stringify(savedProfile)), lb, lang, langName);
 }
 
-async function _generatePDF(profile, lb, lang, langName) {
-  // Deep-copy so we never mutate savedProfile
-  let p = JSON.parse(JSON.stringify(profile));
+async function _buildPDF(p, lb, lang, langName) {
 
-  // Collect all free-text content
-  const allText = [
-    p.summary || '',
-    ...(p.exps   || []).map(e => e.jobTitle    || ''),
-    ...(p.exps   || []).map(e => e.description || ''),
-    ...(p.edus   || []).map(e => e.degree      || ''),
-    ...(p.certs  || []).map(c => c.certName    || ''),
-    ...(p.certs  || []).map(c => c.issuer      || ''),
-    ...(p.awards || []).map(a => a.awardName   || ''),
-    ...(p.awards || []).map(a => a.awardOrg    || ''),
-  ].join(' ');
-
-  // Auto-detect source language via Claude (fast, ~10 words is enough)
-  let sourceLang = 'en'; // fallback
-  try {
-    const sample = allText.slice(0, 300);
-    const detResp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 10,
-        messages: [{ role:'user', content:`Detect the language of this text and reply with ONLY the ISO 639-1 code (en/it/es/de/fr/pt/etc), nothing else:\n\n${sample}` }]
-      })
-    });
-    const detData = await detResp.json();
-    sourceLang = (detData.content?.[0]?.text || 'en').trim().toLowerCase().slice(0,2);
-  } catch(e) { /* use fallback */ }
-
-  // Only translate if source ≠ target
-  if (sourceLang !== lang) {
+  // ── Translate all free-text fields via Claude API (skip only for English) ──
+  if (lang !== 'en') {
     try {
       const payload = {
         summary:     p.summary || '',
@@ -6068,76 +6042,104 @@ async function _generatePDF(profile, lb, lang, langName) {
         body: JSON.stringify({
           model: 'claude-sonnet-4-6',
           max_tokens: 3000,
-          messages: [{ role:'user', content:`Translate the following JSON from ${sourceLang === 'en' ? 'English' : sourceLang} into ${langName} for a professional CV/resume.
+          messages: [{
+            role: 'user',
+            content: `You are translating a professional CV into ${langName}.
 
-STRICT RULES:
-- Translate ONLY the string values — never keys
-- Keep proper nouns UNCHANGED: company names, ERP product names (SAP, Oracle, Dynamics, NetSuite, Workday, Infor, IFS, Sage, etc.), city/country names, certification names/bodies, institution names, LinkedIn URLs
-- Keep dates, numbers, emails, phone numbers UNCHANGED
-- Translate empty strings "" as ""
-- Maintain formal, professional CV tone
-- Return ONLY the JSON — no markdown fences, no explanation
+Rules:
+- Translate ALL string values into ${langName}, regardless of what language they are currently in
+- NEVER translate: company names, ERP product names (SAP, Oracle, Dynamics, NetSuite, Workday, Infor, IFS, Sage, etc.), city/country names, certification body names, institution names, email addresses, URLs, phone numbers, dates
+- Keep empty strings as ""
+- Use formal, professional CV language
+- Return ONLY the JSON object — no markdown, no explanation
 
-${JSON.stringify(payload, null, 2)}` }]
+${JSON.stringify(payload, null, 2)}`
+          }]
         })
       });
 
       const data = await resp.json();
       const raw  = (data.content?.[0]?.text || '').trim()
-                     .replace(/^```json\s*/,'').replace(/^```\s*/,'').replace(/\s*```$/,'');
+                       .replace(/^```json\s*/i,'').replace(/^```/,'').replace(/```$/,'').trim();
       const tr   = JSON.parse(raw);
 
       p.summary = tr.summary || p.summary;
-      (p.exps   || []).forEach((e,i) => { e.jobTitle    = tr.expTitles?.[i]  || e.jobTitle;    e.description = tr.expDescs?.[i]   || e.description; });
-      (p.edus   || []).forEach((e,i) => { e.degree      = tr.eduDegrees?.[i] || e.degree; });
-      (p.certs  || []).forEach((c,i) => { c.certName    = tr.certNames?.[i]  || c.certName;    c.issuer      = tr.certIssuers?.[i] || c.issuer; });
-      (p.awards || []).forEach((a,i) => { a.awardName   = tr.awardNames?.[i] || a.awardName;   a.awardOrg    = tr.awardOrgs?.[i]  || a.awardOrg; });
+      (p.exps   || []).forEach((e,i) => {
+        if (tr.expTitles?.[i])   e.jobTitle    = tr.expTitles[i];
+        if (tr.expDescs?.[i])    e.description = tr.expDescs[i];
+      });
+      (p.edus   || []).forEach((e,i) => { if (tr.eduDegrees?.[i])  e.degree   = tr.eduDegrees[i]; });
+      (p.certs  || []).forEach((c,i) => {
+        if (tr.certNames?.[i])   c.certName = tr.certNames[i];
+        if (tr.certIssuers?.[i]) c.issuer   = tr.certIssuers[i];
+      });
+      (p.awards || []).forEach((a,i) => {
+        if (tr.awardNames?.[i])  a.awardName = tr.awardNames[i];
+        if (tr.awardOrgs?.[i])   a.awardOrg  = tr.awardOrgs[i];
+      });
 
     } catch(err) {
-      console.warn('Translation failed, using original:', err);
+      console.warn('[PDF] Translation error — using original text:', err);
+      showToast({ id:'pdf-err', icon:'⚠️', title:'Translation error', desc:'PDF generated with original text.', color:'#FFF7ED', iconColor:'#F97316' });
     }
   }
 
-  // ── Build HTML ──
+  // ── Build HTML sections ──
   const name = `${p.firstName||''} ${p.lastName||''}`.trim();
 
-  const expHTML = (p.exps||[]).length ? `<h2>${lb.exp}</h2>` + (p.exps||[]).map(e => `
-    <div class="exp">
-      <div class="exp-t">${e.jobTitle} — ${e.company}</div>
-      <div class="exp-s">${e.startDate||''}${e.current ? ' – '+lb.present : e.endDate ? ' – '+e.endDate : ''}</div>
-      <p>${(e.description||'').replace(/\n/g,'<br>')}</p>
-    </div>`).join('') : '';
+  const expHTML = (p.exps||[]).length
+    ? `<h2>${lb.exp}</h2>` + (p.exps||[]).map(e=>`
+        <div class="exp">
+          <div class="exp-t">${e.jobTitle||''} — ${e.company||''}</div>
+          <div class="exp-s">${e.startDate||''}${e.current?' – '+lb.present : e.endDate?' – '+e.endDate:''}</div>
+          <p>${(e.description||'').replace(/\n/g,'<br>')}</p>
+        </div>`).join('') : '';
 
-  const eduHTML  = (p.edus||[]).length   ? `<h2>${lb.edu}</h2>`    + (p.edus||[]).map(e  => `<p><strong>${e.degree}</strong> — ${e.institution} ${e.gradYear||''}</p>`).join('') : '';
-  const certHTML = (p.certs||[]).length  ? `<h2>${lb.cert}</h2>`   + (p.certs||[]).map(c  => `<p>${c.certName}${c.issuer?' — '+c.issuer:''} ${c.certYear||''}</p>`).join('') : '';
-  const awdHTML  = (p.awards||[]).length ? `<h2>${lb.awards}</h2>` + (p.awards||[]).map(a => `<p>${a.awardName}${a.awardOrg?' — '+a.awardOrg:''} ${a.awardYear||''}</p>`).join('') : '';
-  const langsHTML= (p.langs||[]).length  ? `<h2>${lb.langs}</h2>
-    <table style="width:100%;border-collapse:collapse;font-size:12px">
-      <tr style="background:#f0f4ff"><th style="text-align:left;padding:5px 8px">${lb.langSpoken}</th><th style="text-align:left;padding:5px 8px">${lb.langWritten}</th></tr>
-      ${(p.langs||[]).map(l=>`<tr style="border-bottom:1px solid #eee"><td style="padding:5px 8px;font-weight:600">${l.langName||''}</td><td style="padding:5px 8px">${l.spoken||'—'}</td><td style="padding:5px 8px">${l.written||'—'}</td></tr>`).join('')}
-    </table>` : '';
+  const eduHTML  = (p.edus||[]).length
+    ? `<h2>${lb.edu}</h2>` + (p.edus||[]).map(e=>`<p><strong>${e.degree||''}</strong> — ${e.institution||''} ${e.gradYear||''}</p>`).join('') : '';
 
-  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${name} — ERP Talent Hub</title>
+  const certHTML = (p.certs||[]).length
+    ? `<h2>${lb.cert}</h2>` + (p.certs||[]).map(c=>`<p>${c.certName||''}${c.issuer?' — '+c.issuer:''} ${c.certYear||''}</p>`).join('') : '';
+
+  const awdHTML  = (p.awards||[]).length
+    ? `<h2>${lb.awards}</h2>` + (p.awards||[]).map(a=>`<p>${a.awardName||''}${a.awardOrg?' — '+a.awardOrg:''} ${a.awardYear||''}</p>`).join('') : '';
+
+  const langsHTML = (p.langs||[]).length
+    ? `<h2>${lb.langs}</h2>
+       <table style="width:100%;border-collapse:collapse;font-size:12px;margin-top:4px">
+         <tr style="background:#EFF6FF">
+           <th style="text-align:left;padding:5px 8px;font-weight:600;border-bottom:1px solid #BFDBFE">Language</th>
+           <th style="text-align:left;padding:5px 8px;font-weight:600;border-bottom:1px solid #BFDBFE">${lb.langSpoken}</th>
+           <th style="text-align:left;padding:5px 8px;font-weight:600;border-bottom:1px solid #BFDBFE">${lb.langWritten}</th>
+         </tr>
+         ${(p.langs||[]).map(l=>`<tr style="border-bottom:1px solid #f0f0f0">
+           <td style="padding:5px 8px;font-weight:600">${l.langName||''}</td>
+           <td style="padding:5px 8px">${l.spoken||'—'}</td>
+           <td style="padding:5px 8px">${l.written||'—'}</td>
+         </tr>`).join('')}
+       </table>` : '';
+
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
+  <title>${name} — ERP Talent Hub</title>
   <style>
+    *{box-sizing:border-box}
     body{font-family:Arial,sans-serif;font-size:13px;color:#1a1a1a;margin:40px;line-height:1.6}
     h1{font-size:22px;color:#2563EB;margin:0 0 4px}
     .sub{font-size:13px;color:#555;margin-bottom:4px}
-    .contact{font-size:12px;color:#555;margin-bottom:20px}
-    h2{font-size:11px;font-weight:700;color:#2563EB;border-bottom:1.5px solid #2563EB;padding-bottom:3px;margin:18px 0 8px;text-transform:uppercase;letter-spacing:.6px}
+    .contact{font-size:12px;color:#666;margin-bottom:20px}
+    h2{font-size:11px;font-weight:700;color:#2563EB;border-bottom:2px solid #2563EB;padding-bottom:3px;margin:20px 0 10px;text-transform:uppercase;letter-spacing:.6px}
     p{margin:0 0 8px}
     .tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px}
-    .tag{background:#EFF6FF;color:#1D4ED8;border:1px solid #BFDBFE;border-radius:4px;padding:2px 8px;font-size:11px}
-    .exp{margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid #f0f0f0}
-    .exp:last-child{border-bottom:none}
-    .exp-t{font-weight:700;font-size:14px}
-    .exp-s{font-size:11px;color:#666;margin-bottom:4px}
-    table{margin-top:4px;width:100%}
-    th,td{font-size:12px}
-    .footer{font-size:10px;color:#999;margin-top:40px;text-align:center;border-top:1px solid #eee;padding-top:12px}
+    .tag{background:#EFF6FF;color:#1D4ED8;border:1px solid #BFDBFE;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:500}
+    .exp{margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid #f0f0f0}
+    .exp:last-child{border-bottom:none;margin-bottom:0}
+    .exp-t{font-weight:700;font-size:14px;margin-bottom:2px}
+    .exp-s{font-size:11px;color:#888;margin-bottom:6px}
+    .footer{font-size:10px;color:#aaa;margin-top:40px;text-align:center;border-top:1px solid #eee;padding-top:12px}
   </style></head><body>
   <h1>${name}</h1>
   <div class="sub">${lb.prof}</div>
-  <div class="contact">${[p.city,p.province,p.country].filter(Boolean).join(', ')} &nbsp;|&nbsp; ${p.email||''} &nbsp;|&nbsp; ${p.phone||''}</div>
+  <div class="contact">${[p.city,p.province,p.country].filter(Boolean).join(', ')}${p.email?' &nbsp;|&nbsp; '+p.email:''} ${p.phone?' &nbsp;|&nbsp; '+p.phone:''}</div>
   <h2>${lb.summary}</h2><p>${(p.summary||'').replace(/\n/g,'<br>')}</p>
   <h2>${lb.erp}</h2><div class="tags">${(p.erp||[]).map(s=>'<span class="tag">'+s+'</span>').join('')}</div>
   ${expHTML}${eduHTML}${certHTML}${awdHTML}${langsHTML}
@@ -6145,7 +6147,7 @@ ${JSON.stringify(payload, null, 2)}` }]
   </body></html>`;
 
   const win = window.open('', '_blank');
-  if (win) { win.document.write(html); win.document.close(); setTimeout(() => win.print(), 600); }
+  if (win) { win.document.write(html); win.document.close(); setTimeout(()=>win.print(), 600); }
   showToast({ id:Date.now(), icon:'📄', title:'PDF ready!', desc:'Use Print → Save as PDF.', color:'#F0FDF4', iconColor:'#16A34A' });
 }
 function openPdfLangPicker() {
