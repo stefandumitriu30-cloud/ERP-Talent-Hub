@@ -4763,13 +4763,17 @@ function toggleMiaPanel() {
 }
 
 function miaGreet(ctx) {
-  const script = MIA_SCRIPTS[ctx] || MIA_SCRIPTS['home'];
-  const msgs   = document.getElementById('mia-messages');
+  const msgs = document.getElementById('mia-messages');
   msgs.innerHTML = '';
+  // Snapshot the language NOW so the greeting is locked to the current lang
+  const lang = currentLang;
   setTimeout(() => {
     showMiaTyping();
     setTimeout(() => {
       hideMiaTyping();
+      // Re-read MIA_SCRIPTS at speak time to get the correct language
+      const scripts = MIA_SCRIPTS_ALL[currentLang] || MIA_SCRIPTS_ALL['en'];
+      const script  = scripts[ctx] || scripts['home'];
       appendMiaMessage(script.greeting);
       setMiaQuickBtns(script.quick || []);
       if (miaSoundOn) miaSpeak(script.greeting.replace(/\*\*/g, ''));
