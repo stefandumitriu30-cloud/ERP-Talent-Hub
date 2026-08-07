@@ -1,6 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json?v=3" />
+  <meta name="theme-color" content="#2563EB" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="ERP Talent Hub" />
+  <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png?v=3" />
+  <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png?v=3" />
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=3" />
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>ERP Talent Hub</title>
@@ -4746,8 +4757,10 @@ function openMiaPanel() {
   document.getElementById('mia-panel').classList.add('open');
   document.getElementById('mia-hint').style.display = 'none';
   clearTimeout(miaHintTimer);
-  miaPostLoginData = null;
+
   const msgs = document.getElementById('mia-messages');
+
+  miaPostLoginData = null;
   if (msgs.children.length === 0) miaGreet(miaContext);
 }
 
@@ -4781,13 +4794,15 @@ function miaGreet(ctx) {
 
 function setMiaContext(ctx) {
   miaContext = ctx;
-  const scripts = MIA_SCRIPTS_ALL[currentLang] || MIA_SCRIPTS_ALL['en'];
-  const script  = scripts[ctx] || scripts['home'];
+  // Update hint bubble
+  const script = MIA_SCRIPTS[ctx] || MIA_SCRIPTS['home'];
   document.getElementById('mia-hint-text').innerHTML = script.hint || "👋 Need help? I'm Mia!";
+  // If panel is open, re-greet with new context
   if (miaOpen) {
     document.getElementById('mia-messages').innerHTML = '';
     miaGreet(ctx);
   } else {
+    // Show hint bubble briefly
     clearTimeout(miaHintTimer);
     const hint = document.getElementById('mia-hint');
     hint.style.display = 'block';
@@ -5478,6 +5493,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   addEntry('award');
   initMia();
 });
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js?v=3')
+      .then(reg => console.log('SW registered v3:', reg.scope))
+      .catch(err => console.warn('SW failed:', err));
+  });
+}
 </script>
 </body>
 </html>
