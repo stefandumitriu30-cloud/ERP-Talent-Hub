@@ -4745,10 +4745,6 @@ function openMiaPanel() {
   document.getElementById('mia-panel').classList.add('open');
   document.getElementById('mia-hint').style.display = 'none';
   clearTimeout(miaHintTimer);
-  // Clear and greet fresh in current language every time
-  const msgs = document.getElementById('mia-messages');
-  if (msgs) msgs.innerHTML = '';
-  setMiaQuickBtns([]);
   miaGreet(miaContext);
 }
 
@@ -4756,6 +4752,10 @@ function closeMiaPanel() {
   miaOpen = false;
   document.getElementById('mia-panel').classList.remove('open');
   stopMiaSpeech();
+  // Clear messages on close — next open always greets fresh in current language
+  const msgs = document.getElementById('mia-messages');
+  if (msgs) msgs.innerHTML = '';
+  setMiaQuickBtns([]);
 }
 
 function toggleMiaPanel() {
@@ -4763,18 +4763,18 @@ function toggleMiaPanel() {
 }
 
 function miaGreet(ctx) {
-  // Read MIA_SCRIPTS directly — no closure, no cache
-  const scripts = MIA_SCRIPTS_ALL[currentLang] || MIA_SCRIPTS_ALL['en'];
-  const script  = scripts[ctx] || scripts['home'];
   const msgs = document.getElementById('mia-messages');
   if (msgs) msgs.innerHTML = '';
   showMiaTyping();
   setTimeout(() => {
     hideMiaTyping();
+    // Read language HERE — inside the callback — never outside
+    const scripts = MIA_SCRIPTS_ALL[currentLang] || MIA_SCRIPTS_ALL['en'];
+    const script  = scripts[ctx] || scripts['home'];
     appendMiaMessage(script.greeting);
     setMiaQuickBtns(script.quick || []);
     if (miaSoundOn) miaSpeak(script.greeting.replace(/\*\*/g, ''));
-  }, 700);
+  }, 500);
 }
 
 function setMiaContext(ctx) {
