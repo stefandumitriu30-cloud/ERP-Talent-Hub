@@ -4,6 +4,15 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>ERP Talent Hub</title>
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json?v=3" />
+  <meta name="theme-color" content="#2563EB" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="ERP Talent Hub" />
+  <link rel="apple-touch-icon" href="icon-192.png?v=3" />
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=3" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet" />
@@ -665,6 +674,8 @@ input[type=file].photo-input{display:none}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <!-- iOS Keychain credential association hint -->
+  <link rel="canonical" href="https://stefandumitriu30-cloud.github.io/ERP-Talent-Hub/" />
 </head>
 <body>
 
@@ -703,26 +714,26 @@ input[type=file].photo-input{display:none}
         </div>
         <div class="nav-user-dropdown" id="nav-user-dropdown" style="display:none">
           <div class="nav-user-dropdown-item" id="dd-myprofile" onclick="closeUserDropdown();showView('myprofile')" style="display:none">
-            <i class="fa-solid fa-user"></i> My profile
+            <i class="fa-solid fa-user"></i> <span data-i18n="dd.myprofile">My profile</span>
           </div>
           <div class="nav-user-dropdown-item" id="dd-messages" onclick="closeUserDropdown();showView('candidate')" style="display:none">
-            <i class="fa-solid fa-comments"></i> My messages
+            <i class="fa-solid fa-comments"></i> <span data-i18n="dd.messages">My messages</span>
           </div>
           <div class="nav-user-dropdown-item" id="dd-recruiter-portal" onclick="closeUserDropdown();showView('recruiter')" style="display:none">
-            <i class="fa-solid fa-briefcase"></i> Recruiter portal
+            <i class="fa-solid fa-briefcase"></i> <span data-i18n="dd.recruiter">Recruiter portal</span>
           </div>
           <div class="nav-user-dropdown-item" id="dd-admin" onclick="closeUserDropdown();showView('admin')" style="display:none">
-            <i class="fa-solid fa-shield-halved"></i> Admin dashboard
+            <i class="fa-solid fa-shield-halved"></i> <span data-i18n="dd.admin">Admin dashboard</span>
           </div>
           <div class="nav-user-dropdown-item" id="dd-change-password" onclick="closeUserDropdown();openChangePasswordModal()" style="display:none">
-            <i class="fa-solid fa-key"></i> Change password
+            <i class="fa-solid fa-key"></i> <span data-i18n="dd.changePassword">Change password</span>
           </div>
           <hr style="border:none;border-top:1px solid var(--gray-100);margin:4px 0">
           <div class="nav-user-dropdown-item danger" onclick="logoutUser()">
-            <i class="fa-solid fa-right-from-bracket"></i> Logout
+            <i class="fa-solid fa-right-from-bracket"></i> <span data-i18n="dd.logout">Logout</span>
           </div>
           <div class="nav-user-dropdown-item danger" id="dd-delete-account" onclick="closeUserDropdown();openDeleteAccountModal()" style="display:none">
-            <i class="fa-solid fa-trash"></i> Delete account
+            <i class="fa-solid fa-trash"></i> <span data-i18n="dd.deleteAccount">Delete account</span>
           </div>
         </div>
       </div>
@@ -765,19 +776,20 @@ input[type=file].photo-input{display:none}
       </div>
 
       <!-- Fields (login + register) -->
+      <form id="auth-form" action="#" onsubmit="event.preventDefault();submitAuth()" autocomplete="on">
       <div id="auth-login-register-fields">
         <div id="auth-name-field" class="auth-field" style="display:none">
           <label>Full name</label>
-          <input type="text" id="auth-name" placeholder="e.g. Marco Rossi" />
+          <input type="text" id="auth-name" placeholder="e.g. Marco Rossi" autocomplete="name" inputmode="text" />
         </div>
         <div class="auth-field">
           <label>Email address</label>
-          <input type="email" id="auth-email" placeholder="you@example.com" onkeydown="if(event.key==='Enter')submitAuth()" />
+          <input type="email" id="auth-email" placeholder="you@example.com" onkeydown="if(event.key==='Enter')submitAuth()" autocomplete="email" inputmode="email" />
         </div>
         <div class="auth-field" id="auth-password-field">
           <label>Password</label>
           <div style="position:relative">
-            <input type="password" id="auth-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')submitAuth()" style="padding-right:36px" />
+            <input type="password" id="auth-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')submitAuth()" style="padding-right:36px" autocomplete="current-password" />
           </div>
           <div style="text-align:right;margin-top:4px">
             <a onclick="switchAuthTab('forgot')" style="font-size:12px;color:var(--blue);cursor:pointer" id="auth-forgot-link">Forgot password?</a>
@@ -785,19 +797,18 @@ input[type=file].photo-input{display:none}
         </div>
         <div class="auth-field" id="auth-confirm-field" style="display:none">
           <label>Confirm password</label>
-          <input type="password" id="auth-confirm" placeholder="••••••••" onkeydown="if(event.key==='Enter')submitAuth()" />
+          <input type="password" id="auth-confirm" placeholder="••••••••" onkeydown="if(event.key==='Enter')submitAuth()" autocomplete="new-password" />
         </div>
         <!-- Error -->
         <div class="auth-error" id="auth-error"></div>
         <!-- Submit -->
-        <button class="auth-submit" id="auth-submit-btn" onclick="submitAuth()">Login</button>
+        <button type="submit" class="auth-submit" id="auth-submit-btn">Login</button>
         <!-- Footer note -->
         <p class="auth-footer-note" id="auth-footer-note">
           No account yet? <a onclick="switchAuthTab('register')">Register now</a>
         </p>
       </div>
-
-      <!-- Forgot password panel -->
+      </form>
       <div id="auth-forgot-panel" style="display:none">
         <div style="text-align:center;margin-bottom:18px">
           <div style="width:48px;height:48px;border-radius:50%;background:var(--blue-light);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:20px;color:var(--blue)">
@@ -807,7 +818,7 @@ input[type=file].photo-input{display:none}
         </div>
         <div class="auth-field">
           <label id="auth-forgot-email-label">Email address</label>
-          <input type="email" id="auth-forgot-email" placeholder="you@example.com" onkeydown="if(event.key==='Enter')submitForgotPassword()" />
+          <input type="email" id="auth-forgot-email" placeholder="you@example.com" onkeydown="if(event.key==='Enter')submitForgotPassword()" autocomplete="email" inputmode="email" />
         </div>
         <div class="auth-error" id="auth-forgot-error"></div>
         <div id="auth-forgot-success" style="display:none;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:var(--radius);padding:12px 14px;font-size:13px;color:#15803D;margin-bottom:12px;text-align:center">
@@ -871,7 +882,7 @@ input[type=file].photo-input{display:none}
       <div class="onboarding-dot"></div>
     </div>
     <div class="onboarding-actions">
-      <button class="onboarding-skip" onclick="skipOnboarding()">Skip</button>
+      <button class="onboarding-skip" onclick="skipOnboarding()" data-i18n="ob.skip">Skip</button>
       <button class="onboarding-next" id="ob-btn" onclick="nextOnboardingStep()">Next →</button>
     </div>
   </div>
@@ -883,13 +894,13 @@ input[type=file].photo-input{display:none}
   <div class="auth-modal">
     <div class="auth-modal-header"><h2 data-i18n="cp.title">Change password</h2><p data-i18n="cp.sub">Choose a new secure password</p></div>
     <div class="auth-modal-body">
-      <div class="auth-field"><label>Current password</label><input type="password" id="cp-current" placeholder="••••••••" onkeydown="if(event.key==='Enter')submitChangePassword()" /></div>
-      <div class="auth-field"><label>New password</label><input type="password" id="cp-new" placeholder="••••••••" onkeydown="if(event.key==='Enter')submitChangePassword()" /></div>
-      <div class="auth-field"><label>Confirm new password</label><input type="password" id="cp-confirm" placeholder="••••••••" onkeydown="if(event.key==='Enter')submitChangePassword()" /></div>
+      <div class="auth-field"><label data-i18n="cp.current">Current password</label><input type="password" id="cp-current" placeholder="••••••••" onkeydown="if(event.key==='Enter')submitChangePassword()" autocomplete="current-password" /></div>
+      <div class="auth-field"><label data-i18n="cp.new">New password</label><input type="password" id="cp-new" placeholder="••••••••" onkeydown="if(event.key==='Enter')submitChangePassword()" autocomplete="new-password" /></div>
+      <div class="auth-field"><label data-i18n="cp.confirm">Confirm new password</label><input type="password" id="cp-confirm" placeholder="••••••••" onkeydown="if(event.key==='Enter')submitChangePassword()" autocomplete="new-password" /></div>
       <div class="auth-error" id="cp-error"></div>
       <div id="cp-success" style="display:none;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:var(--radius);padding:12px;font-size:13px;color:#15803D;margin-bottom:12px;text-align:center"><i class="fa-solid fa-circle-check"></i> Password updated successfully!</div>
-      <button class="auth-submit" id="cp-btn" onclick="submitChangePassword()">Update password</button>
-      <p class="auth-footer-note"><a onclick="closeChangePasswordModal()" style="cursor:pointer">Cancel</a></p>
+      <button class="auth-submit" id="cp-btn" onclick="submitChangePassword()" data-i18n="cp.submit">Update password</button>
+      <p class="auth-footer-note"><a onclick="closeChangePasswordModal()" style="cursor:pointer" data-i18n="cp.cancel">Cancel</a></p>
     </div>
   </div>
 </div>
@@ -900,11 +911,11 @@ input[type=file].photo-input{display:none}
     <div class="auth-modal-header" style="background:linear-gradient(135deg,#DC2626,#B91C1C)"><h2 data-i18n="da.title">Delete account</h2><p data-i18n="da.sub">This action is permanent and cannot be undone</p></div>
     <div class="auth-modal-body">
       <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:var(--radius);padding:14px;margin-bottom:18px;font-size:13px;color:#DC2626"><i class="fa-solid fa-triangle-exclamation" style="margin-right:6px"></i><strong>Warning:</strong> Deleting your account will permanently remove all your data.</div>
-      <div class="auth-field"><label>Type your password to confirm</label><input type="password" id="da-password" placeholder="••••••••" /></div>
-      <div class="auth-field"><label>Type <strong>DELETE</strong> to confirm</label><input type="text" id="da-confirm" placeholder="DELETE" /></div>
+      <div class="auth-field"><label data-i18n="da.passLabel">Type your password to confirm</label><input type="password" id="da-password" placeholder="••••••••" /></div>
+      <div class="auth-field"><label data-i18n="da.confirmLabel">Type DELETE to confirm</label><input type="text" id="da-confirm" placeholder="DELETE" /></div>
       <div class="auth-error" id="da-error"></div>
-      <button class="auth-submit" id="da-btn" onclick="submitDeleteAccount()" style="background:#DC2626">Delete my account permanently</button>
-      <p class="auth-footer-note"><a onclick="closeDeleteAccountModal()" style="cursor:pointer">Cancel</a></p>
+      <button class="auth-submit" id="da-btn" onclick="submitDeleteAccount()" style="background:#DC2626" data-i18n="da.submit">Delete my account permanently</button>
+      <p class="auth-footer-note"><a onclick="closeDeleteAccountModal()" style="cursor:pointer" data-i18n="da.cancel">Cancel</a></p>
     </div>
   </div>
 </div>
@@ -922,7 +933,7 @@ input[type=file].photo-input{display:none}
       <div class="onboarding-dot"></div><div class="onboarding-dot"></div>
     </div>
     <div class="onboarding-actions">
-      <button class="onboarding-skip" onclick="skipOnboarding()">Skip</button>
+      <button class="onboarding-skip" onclick="skipOnboarding()" data-i18n="ob.skip">Skip</button>
       <button class="onboarding-next" id="ob-btn" onclick="nextOnboardingStep()">Next →</button>
     </div>
   </div>
@@ -1163,6 +1174,9 @@ input[type=file].photo-input{display:none}
           <i class="fa-solid fa-pen" style="margin-right:6px"></i><span data-i18n="mp.edit">Edit profile</span>
         </button>
         <button class="btn-outline btn-sm" onclick="downloadProfilePDF()" style="font-size:13px" title="Download profile as PDF">
+          <i class="fa-solid fa-file-pdf" style="margin-right:6px;color:#DC2626"></i><span data-i18n="mp.downloadPdf">Download PDF</span>
+        </button>
+        <button class="btn-outline btn-sm" onclick="downloadProfilePDF()" style="font-size:13px" title="Download profile as PDF">
           <i class="fa-solid fa-file-pdf" style="margin-right:6px;color:#DC2626"></i>Download PDF
         </button>
       </div>
@@ -1261,13 +1275,13 @@ input[type=file].photo-input{display:none}
           <div class="gate-icon"><i class="fa-solid fa-user-tie"></i></div>
         </div>
         <h2 class="gate-title">Recruiter Access</h2>
-        <p class="gate-sub">ERP Talent Hub is exclusively open to <strong>verified LinkedIn Recruiter</strong> account holders. We verify your professional identity before granting access to the talent pool.</p>
+        <p class="gate-sub" data-i18n="gate.sub1">ERP Talent Hub is exclusively open to <strong>verified LinkedIn Recruiter</strong> account holders.</p>
         <div class="gate-steps-list">
-          <div class="gate-step-item"><div class="gate-step-num">1</div><div><strong>Connect LinkedIn</strong><br><span>Enter your LinkedIn Recruiter profile URL</span></div></div>
-          <div class="gate-step-item"><div class="gate-step-num">2</div><div><strong>Verify account type</strong><br><span>We check your account holds a LinkedIn Recruiter licence</span></div></div>
+          <div class="gate-step-item"><div class="gate-step-num">1</div><div><strong data-i18n="gate.step1t">Connect LinkedIn</strong><br><span data-i18n="gate.step1d">Enter your LinkedIn Recruiter profile URL</span></div></div>
+          <div class="gate-step-item"><div class="gate-step-num">2</div><div><strong data-i18n="gate.step2t">Verify account type</strong><br><span data-i18n="gate.step2d">We check your account holds a LinkedIn Recruiter licence</span></div></div>
           <div class="gate-step-item"><div class="gate-step-num">3</div><div><strong>Access the pool</strong><br><span>Browse and contact ERP professionals instantly</span></div></div>
         </div>
-        <button class="btn-primary gate-btn" onclick="gotoStep(2)"><i class="fa-brands fa-linkedin" style="margin-right:8px"></i>Connect with LinkedIn Recruiter</button>
+        <button class="btn-primary gate-btn" onclick="gotoStep(2)"><i class="fa-brands fa-linkedin" style="margin-right:8px"></i><span data-i18n="gate.connectBtn">Connect with LinkedIn Recruiter</span></button>
         <button class="btn-ghost" style="margin-top:8px;width:100%;font-size:13px" onclick="showView('home')">← Back to homepage</button>
       </div>
 
@@ -1277,10 +1291,10 @@ input[type=file].photo-input{display:none}
         <div class="gate-icon-wrap">
           <div class="gate-icon li-icon"><i class="fa-brands fa-linkedin"></i></div>
         </div>
-        <h2 class="gate-title">Enter your LinkedIn Recruiter URL</h2>
-        <p class="gate-sub">Paste the URL of your LinkedIn Recruiter profile. It must be a <strong>LinkedIn Recruiter</strong> account — standard LinkedIn profiles will not be accepted.</p>
+        <h2 class="gate-title" data-i18n="gate.title2">Enter your LinkedIn Recruiter URL</h2>
+        <p class="gate-sub" data-i18n="gate.sub2">Paste the URL of your LinkedIn Recruiter profile.</p>
         <div class="field" style="text-align:left;margin-bottom:8px">
-          <label style="font-size:13px;font-weight:500;color:#334155;display:block;margin-bottom:6px">LinkedIn Recruiter profile URL <span style="color:#DC2626">*</span></label>
+          <label style="font-size:13px;font-weight:500;color:#334155;display:block;margin-bottom:6px"><span data-i18n="gate.urlLabel">LinkedIn Recruiter profile URL</span> <span style="color:#DC2626">*</span></label>
           <div style="display:flex;gap:8px;align-items:center">
             <span style="font-size:13px;color:#64748B;white-space:nowrap">linkedin.com/in/</span>
             <input type="text" id="gate-li-url" placeholder="yourname" style="flex:1" oninput="validateGateUrl()" />
@@ -1296,7 +1310,7 @@ input[type=file].photo-input{display:none}
           <input type="text" id="gate-li-name" placeholder="e.g. Sarah Johnson" />
         </div>
         <div class="field" style="text-align:left;margin-bottom:16px">
-          <label style="font-size:13px;font-weight:500;color:#334155;display:block;margin-bottom:6px">Company / Agency <span style="color:#DC2626">*</span></label>
+          <label style="font-size:13px;font-weight:500;color:#334155;display:block;margin-bottom:6px"><span data-i18n="gate.companyLabel">Company / Agency</span> <span style="color:#DC2626">*</span></label>
           <input type="text" id="gate-li-company" placeholder="e.g. Korn Ferry" />
         </div>
         <!-- Recruiter photo upload -->
@@ -1318,7 +1332,7 @@ input[type=file].photo-input{display:none}
             <input type="file" id="rec-photo-input" class="photo-input" accept="image/jpeg,image/png,image/webp" onchange="onRecPhotoChange(event)" />
           </div>
         </div>
-        <button class="btn-primary gate-btn" id="gate-verify-btn" onclick="startVerification()"><i class="fa-solid fa-shield-halved" style="margin-right:8px"></i>Verify LinkedIn Recruiter account</button>
+        <button class="btn-primary gate-btn" id="gate-verify-btn" onclick="startVerification()"><i class="fa-solid fa-shield-halved" style="margin-right:8px"></i><span data-i18n="gate.verifyBtn">Verify LinkedIn Recruiter account</span></button>
         <button class="btn-ghost" style="margin-top:8px;width:100%;font-size:13px" onclick="gotoStep(1)">← Back</button>
       </div>
 
@@ -1562,7 +1576,7 @@ input[type=file].photo-input{display:none}
 const TRANSLATIONS = {
   en:{
     "candidates":"My messages","recruiters":"For recruiters","submit":"Submit your CV",
-    "nav.login":"Login","auth.welcome":"Welcome to ERP Talent Hub","auth.signinSub":"Sign in to access your profile","auth.registerSub":"Create your free account","auth.tabLogin":"Login","auth.tabRegister":"Register","auth.submitLogin":"Login","auth.submitRegister":"Create account","auth.roleLabel":"I am a","auth.roleCandidate":"ERP Professional","auth.roleRecruiter":"Recruiter","auth.nameLabel":"Full name","auth.passwordLabel":"Password","auth.forgotTitle":"Reset your password","auth.forgotSub":"Enter your email and we'll send a reset link.","auth.backToLogin":"← Back to login","cp.title":"Change password","cp.sub":"Choose a new secure password","cp.current":"Current password","cp.new":"New password","cp.confirm":"Confirm new password","cp.submit":"Update password","cp.cancel":"Cancel","da.title":"Delete account","da.sub":"This action is permanent and cannot be undone","da.passLabel":"Type your password to confirm","da.confirmLabel":"Type DELETE to confirm","da.submit":"Delete my account permanently","da.cancel":"Cancel","nav.register":"Register",
+    "nav.login":"Login","dd.myprofile":"My profile","dd.messages":"My messages","dd.recruiter":"Recruiter portal","dd.admin":"Admin dashboard","dd.changePassword":"Change password","dd.logout":"Logout","dd.deleteAccount":"Delete account","auth.welcome":"Welcome to ERP Talent Hub","auth.signinSub":"Sign in to access your profile","auth.registerSub":"Create your free account","auth.tabLogin":"Login","auth.tabRegister":"Register","auth.submitLogin":"Login","auth.submitRegister":"Create account","auth.roleLabel":"I am a","auth.roleCandidate":"ERP Professional","auth.roleRecruiter":"Recruiter","auth.nameLabel":"Full name","auth.passwordLabel":"Password","auth.forgotTitle":"Reset your password","auth.forgotSub":"Enter your email and we'll send a reset link.","auth.backToLogin":"← Back to login","cp.title":"Change password","cp.sub":"Choose a new secure password","cp.current":"Current password","cp.new":"New password","cp.confirm":"Confirm new password","cp.submit":"Update password","cp.cancel":"Cancel","da.title":"Delete account","da.sub":"This action is permanent and cannot be undone","da.warning":"Deleting your account will permanently remove all your data.","da.passLabel":"Type your password to confirm","da.confirmLabel":"Type DELETE to confirm","da.submit":"Delete my account permanently","da.cancel":"Cancel","gate.title1":"Recruiter Access Required","gate.sub1":"ERP Talent Hub is exclusively open to <strong>verified LinkedIn Recruiter</strong> account holders.","gate.step1t":"Connect LinkedIn","gate.step1d":"Enter your LinkedIn Recruiter profile URL","gate.step2t":"Verify account type","gate.step2d":"We check your account holds a LinkedIn Recruiter licence","gate.step3t":"Access granted","gate.step3d":"Start connecting with ERP professionals","gate.connectBtn":"Connect with LinkedIn Recruiter","gate.title2":"Enter your LinkedIn Recruiter URL","gate.sub2":"Paste the URL of your LinkedIn Recruiter profile.","gate.urlLabel":"LinkedIn Recruiter profile URL","gate.nameLabel":"Full name (as on LinkedIn)","gate.companyLabel":"Company / Agency","gate.verifyBtn":"Verify LinkedIn Recruiter account","score.title":"Profile completeness","score.complete":"✓ Profile complete! Recruiters can find you easily.","score.missing":"Missing:","stats.views":"Profile views","stats.contacts":"Recruiter contacts","stats.week":"This week","ob.skip":"Skip","mp.downloadPdf":"Download PDF","nav.register":"Register",
     "auth.login":"Login","auth.createAccount":"Create account","auth.noAccount":"No account yet?","auth.registerNow":"Register now","auth.haveAccount":"Already have an account?","auth.loginLink":"Login","auth.forgot":"Forgot password?","auth.forgotDesc":"Enter your email address and we'll send you a link to reset your password.","auth.emailLabel":"Email address","auth.sendReset":"Send reset link","auth.sending":"Sending…","auth.resetSent":"Check your inbox! A reset link has been sent.","auth.emailRequired":"Please enter your email address.","auth.emailInvalid":"Please enter a valid email address.",
     "mia.guide":"Your ERP Talent Hub guide","mia.soundOff":"Sound off","mia.soundOn":"Sound on","mia.placeholder":"Ask Mia anything…","mia.hint":"👋 Hi! I'm <strong>Mia</strong>, your guide. Click me to get started!",
     "myprofile":"My profile",
@@ -1602,7 +1616,7 @@ const TRANSLATIONS = {
   },
   it:{
     "candidates":"I miei messaggi","recruiters":"Per recruiter","submit":"Invia il tuo CV",
-    "nav.login":"Accedi","auth.welcome":"Benvenuto su ERP Talent Hub","auth.signinSub":"Accedi per vedere il tuo profilo","auth.registerSub":"Crea il tuo account gratuito","auth.tabLogin":"Accedi","auth.tabRegister":"Registrati","auth.submitLogin":"Accedi","auth.submitRegister":"Crea account","auth.roleLabel":"Sono un","auth.roleCandidate":"Professionista ERP","auth.roleRecruiter":"Recruiter","auth.nameLabel":"Nome completo","auth.passwordLabel":"Password","auth.forgotTitle":"Reimposta la password","auth.forgotSub":"Inserisci la tua email e ti invieremo un link di reset.","auth.backToLogin":"← Torna al login","cp.title":"Cambia password","cp.sub":"Scegli una nuova password sicura","cp.current":"Password attuale","cp.new":"Nuova password","cp.confirm":"Conferma nuova password","cp.submit":"Aggiorna password","cp.cancel":"Annulla","da.title":"Elimina account","da.sub":"Questa azione è permanente e non può essere annullata","da.passLabel":"Digita la tua password per confermare","da.confirmLabel":"Digita ELIMINA per confermare","da.submit":"Elimina il mio account definitivamente","da.cancel":"Annulla","nav.register":"Registrati",
+    "nav.login":"Accedi","dd.myprofile":"Il mio profilo","dd.messages":"I miei messaggi","dd.recruiter":"Portale recruiter","dd.admin":"Dashboard admin","dd.changePassword":"Cambia password","dd.logout":"Esci","dd.deleteAccount":"Elimina account","auth.welcome":"Benvenuto su ERP Talent Hub","auth.signinSub":"Accedi per vedere il tuo profilo","auth.registerSub":"Crea il tuo account gratuito","auth.tabLogin":"Accedi","auth.tabRegister":"Registrati","auth.submitLogin":"Accedi","auth.submitRegister":"Crea account","auth.roleLabel":"Sono un","auth.roleCandidate":"Professionista ERP","auth.roleRecruiter":"Recruiter","auth.nameLabel":"Nome completo","auth.passwordLabel":"Password","auth.forgotTitle":"Reimposta la password","auth.forgotSub":"Inserisci la tua email e ti invieremo un link di reset.","auth.backToLogin":"← Torna al login","cp.title":"Cambia password","cp.sub":"Scegli una nuova password sicura","cp.current":"Password attuale","cp.new":"Nuova password","cp.confirm":"Conferma nuova password","cp.submit":"Aggiorna password","cp.cancel":"Annulla","da.title":"Elimina account","da.sub":"Questa azione è permanente e non può essere annullata","da.warning":"L'eliminazione dell'account rimuoverà permanentemente tutti i tuoi dati.","da.passLabel":"Digita la tua password per confermare","da.confirmLabel":"Digita ELIMINA per confermare","da.submit":"Elimina il mio account definitivamente","da.cancel":"Annulla","gate.title1":"Accesso Recruiter Richiesto","gate.sub1":"ERP Talent Hub è riservato esclusivamente ai titolari di account <strong>LinkedIn Recruiter verificato</strong>.","gate.step1t":"Connetti LinkedIn","gate.step1d":"Inserisci il tuo URL di profilo LinkedIn Recruiter","gate.step2t":"Verifica tipo account","gate.step2d":"Verifichiamo che il tuo account abbia una licenza LinkedIn Recruiter","gate.step3t":"Accesso garantito","gate.step3d":"Inizia a connetterti con i professionisti ERP","gate.connectBtn":"Connetti con LinkedIn Recruiter","gate.title2":"Inserisci il tuo URL LinkedIn Recruiter","gate.sub2":"Incolla il tuo URL di profilo LinkedIn Recruiter.","gate.urlLabel":"URL profilo LinkedIn Recruiter","gate.nameLabel":"Nome completo (come su LinkedIn)","gate.companyLabel":"Azienda / Agenzia","gate.verifyBtn":"Verifica account LinkedIn Recruiter","score.title":"Completezza profilo","score.complete":"✓ Profilo completo! I recruiter possono trovarti facilmente.","score.missing":"Mancanti:","stats.views":"Visualizzazioni","stats.contacts":"Contatti recruiter","stats.week":"Questa settimana","ob.skip":"Salta","mp.downloadPdf":"Scarica PDF","nav.register":"Registrati",
     "auth.login":"Accedi","auth.createAccount":"Crea account","auth.noAccount":"Non hai un account?","auth.registerNow":"Registrati","auth.haveAccount":"Hai già un account?","auth.loginLink":"Accedi","auth.forgot":"Password dimenticata?","auth.forgotDesc":"Inserisci il tuo indirizzo email e ti invieremo un link per reimpostare la password.","auth.emailLabel":"Indirizzo email","auth.sendReset":"Invia link di reset","auth.sending":"Invio in corso…","auth.resetSent":"Controlla la tua casella! Il link di reset è stato inviato.","auth.emailRequired":"Inserisci il tuo indirizzo email.","auth.emailInvalid":"Inserisci un indirizzo email valido.",
     "mia.guide":"La tua guida su ERP Talent Hub","mia.soundOff":"Audio spento","mia.soundOn":"Audio acceso","mia.placeholder":"Chiedi qualcosa a Mia…","mia.hint":"👋 Ciao! Sono <strong>Mia</strong>, la tua guida. Clicca su di me!",
     "myprofile":"Il mio profilo",
@@ -1642,7 +1656,7 @@ const TRANSLATIONS = {
   },
   es:{
     "candidates":"Mis mensajes","recruiters":"Para recruiters","submit":"Envía tu CV",
-    "nav.login":"Iniciar sesión","auth.welcome":"Bienvenido a ERP Talent Hub","auth.signinSub":"Inicia sesión para acceder a tu perfil","auth.registerSub":"Crea tu cuenta gratuita","auth.tabLogin":"Iniciar sesión","auth.tabRegister":"Registrarse","auth.submitLogin":"Iniciar sesión","auth.submitRegister":"Crear cuenta","auth.roleLabel":"Soy","auth.roleCandidate":"Profesional ERP","auth.roleRecruiter":"Reclutador","auth.nameLabel":"Nombre completo","auth.passwordLabel":"Contraseña","auth.forgotTitle":"Restablecer contraseña","auth.forgotSub":"Ingresa tu email y te enviaremos un enlace de restablecimiento.","auth.backToLogin":"← Volver al inicio de sesión","cp.title":"Cambiar contraseña","cp.sub":"Elige una nueva contraseña segura","cp.current":"Contraseña actual","cp.new":"Nueva contraseña","cp.confirm":"Confirmar nueva contraseña","cp.submit":"Actualizar contraseña","cp.cancel":"Cancelar","da.title":"Eliminar cuenta","da.sub":"Esta acción es permanente y no se puede deshacer","da.passLabel":"Escribe tu contraseña para confirmar","da.confirmLabel":"Escribe ELIMINAR para confirmar","da.submit":"Eliminar mi cuenta permanentemente","da.cancel":"Cancelar","nav.register":"Registrarse",
+    "nav.login":"Iniciar sesión","dd.myprofile":"Mi perfil","dd.messages":"Mis mensajes","dd.recruiter":"Portal recruiter","dd.admin":"Panel admin","dd.changePassword":"Cambiar contraseña","dd.logout":"Cerrar sesión","dd.deleteAccount":"Eliminar cuenta","auth.welcome":"Bienvenido a ERP Talent Hub","auth.signinSub":"Inicia sesión para acceder a tu perfil","auth.registerSub":"Crea tu cuenta gratuita","auth.tabLogin":"Iniciar sesión","auth.tabRegister":"Registrarse","auth.submitLogin":"Iniciar sesión","auth.submitRegister":"Crear cuenta","auth.roleLabel":"Soy","auth.roleCandidate":"Profesional ERP","auth.roleRecruiter":"Reclutador","auth.nameLabel":"Nombre completo","auth.passwordLabel":"Contraseña","auth.forgotTitle":"Restablecer contraseña","auth.forgotSub":"Ingresa tu email y te enviaremos un enlace de restablecimiento.","auth.backToLogin":"← Volver al inicio de sesión","cp.title":"Cambiar contraseña","cp.sub":"Elige una nueva contraseña segura","cp.current":"Contraseña actual","cp.new":"Nueva contraseña","cp.confirm":"Confirmar nueva contraseña","cp.submit":"Actualizar contraseña","cp.cancel":"Cancelar","da.title":"Eliminar cuenta","da.sub":"Esta acción es permanente y no se puede deshacer","da.warning":"Eliminar tu cuenta eliminará permanentemente todos tus datos.","da.passLabel":"Escribe tu contraseña para confirmar","da.confirmLabel":"Escribe ELIMINAR para confirmar","da.submit":"Eliminar mi cuenta permanentemente","da.cancel":"Cancelar","gate.title1":"Acceso de Recruiter Requerido","gate.sub1":"ERP Talent Hub es exclusivamente para titulares de cuenta <strong>LinkedIn Recruiter verificada</strong>.","gate.step1t":"Conectar LinkedIn","gate.step1d":"Introduce la URL de tu perfil LinkedIn Recruiter","gate.step2t":"Verificar tipo de cuenta","gate.step2d":"Comprobamos que tu cuenta tiene licencia LinkedIn Recruiter","gate.step3t":"Acceso concedido","gate.step3d":"Empieza a conectar con profesionales ERP","gate.connectBtn":"Conectar con LinkedIn Recruiter","gate.title2":"Introduce tu URL de LinkedIn Recruiter","gate.sub2":"Pega la URL de tu perfil LinkedIn Recruiter.","gate.urlLabel":"URL de perfil LinkedIn Recruiter","gate.nameLabel":"Nombre completo (como en LinkedIn)","gate.companyLabel":"Empresa / Agencia","gate.verifyBtn":"Verificar cuenta LinkedIn Recruiter","score.title":"Completitud del perfil","score.complete":"✓ ¡Perfil completo! Los recruiters pueden encontrarte fácilmente.","score.missing":"Faltantes:","stats.views":"Vistas del perfil","stats.contacts":"Contactos recruiter","stats.week":"Esta semana","ob.skip":"Saltar","mp.downloadPdf":"Descargar PDF","nav.register":"Registrarse",
     "auth.login":"Iniciar sesión","auth.createAccount":"Crear cuenta","auth.noAccount":"¿No tienes cuenta?","auth.registerNow":"Regístrate","auth.haveAccount":"¿Ya tienes cuenta?","auth.loginLink":"Iniciar sesión","auth.forgot":"¿Olvidaste tu contraseña?","auth.forgotDesc":"Introduce tu email y te enviaremos un enlace para restablecer tu contraseña.","auth.emailLabel":"Correo electrónico","auth.sendReset":"Enviar enlace de restablecimiento","auth.sending":"Enviando…","auth.resetSent":"¡Revisa tu bandeja! Se ha enviado el enlace de restablecimiento.","auth.emailRequired":"Por favor introduce tu correo electrónico.","auth.emailInvalid":"Por favor introduce un correo electrónico válido.",
     "mia.guide":"Tu guía en ERP Talent Hub","mia.soundOff":"Sonido apagado","mia.soundOn":"Sonido encendido","mia.placeholder":"Pregúntale algo a Mia…","mia.hint":"👋 ¡Hola! Soy <strong>Mia</strong>, tu guía. ¡Haz clic en mí!",
     "myprofile":"Mi perfil",
@@ -1682,7 +1696,7 @@ const TRANSLATIONS = {
   },
   de:{
     "candidates":"Meine Nachrichten","recruiters":"Für Recruiter","submit":"Lebenslauf einreichen",
-    "nav.login":"Anmelden","auth.welcome":"Willkommen bei ERP Talent Hub","auth.signinSub":"Melden Sie sich an, um Ihr Profil aufzurufen","auth.registerSub":"Erstellen Sie Ihr kostenloses Konto","auth.tabLogin":"Anmelden","auth.tabRegister":"Registrieren","auth.submitLogin":"Anmelden","auth.submitRegister":"Konto erstellen","auth.roleLabel":"Ich bin","auth.roleCandidate":"ERP-Fachmann","auth.roleRecruiter":"Recruiter","auth.nameLabel":"Vollständiger Name","auth.passwordLabel":"Passwort","auth.forgotTitle":"Passwort zurücksetzen","auth.forgotSub":"Geben Sie Ihre E-Mail ein und wir senden Ihnen einen Reset-Link.","auth.backToLogin":"← Zurück zur Anmeldung","cp.title":"Passwort ändern","cp.sub":"Wählen Sie ein neues sicheres Passwort","cp.current":"Aktuelles Passwort","cp.new":"Neues Passwort","cp.confirm":"Neues Passwort bestätigen","cp.submit":"Passwort aktualisieren","cp.cancel":"Abbrechen","da.title":"Konto löschen","da.sub":"Diese Aktion ist dauerhaft und kann nicht rückgängig gemacht werden","da.passLabel":"Geben Sie Ihr Passwort zur Bestätigung ein","da.confirmLabel":"Geben Sie LÖSCHEN zur Bestätigung ein","da.submit":"Mein Konto dauerhaft löschen","da.cancel":"Abbrechen","nav.register":"Registrieren",
+    "nav.login":"Anmelden","dd.myprofile":"Mein Profil","dd.messages":"Meine Nachrichten","dd.recruiter":"Recruiter-Portal","dd.admin":"Admin-Dashboard","dd.changePassword":"Passwort ändern","dd.logout":"Abmelden","dd.deleteAccount":"Konto löschen","auth.welcome":"Willkommen bei ERP Talent Hub","auth.signinSub":"Melden Sie sich an, um Ihr Profil aufzurufen","auth.registerSub":"Erstellen Sie Ihr kostenloses Konto","auth.tabLogin":"Anmelden","auth.tabRegister":"Registrieren","auth.submitLogin":"Anmelden","auth.submitRegister":"Konto erstellen","auth.roleLabel":"Ich bin","auth.roleCandidate":"ERP-Fachmann","auth.roleRecruiter":"Recruiter","auth.nameLabel":"Vollständiger Name","auth.passwordLabel":"Passwort","auth.forgotTitle":"Passwort zurücksetzen","auth.forgotSub":"Geben Sie Ihre E-Mail ein und wir senden Ihnen einen Reset-Link.","auth.backToLogin":"← Zurück zur Anmeldung","cp.title":"Passwort ändern","cp.sub":"Wählen Sie ein neues sicheres Passwort","cp.current":"Aktuelles Passwort","cp.new":"Neues Passwort","cp.confirm":"Neues Passwort bestätigen","cp.submit":"Passwort aktualisieren","cp.cancel":"Abbrechen","da.title":"Konto löschen","da.sub":"Diese Aktion ist dauerhaft und kann nicht rückgängig gemacht werden","da.warning":"Das Löschen Ihres Kontos entfernt alle Ihre Daten dauerhaft.","da.passLabel":"Geben Sie Ihr Passwort zur Bestätigung ein","da.confirmLabel":"Geben Sie LÖSCHEN zur Bestätigung ein","da.submit":"Mein Konto dauerhaft löschen","da.cancel":"Abbrechen","gate.title1":"Recruiter-Zugang erforderlich","gate.sub1":"ERP Talent Hub ist ausschließlich für Inhaber von <strong>verifizierten LinkedIn Recruiter</strong>-Konten.","gate.step1t":"LinkedIn verbinden","gate.step1d":"Geben Sie Ihre LinkedIn Recruiter-Profil-URL ein","gate.step2t":"Kontotyp überprüfen","gate.step2d":"Wir prüfen, ob Ihr Konto eine LinkedIn Recruiter-Lizenz hat","gate.step3t":"Zugang gewährt","gate.step3d":"Beginnen Sie, sich mit ERP-Fachleuten zu vernetzen","gate.connectBtn":"Mit LinkedIn Recruiter verbinden","gate.title2":"Ihre LinkedIn Recruiter-URL eingeben","gate.sub2":"Fügen Sie die URL Ihres LinkedIn Recruiter-Profils ein.","gate.urlLabel":"LinkedIn Recruiter-Profil-URL","gate.nameLabel":"Vollständiger Name (wie auf LinkedIn)","gate.companyLabel":"Unternehmen / Agentur","gate.verifyBtn":"LinkedIn Recruiter-Konto verifizieren","score.title":"Profilvollständigkeit","score.complete":"✓ Profil vollständig! Recruiter können Sie leicht finden.","score.missing":"Fehlend:","stats.views":"Profilaufrufe","stats.contacts":"Recruiter-Kontakte","stats.week":"Diese Woche","ob.skip":"Überspringen","mp.downloadPdf":"PDF herunterladen","nav.register":"Registrieren",
     "auth.login":"Anmelden","auth.createAccount":"Konto erstellen","auth.noAccount":"Noch kein Konto?","auth.registerNow":"Jetzt registrieren","auth.haveAccount":"Bereits ein Konto?","auth.loginLink":"Anmelden","auth.forgot":"Passwort vergessen?","auth.forgotDesc":"Geben Sie Ihre E-Mail-Adresse ein und wir senden Ihnen einen Link zum Zurücksetzen des Passworts.","auth.emailLabel":"E-Mail-Adresse","auth.sendReset":"Link zum Zurücksetzen senden","auth.sending":"Wird gesendet…","auth.resetSent":"Prüfen Sie Ihr Postfach! Ein Reset-Link wurde gesendet.","auth.emailRequired":"Bitte geben Sie Ihre E-Mail-Adresse ein.","auth.emailInvalid":"Bitte geben Sie eine gültige E-Mail-Adresse ein.",
     "mia.guide":"Ihre Führerin auf ERP Talent Hub","mia.soundOff":"Ton aus","mia.soundOn":"Ton an","mia.placeholder":"Fragen Sie Mia…","mia.hint":"👋 Hallo! Ich bin <strong>Mia</strong>, Ihre Führerin. Klicken Sie mich an!",
     "myprofile":"Mein Profil",
@@ -1722,7 +1736,7 @@ const TRANSLATIONS = {
   },
   fr:{
     "candidates":"Mes messages","recruiters":"Pour les recruteurs","submit":"Déposer mon CV",
-    "nav.login":"Connexion","auth.welcome":"Bienvenue sur ERP Talent Hub","auth.signinSub":"Connectez-vous pour accéder à votre profil","auth.registerSub":"Créez votre compte gratuit","auth.tabLogin":"Connexion","auth.tabRegister":"S'inscrire","auth.submitLogin":"Se connecter","auth.submitRegister":"Créer un compte","auth.roleLabel":"Je suis","auth.roleCandidate":"Professionnel ERP","auth.roleRecruiter":"Recruteur","auth.nameLabel":"Nom complet","auth.passwordLabel":"Mot de passe","auth.forgotTitle":"Réinitialiser le mot de passe","auth.forgotSub":"Entrez votre email et nous vous enverrons un lien de réinitialisation.","auth.backToLogin":"← Retour à la connexion","cp.title":"Changer le mot de passe","cp.sub":"Choisissez un nouveau mot de passe sécurisé","cp.current":"Mot de passe actuel","cp.new":"Nouveau mot de passe","cp.confirm":"Confirmer le nouveau mot de passe","cp.submit":"Mettre à jour le mot de passe","cp.cancel":"Annuler","da.title":"Supprimer le compte","da.sub":"Cette action est permanente et ne peut pas être annulée","da.passLabel":"Tapez votre mot de passe pour confirmer","da.confirmLabel":"Tapez SUPPRIMER pour confirmer","da.submit":"Supprimer mon compte définitivement","da.cancel":"Annuler","nav.register":"S'inscrire",
+    "nav.login":"Connexion","dd.myprofile":"Mon profil","dd.messages":"Mes messages","dd.recruiter":"Portail recruteur","dd.admin":"Tableau de bord admin","dd.changePassword":"Changer le mot de passe","dd.logout":"Déconnexion","dd.deleteAccount":"Supprimer le compte","auth.welcome":"Bienvenue sur ERP Talent Hub","auth.signinSub":"Connectez-vous pour accéder à votre profil","auth.registerSub":"Créez votre compte gratuit","auth.tabLogin":"Connexion","auth.tabRegister":"S'inscrire","auth.submitLogin":"Se connecter","auth.submitRegister":"Créer un compte","auth.roleLabel":"Je suis","auth.roleCandidate":"Professionnel ERP","auth.roleRecruiter":"Recruteur","auth.nameLabel":"Nom complet","auth.passwordLabel":"Mot de passe","auth.forgotTitle":"Réinitialiser le mot de passe","auth.forgotSub":"Entrez votre email et nous vous enverrons un lien de réinitialisation.","auth.backToLogin":"← Retour à la connexion","cp.title":"Changer le mot de passe","cp.sub":"Choisissez un nouveau mot de passe sécurisé","cp.current":"Mot de passe actuel","cp.new":"Nouveau mot de passe","cp.confirm":"Confirmer le nouveau mot de passe","cp.submit":"Mettre à jour le mot de passe","cp.cancel":"Annuler","da.title":"Supprimer le compte","da.sub":"Cette action est permanente et ne peut pas être annulée","da.warning":"La suppression de votre compte supprimera définitivement toutes vos données.","da.passLabel":"Tapez votre mot de passe pour confirmer","da.confirmLabel":"Tapez SUPPRIMER pour confirmer","da.submit":"Supprimer mon compte définitivement","da.cancel":"Annuler","gate.title1":"Accès Recruteur Requis","gate.sub1":"ERP Talent Hub est exclusivement réservé aux titulaires de compte <strong>LinkedIn Recruiter vérifié</strong>.","gate.step1t":"Connecter LinkedIn","gate.step1d":"Entrez l'URL de votre profil LinkedIn Recruiter","gate.step2t":"Vérifier le type de compte","gate.step2d":"Nous vérifions que votre compte a une licence LinkedIn Recruiter","gate.step3t":"Accès accordé","gate.step3d":"Commencez à vous connecter avec des professionnels ERP","gate.connectBtn":"Se connecter avec LinkedIn Recruiter","gate.title2":"Entrez votre URL LinkedIn Recruiter","gate.sub2":"Collez l'URL de votre profil LinkedIn Recruiter.","gate.urlLabel":"URL du profil LinkedIn Recruiter","gate.nameLabel":"Nom complet (comme sur LinkedIn)","gate.companyLabel":"Entreprise / Agence","gate.verifyBtn":"Vérifier le compte LinkedIn Recruiter","score.title":"Complétude du profil","score.complete":"✓ Profil complet ! Les recruteurs peuvent vous trouver facilement.","score.missing":"Manquants :","stats.views":"Vues du profil","stats.contacts":"Contacts recruteurs","stats.week":"Cette semaine","ob.skip":"Ignorer","mp.downloadPdf":"Télécharger PDF","nav.register":"S'inscrire",
     "auth.login":"Connexion","auth.createAccount":"Créer un compte","auth.noAccount":"Pas encore de compte ?","auth.registerNow":"S'inscrire","auth.haveAccount":"Vous avez déjà un compte ?","auth.loginLink":"Connexion","auth.forgot":"Mot de passe oublié ?","auth.forgotDesc":"Entrez votre adresse email et nous vous enverrons un lien pour réinitialiser votre mot de passe.","auth.emailLabel":"Adresse email","auth.sendReset":"Envoyer le lien de réinitialisation","auth.sending":"Envoi en cours…","auth.resetSent":"Vérifiez votre boîte mail ! Un lien de réinitialisation a été envoyé.","auth.emailRequired":"Veuillez entrer votre adresse email.","auth.emailInvalid":"Veuillez entrer une adresse email valide.",
     "mia.guide":"Votre guide sur ERP Talent Hub","mia.soundOff":"Son désactivé","mia.soundOn":"Son activé","mia.placeholder":"Posez une question à Mia…","mia.hint":"👋 Je suis <strong>Mia</strong>, votre guide. Cliquez sur moi !",
     "myprofile":"Mon profil",
@@ -1794,12 +1808,10 @@ function applyTranslations() {
                       document.getElementById('auth-tab-register')?.classList.contains('active') ? 'register' : null;
     if (activeTab) setTimeout(() => switchAuthTab(activeTab), 0);
   }
-  // Refresh profile stats labels on language change
-  if (document.getElementById('profile-stats-bar')) renderProfileStats();
-  if (cpModal && cpModal.style.display !== 'none') {
-    const btn = document.getElementById('cp-btn');
-    if (btn && !btn.disabled) btn.textContent = t('cp.submit') || 'Update password';
-  }
+  // Refresh stats labels
+  if (typeof renderProfileStats === 'function') renderProfileStats();
+  // Refresh profile score
+  if (typeof renderProfileScore === 'function' && window.savedProfile) setTimeout(renderProfileScore, 100);
   // Static i18n attributes
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
@@ -4043,6 +4055,11 @@ function switchAuthTab(mode) {
     document.getElementById('auth-name-field').style.display    = isLogin ? 'none' : 'block';
     document.getElementById('auth-password-field').style.display = 'block';
     document.getElementById('auth-confirm-field').style.display = isLogin ? 'none' : 'block';
+    // Update autocomplete so iOS Keychain knows login vs register
+    const pwField = document.getElementById('auth-password');
+    if (pwField) pwField.setAttribute('autocomplete', isLogin ? 'current-password' : 'new-password');
+    const cfField = document.getElementById('auth-confirm');
+    if (cfField) cfField.setAttribute('autocomplete', 'new-password');
     document.getElementById('auth-submit-btn').textContent      = isLogin ? t('auth.login') || 'Login' : t('auth.createAccount') || 'Create account';
     document.getElementById('auth-footer-note').innerHTML       = isLogin
       ? `${t('auth.noAccount') || 'No account yet?'} <a onclick="switchAuthTab('register')">${t('auth.registerNow') || 'Register now'}</a>`
@@ -5779,24 +5796,18 @@ function loadProfileStats() {
 function renderProfileStats() {
   const container = document.getElementById('profile-stats-bar');
   if (!container) return;
-  const labels = {
-    views:    { en:'Profile views',      it:'Visualizzazioni',     es:'Vistas del perfil',    de:'Profilaufrufe',         fr:'Vues du profil' },
-    contacts: { en:'Recruiter contacts', it:'Contatti recruiter',  es:'Contactos recruiter',  de:'Recruiter-Kontakte',    fr:'Contacts recruteurs' },
-    week:     { en:'This week',          it:'Questa settimana',    es:'Esta semana',           de:'Diese Woche',           fr:'Cette semaine' },
-  };
-  const l = currentLang || 'en';
   container.innerHTML = `
     <div class="stat-card">
       <div class="stat-value">${profileStats.views}</div>
-      <div class="stat-label">${labels.views[l] || labels.views.en}</div>
+      <div class="stat-label">${t('stats.views')||'Profile views'}</div>
     </div>
     <div class="stat-card">
       <div class="stat-value">${profileStats.contacts}</div>
-      <div class="stat-label">${labels.contacts[l] || labels.contacts.en}</div>
+      <div class="stat-label">${t('stats.contacts')||'Recruiter contacts'}</div>
     </div>
     <div class="stat-card">
       <div class="stat-value">${profileStats.thisWeek}</div>
-      <div class="stat-label">${labels.week[l] || labels.week.en}</div>
+      <div class="stat-label">${t('stats.week')||'This week'}</div>
     </div>`;
 }
 
@@ -5833,7 +5844,7 @@ function renderProfileScore() {
   container.innerHTML = `
     <div style="margin-bottom:20px">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-        <span style="font-size:14px;font-weight:600;color:var(--gray-700)">${emoji} Profile completeness</span>
+        <span style="font-size:14px;font-weight:600;color:var(--gray-700)">${emoji} ${t('score.title')||'Profile completeness'}</span>
         <span class="score-badge" style="background:${color}22;color:${color};border:1px solid ${color}44">${score}% — ${passed}/${total}</span>
       </div>
       <div class="score-bar-wrap"><div class="score-bar-fill" style="width:${score}%;background:${color}"></div></div>
@@ -5860,7 +5871,9 @@ function downloadProfilePDF() {
     .tag{background:#EFF6FF;color:#1D4ED8;border:1px solid #BFDBFE;border-radius:4px;padding:2px 8px;font-size:11px}
     .exp{margin-bottom:10px} .exp-t{font-weight:700} .exp-s{font-size:11px;color:#666}
     .footer{font-size:10px;color:#999;margin-top:40px;text-align:center;border-top:1px solid #eee;padding-top:12px}
-  </style></head><body>
+  </style>  <!-- iOS Keychain credential association hint -->
+  <link rel="canonical" href="https://stefandumitriu30-cloud.github.io/ERP-Talent-Hub/" />
+</head><body>
   <h1>${name}</h1><div class="sub">ERP Professional</div>
   <div class="contact">${p.city||''}${p.country?', '+p.country:''} &nbsp;|&nbsp; ${p.email||''} &nbsp;|&nbsp; ${p.phone||''}</div>
   <h2>Professional Summary</h2><p>${(p.summary||'').replace(/\n/g,'<br>')}</p>
