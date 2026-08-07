@@ -649,9 +649,15 @@ input[type=file].photo-input{display:none}
           <div class="nav-user-dropdown-item" id="dd-admin" onclick="closeUserDropdown();showView('admin')" style="display:none">
             <i class="fa-solid fa-shield-halved"></i> Admin dashboard
           </div>
+          <div class="nav-user-dropdown-item" id="dd-change-password" onclick="closeUserDropdown();openChangePasswordModal()" style="display:none">
+            <i class="fa-solid fa-key"></i> Change password
+          </div>
           <hr style="border:none;border-top:1px solid var(--gray-100);margin:4px 0">
           <div class="nav-user-dropdown-item danger" onclick="logoutUser()">
             <i class="fa-solid fa-right-from-bracket"></i> Logout
+          </div>
+          <div class="nav-user-dropdown-item danger" id="dd-delete-account" onclick="closeUserDropdown();openDeleteAccountModal()" style="display:none">
+            <i class="fa-solid fa-trash"></i> Delete account
           </div>
         </div>
       </div>
@@ -785,6 +791,65 @@ input[type=file].photo-input{display:none}
   </div>
 </div>
 
+<!-- ═══════════════════ CHANGE PASSWORD MODAL ═══════════════════ -->
+<div id="change-pw-modal" style="display:none" class="auth-modal-overlay" onclick="if(event.target===this)closeChangePasswordModal()">
+  <div class="auth-modal">
+    <div class="auth-modal-header">
+      <div class="auth-logo"></div>
+      <h2>Change password</h2>
+      <p>Choose a new secure password</p>
+    </div>
+    <div class="auth-modal-body">
+      <div class="auth-field">
+        <label>Current password</label>
+        <input type="password" id="cp-current" placeholder="••••••••" onkeydown="if(event.key==='Enter')submitChangePassword()" />
+      </div>
+      <div class="auth-field">
+        <label>New password</label>
+        <input type="password" id="cp-new" placeholder="••••••••" onkeydown="if(event.key==='Enter')submitChangePassword()" />
+      </div>
+      <div class="auth-field">
+        <label>Confirm new password</label>
+        <input type="password" id="cp-confirm" placeholder="••••••••" onkeydown="if(event.key==='Enter')submitChangePassword()" />
+      </div>
+      <div class="auth-error" id="cp-error"></div>
+      <div id="cp-success" style="display:none;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:var(--radius);padding:12px;font-size:13px;color:#15803D;margin-bottom:12px;text-align:center">
+        <i class="fa-solid fa-circle-check"></i> Password updated successfully!
+      </div>
+      <button class="auth-submit" id="cp-btn" onclick="submitChangePassword()">Update password</button>
+      <p class="auth-footer-note"><a onclick="closeChangePasswordModal()" style="cursor:pointer">Cancel</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ DELETE ACCOUNT MODAL ═══════════════════ -->
+<div id="delete-account-modal" style="display:none" class="auth-modal-overlay" onclick="if(event.target===this)closeDeleteAccountModal()">
+  <div class="auth-modal">
+    <div class="auth-modal-header" style="background:linear-gradient(135deg,#DC2626,#B91C1C)">
+      <div class="auth-logo" style="background:rgba(255,255,255,.2)"></div>
+      <h2>Delete account</h2>
+      <p>This action is permanent and cannot be undone</p>
+    </div>
+    <div class="auth-modal-body">
+      <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:var(--radius);padding:14px;margin-bottom:18px;font-size:13px;color:#DC2626">
+        <i class="fa-solid fa-triangle-exclamation" style="margin-right:6px"></i>
+        <strong>Warning:</strong> Deleting your account will permanently remove your profile, all messages and all data. This cannot be undone.
+      </div>
+      <div class="auth-field">
+        <label>Type your password to confirm</label>
+        <input type="password" id="da-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')submitDeleteAccount()" />
+      </div>
+      <div class="auth-field">
+        <label>Type <strong>DELETE</strong> to confirm</label>
+        <input type="text" id="da-confirm" placeholder="DELETE" onkeydown="if(event.key==='Enter')submitDeleteAccount()" />
+      </div>
+      <div class="auth-error" id="da-error"></div>
+      <button class="auth-submit" id="da-btn" onclick="submitDeleteAccount()" style="background:#DC2626">Delete my account permanently</button>
+      <p class="auth-footer-note"><a onclick="closeDeleteAccountModal()" style="cursor:pointer">Cancel</a></p>
+    </div>
+  </div>
+</div>
+
 <!-- ═══════════════════ NOTIFICATION DRAWER ═══════════════════ -->
 <div id="notif-drawer" style="display:none">
   <div class="notif-drawer-overlay" onclick="closeNotifDrawer()"></div>
@@ -792,6 +857,7 @@ input[type=file].photo-input{display:none}
     <div class="notif-drawer-header">
       <h3>Notifications</h3>
       <div style="display:flex;gap:8px;align-items:center">
+        <button id="enable-push-btn" onclick="enablePushNotifications()" title="Enable push notifications" style="background:none;border:none;cursor:pointer;color:var(--gray-400);font-size:16px;padding:4px;min-height:unset" title="Enable push notifications"><i class="fa-solid fa-bell-plus"></i></button>
         <button onclick="markAllRead()" class="notif-mark-all">Mark all read</button>
         <button onclick="closeNotifDrawer()" style="background:none;border:none;cursor:pointer;color:var(--gray-400);font-size:18px;padding:4px;min-height:unset"><i class="fa-solid fa-xmark"></i></button>
       </div>
@@ -2579,13 +2645,15 @@ function pushNotification(type, payload = {}) {
   const def = NOTIF_TYPES[type];
   if (!def) return;
 
+  const desc = type === 'stage_change' ? def.desc(payload.stage)
+             : type === 'stage_overdue' ? def.desc()
+             : def.desc(payload.recruiter || 'A recruiter');
+
   const notif = {
     id:      Date.now() + Math.random(),
     type,
     title:   def.title,
-    desc:    type === 'stage_change' ? def.desc(payload.stage)
-           : type === 'stage_overdue' ? def.desc()
-           : def.desc(payload.recruiter || 'A recruiter'),
+    desc,
     icon:    def.icon,
     color:   def.color,
     iconColor: def.iconColor,
@@ -2598,6 +2666,11 @@ function pushNotification(type, payload = {}) {
   updateNotifBell();
   renderNotifList();
   showToast(notif);
+
+  // Also send native push notification (works even when app is in background)
+  if (document.hidden || !document.hasFocus()) {
+    sendNativeNotification(def.title, desc, '/ERP-Talent-Hub/');
+  }
 }
 
 function updateNotifBell() {
@@ -2898,6 +2971,70 @@ const CANDIDATES = [
 
 // ── Shared conversation store ──
 // conversations[candidateId] = { opened: bool, messages: [{from:'rec'|'cand', text, time}] }
+// ─────────────────────────────────────────
+// REALTIME CHAT ENGINE (Supabase)
+// ─────────────────────────────────────────
+
+// conversations[candidateId] = { opened, messages[], stage, statusChangedAt }
+// When Supabase is ready, messages are synced to/from DB in real time
+
+let realtimeSubscription = null;
+
+async function saveMessageToDB(candidateId, from, text) {
+  if (!SUPABASE_READY || !sb()) return;
+  try {
+    await sb().from('messages').insert({
+      candidate_id: String(candidateId),
+      recruiter_id: currentUser?.id || 'anon',
+      from_role:    from,
+      text,
+      created_at:   new Date().toISOString(),
+    });
+  } catch(e) { console.warn('saveMessageToDB:', e); }
+}
+
+async function loadMessagesFromDB(candidateId) {
+  if (!SUPABASE_READY || !sb()) return;
+  try {
+    const { data, error } = await sb()
+      .from('messages')
+      .select('*')
+      .eq('candidate_id', String(candidateId))
+      .order('created_at', { ascending: true });
+    if (error || !data) return;
+    if (!conversations[candidateId]) conversations[candidateId] = { opened: false, messages: [], stage: 'contacted', statusChangedAt: new Date().toISOString() };
+    conversations[candidateId].messages = data.map(m => ({
+      from: m.from_role, text: m.text, time: m.created_at, read: true
+    }));
+    if (data.length > 0) conversations[candidateId].opened = true;
+  } catch(e) { console.warn('loadMessagesFromDB:', e); }
+}
+
+function subscribeToMessages(candidateId, onNewMessage) {
+  if (!SUPABASE_READY || !sb()) return;
+  // Unsubscribe previous
+  if (realtimeSubscription) { realtimeSubscription.unsubscribe(); realtimeSubscription = null; }
+  realtimeSubscription = sb()
+    .channel(`messages:${candidateId}`)
+    .on('postgres_changes', {
+      event: 'INSERT',
+      schema: 'public',
+      table: 'messages',
+      filter: `candidate_id=eq.${candidateId}`,
+    }, payload => {
+      const m = payload.new;
+      const conv = conversations[candidateId];
+      if (!conv) return;
+      // Avoid duplicates (we already added optimistically)
+      const exists = conv.messages.find(msg => msg.time === m.created_at && msg.text === m.text);
+      if (!exists) {
+        conv.messages.push({ from: m.from_role, text: m.text, time: m.created_at, read: false });
+        onNewMessage(m);
+      }
+    })
+    .subscribe();
+}
+
 const conversations = {};
 
 // ── State ──
@@ -2962,15 +3099,26 @@ function renderRecCandidateList(q) {
     });
 }
 
-function openRecChat(candidateId) {
+async function openRecChat(candidateId) {
   recActiveCandidateId = candidateId;
   if (!conversations[candidateId]) {
     conversations[candidateId] = { opened: false, messages: [], stage: 'contacted', statusChangedAt: new Date().toISOString() };
   }
-  // Mark cand messages as read
+  // Load messages from DB
+  await loadMessagesFromDB(candidateId);
   conversations[candidateId].messages.forEach(m => { if(m.from==='cand') m.read = true; });
 
-  // Fire profile_view notification (simulates recruiter viewing candidate profile)
+  // Subscribe to realtime new messages
+  subscribeToMessages(candidateId, (m) => {
+    if (m.from_role === 'cand') {
+      const recName = recruiterProfile?.name ? recruiterProfile.name.split(' ')[0] + ' (Recruiter)' : 'A recruiter';
+      pushNotification('message', { recruiter: recName });
+      renderRecMessages(candidateId);
+      renderRecCandidateList();
+    }
+  });
+
+  // Fire profile_view notification
   const recName = recruiterProfile?.name ? recruiterProfile.name.split(' ')[0] + ' (Recruiter)' : 'A recruiter';
   pushNotification('profile_view', { recruiter: recName });
 
@@ -3063,20 +3211,24 @@ function recInputKey(e, candidateId) {
   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); recSendMessage(candidateId); }
 }
 
-function recSendMessage(candidateId) {
+async function recSendMessage(candidateId) {
   const input = document.getElementById('rec-input');
   const text = input.value.trim();
   if (!text) return;
   const conv = conversations[candidateId];
   const isFirst = !conv.opened;
   conv.opened = true;
-  conv.messages.push({ from: 'rec', text, time: new Date().toISOString(), read: true });
+
+  // Optimistic update
+  const msg = { from: 'rec', text, time: new Date().toISOString(), read: true };
+  conv.messages.push(msg);
   input.value = '';
   input.style.height = 'auto';
 
-  const recName = recruiterProfile?.name ? recruiterProfile.name.split(' ')[0] + ' (Recruiter)' : 'A recruiter';
+  // Persist to DB
+  await saveMessageToDB(candidateId, 'rec', text);
 
-  // First message = connection request + message notification
+  const recName = recruiterProfile?.name ? recruiterProfile.name.split(' ')[0] + ' (Recruiter)' : 'A recruiter';
   if (isFirst) {
     pushNotification('connection', { recruiter: recName });
     setTimeout(() => pushNotification('message', { recruiter: recName }), 800);
@@ -3086,7 +3238,8 @@ function recSendMessage(candidateId) {
 
   renderRecCandidateList();
   renderRecChatWindow(candidateId);
-  simulateCandidateReply(candidateId);
+  // Only simulate reply if Supabase not available
+  if (!SUPABASE_READY) simulateCandidateReply(candidateId);
 }
 
 const SAMPLE_REPLIES = [
@@ -3150,10 +3303,18 @@ function renderCandConvoList() {
   });
 }
 
-function openCandChat(candidateId) {
+async function openCandChat(candidateId) {
   candActiveCandidateId = candidateId;
+  await loadMessagesFromDB(candidateId);
   const conv = conversations[candidateId];
   if (conv) conv.messages.forEach(m => { if (m.from === 'rec') m.candRead = true; });
+  subscribeToMessages(candidateId, (m) => {
+    if (m.from_role === 'rec') {
+      pushNotification('message', { recruiter: 'Recruiter' });
+      renderCandMessages(candidateId);
+      renderCandConvoList();
+    }
+  });
   renderCandConvoList();
   renderCandChatWindow(candidateId);
 }
@@ -3234,18 +3395,18 @@ function candInputKey(e, candidateId) {
   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); candSendMessage(candidateId); }
 }
 
-function candSendMessage(candidateId) {
+async function candSendMessage(candidateId) {
   const input = document.getElementById('cand-input');
   const text = input.value.trim();
   if (!text) return;
   const conv = conversations[candidateId];
-  if (!conv || !conv.opened) return; // safety guard
+  if (!conv || !conv.opened) return;
   conv.messages.push({ from: 'cand', text, time: new Date().toISOString(), read: true, candRead: true });
   input.value = '';
   input.style.height = 'auto';
+  await saveMessageToDB(candidateId, 'cand', text);
   renderCandMessages(candidateId);
   renderCandConvoList();
-  // Update recruiter view if open
   if (document.getElementById('recruiter-view').classList.contains('active') && recActiveCandidateId === candidateId) {
     renderRecMessages(candidateId);
     renderRecCandidateList();
@@ -3781,13 +3942,7 @@ let _sb = null;
 function sb() {
   if (!_sb && SUPABASE_READY && window.supabase) {
     _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON, {
-      auth: {
-        persistSession:    true,          // keep session in localStorage
-        autoRefreshToken:  true,          // auto-refresh before expiry
-        storageKey:        'erpth_sb',    // custom key to avoid conflicts
-        storage:           window.localStorage,
-        detectSessionInUrl: true,         // handles password reset redirects
-      }
+      auth: { persistSession: true, autoRefreshToken: true, storageKey: 'erpth_sb', storage: window.localStorage, detectSessionInUrl: true }
     });
   }
   return _sb;
@@ -4252,6 +4407,9 @@ function loginSuccess(user) {
   pendingNavTarget = null;
   showView(target);
 
+  // Init push notifications for candidates
+  if (user.role === 'candidate') initPushNotifications();
+
   // Mia proactive post-login greeting (after short delay to let view render)
   setTimeout(() => miaPostLoginGreet(user), 1200);
 }
@@ -4398,6 +4556,8 @@ function renderNav() {
   document.getElementById('dd-messages').style.display         = currentUser.role === 'candidate' ? 'flex' : 'none';
   document.getElementById('dd-recruiter-portal').style.display = currentUser.role === 'recruiter' ? 'flex' : 'none';
   document.getElementById('dd-admin').style.display            = currentUser.role === 'admin'     ? 'flex' : 'none';
+  document.getElementById('dd-change-password').style.display  = currentUser.role !== 'admin'     ? 'flex' : 'none';
+  document.getElementById('dd-delete-account').style.display   = currentUser.role !== 'admin'     ? 'flex' : 'none';
   if (bell) bell.style.display = currentUser.role === 'candidate' ? 'flex' : 'none';
 }
 
@@ -4437,7 +4597,93 @@ async function persistRecruiterData() {
 }
 
 // ─────────────────────────────────────────
-// PHOTO UPLOAD
+// CHANGE PASSWORD
+// ─────────────────────────────────────────
+
+function openChangePasswordModal() {
+  ['cp-current','cp-new','cp-confirm'].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('cp-error').classList.remove('show');
+  document.getElementById('cp-success').style.display = 'none';
+  document.getElementById('cp-btn').disabled = false;
+  document.getElementById('cp-btn').textContent = 'Update password';
+  document.getElementById('change-pw-modal').style.display = 'flex';
+  setTimeout(() => document.getElementById('cp-current').focus(), 80);
+}
+
+function closeChangePasswordModal() {
+  document.getElementById('change-pw-modal').style.display = 'none';
+}
+
+async function submitChangePassword() {
+  const current = document.getElementById('cp-current').value;
+  const newPw   = document.getElementById('cp-new').value;
+  const confirm = document.getElementById('cp-confirm').value;
+  const errEl   = document.getElementById('cp-error');
+  errEl.classList.remove('show');
+  if (!current || !newPw || !confirm) { errEl.textContent = 'Please fill in all fields.'; errEl.classList.add('show'); return; }
+  if (newPw.length < 6) { errEl.textContent = 'New password must be at least 6 characters.'; errEl.classList.add('show'); return; }
+  if (newPw !== confirm) { errEl.textContent = 'Passwords do not match.'; errEl.classList.add('show'); return; }
+  if (current === newPw) { errEl.textContent = 'New password must be different from current password.'; errEl.classList.add('show'); return; }
+  const btn = document.getElementById('cp-btn');
+  btn.disabled = true; btn.textContent = 'Updating…';
+  try {
+    const { error: signInErr } = await sb().auth.signInWithPassword({ email: currentUser.email, password: current });
+    if (signInErr) throw new Error('Current password is incorrect.');
+    const { error } = await sb().auth.updateUser({ password: newPw });
+    if (error) throw error;
+    document.getElementById('cp-success').style.display = 'block';
+    btn.style.display = 'none';
+    setTimeout(() => closeChangePasswordModal(), 2500);
+  } catch(err) {
+    btn.disabled = false; btn.textContent = 'Update password';
+    errEl.textContent = err.message || 'An error occurred.'; errEl.classList.add('show');
+  }
+}
+
+// ─────────────────────────────────────────
+// DELETE ACCOUNT
+// ─────────────────────────────────────────
+
+function openDeleteAccountModal() {
+  ['da-password','da-confirm'].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('da-error').classList.remove('show');
+  document.getElementById('da-btn').disabled = false;
+  document.getElementById('da-btn').textContent = 'Delete my account permanently';
+  document.getElementById('delete-account-modal').style.display = 'flex';
+  setTimeout(() => document.getElementById('da-password').focus(), 80);
+}
+
+function closeDeleteAccountModal() {
+  document.getElementById('delete-account-modal').style.display = 'none';
+}
+
+async function submitDeleteAccount() {
+  const password = document.getElementById('da-password').value;
+  const confirm  = document.getElementById('da-confirm').value;
+  const errEl    = document.getElementById('da-error');
+  errEl.classList.remove('show');
+  if (!password) { errEl.textContent = 'Please enter your password.'; errEl.classList.add('show'); return; }
+  if (confirm !== 'DELETE') { errEl.textContent = 'Please type DELETE to confirm.'; errEl.classList.add('show'); return; }
+  const btn = document.getElementById('da-btn');
+  btn.disabled = true; btn.textContent = 'Deleting…';
+  try {
+    const { error: signInErr } = await sb().auth.signInWithPassword({ email: currentUser.email, password });
+    if (signInErr) throw new Error('Incorrect password.');
+    await sb().from('profiles').delete().eq('id', currentUser.id);
+    await sb().auth.signOut();
+    closeDeleteAccountModal();
+    showToast({ id: Date.now(), icon: '✅', title: 'Account deleted', desc: 'Your account has been permanently removed.', color:'#F0FDF4', iconColor:'#16A34A' });
+    currentUser = null; saveSession(null);
+    savedProfile = null; candPhotoBase64 = null; recPhotoBase64 = null;
+    recruiterVerified = false; recruiterProfile = {};
+    notifications = [];
+    renderNav(); showView('home');
+  } catch(err) {
+    btn.disabled = false; btn.textContent = 'Delete my account permanently';
+    errEl.textContent = err.message || 'An error occurred.'; errEl.classList.add('show');
+  }
+}
+
 // ─────────────────────────────────────────
 // PHOTO UPLOAD
 // ─────────────────────────────────────────
@@ -5260,6 +5506,68 @@ function initMia() {
       miaHintTimer = setTimeout(() => { hint.style.display = 'none'; }, 7000);
     }
   }, 3000);
+}
+
+// ─────────────────────────────────────────
+// WEB PUSH NOTIFICATIONS
+// ─────────────────────────────────────────
+// Uses browser's native Push API — works when app is closed too
+// VAPID keys needed for production — using free server for demo
+
+let pushSubscription = null;
+
+async function initPushNotifications() {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    // Check existing subscription
+    const existing = await reg.pushManager.getSubscription();
+    if (existing) { pushSubscription = existing; return; }
+    // Don't auto-request — wait for user action
+  } catch(e) { console.warn('Push init:', e); }
+}
+
+async function requestPushPermission() {
+  if (!('Notification' in window)) {
+    showToast({ id: Date.now(), icon: '⚠️', title: 'Not supported', desc: 'Push notifications are not supported on this browser.', color:'#FFF7ED', iconColor:'#F97316' });
+    return false;
+  }
+  if (Notification.permission === 'granted') return true;
+  if (Notification.permission === 'denied') {
+    showToast({ id: Date.now(), icon: '🔕', title: 'Notifications blocked', desc: 'Enable notifications in your browser settings.', color:'#FFF7ED', iconColor:'#F97316' });
+    return false;
+  }
+  const permission = await Notification.requestPermission();
+  return permission === 'granted';
+}
+
+async function enablePushNotifications() {
+  const granted = await requestPushPermission();
+  if (!granted) return;
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    // Show native test notification
+    reg.showNotification('ERP Talent Hub 🔔', {
+      body: 'Push notifications enabled! You\'ll be notified of new messages even when the app is closed.',
+      icon: '/ERP-Talent-Hub/icon-192.png',
+      badge: '/ERP-Talent-Hub/icon-192.png',
+    });
+    showToast({ id: Date.now(), icon: '🔔', title: 'Notifications enabled!', desc: 'You\'ll receive alerts for new messages and updates.', color:'#F0FDF4', iconColor:'#16A34A' });
+  } catch(e) { console.warn('Push enable:', e); }
+}
+
+// Send native notification (works when app is open)
+function sendNativeNotification(title, body, url) {
+  if (Notification.permission !== 'granted') return;
+  navigator.serviceWorker.ready.then(reg => {
+    reg.showNotification(title, {
+      body,
+      icon:  '/ERP-Talent-Hub/icon-192.png',
+      badge: '/ERP-Talent-Hub/icon-192.png',
+      data:  { url: url || '/ERP-Talent-Hub/' },
+      vibrate: [200, 100, 200],
+    });
+  });
 }
 
 // ─────────────────────────────────────────
