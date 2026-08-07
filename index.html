@@ -1607,9 +1607,6 @@ function setLang(lang) {
   currentLang = lang;
   document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('btn-lang-' + lang).classList.add('active');
-  // Update MIA_SCRIPTS FIRST so any subsequent miaGreet call uses correct language
-  MIA_SCRIPTS   = MIA_SCRIPTS_ALL[lang]  || MIA_SCRIPTS_ALL['en'];
-  MIA_FALLBACKS = MIA_FALLBACKS_ALL[lang] || MIA_FALLBACKS_ALL['en'];
   applyTranslations();
   rebuildDynamicParts();
   setMiaLang(lang);
@@ -4720,12 +4717,7 @@ function setMiaLang(lang) {
   MIA_FALLBACKS = MIA_FALLBACKS_ALL[lang] || MIA_FALLBACKS_ALL['en'];
   miaPostLoginData = null;
 
-  // Always clear messages — old language content must never persist
-  const msgs = document.getElementById('mia-messages');
-  if (msgs) msgs.innerHTML = '';
-  setMiaQuickBtns([]);
-
-  // Refresh UI strings
+  // UI strings
   const guideEl = document.getElementById('mia-header-status');
   if (guideEl) guideEl.textContent = t('mia.guide');
   const inputEl = document.getElementById('mia-input');
@@ -4736,7 +4728,12 @@ function setMiaLang(lang) {
   const hintEl = document.getElementById('mia-hint-text');
   if (hintEl) hintEl.innerHTML = script.hint || t('mia.hint');
 
-  // If panel is open, re-greet immediately in new language
+  // Always reset messages — no old language content survives a language switch
+  const msgs = document.getElementById('mia-messages');
+  if (msgs) msgs.innerHTML = '';
+  setMiaQuickBtns([]);
+
+  // If panel is open re-greet immediately
   if (miaOpen) miaGreet(miaContext);
 }
 
@@ -4748,7 +4745,7 @@ function openMiaPanel() {
   document.getElementById('mia-panel').classList.add('open');
   document.getElementById('mia-hint').style.display = 'none';
   clearTimeout(miaHintTimer);
-  // Always greet fresh in current language — messages cleared on lang change
+  // Always greet fresh — uses currentLang at this exact moment
   miaGreet(miaContext);
 }
 
@@ -4756,6 +4753,10 @@ function closeMiaPanel() {
   miaOpen = false;
   document.getElementById('mia-panel').classList.remove('open');
   stopMiaSpeech();
+  // Clear messages on close so re-open always greets fresh in current language
+  const msgs = document.getElementById('mia-messages');
+  if (msgs) msgs.innerHTML = '';
+  setMiaQuickBtns([]);
 }
 
 function toggleMiaPanel() {
@@ -4763,40 +4764,27 @@ function toggleMiaPanel() {
 }
 
 function miaGreet(ctx) {
+  // Read MIA_SCRIPTS directly — no closure, no cache
+  const scripts = MIA_SCRIPTS_ALL[currentLang] || MIA_SCRIPTS_ALL['en'];
+  const script  = scripts[ctx] || scripts['home'];
   const msgs = document.getElementById('mia-messages');
-  msgs.innerHTML = '';
-  // Snapshot the language NOW so the greeting is locked to the current lang
-  const lang = currentLang;
+  if (msgs) msgs.innerHTML = '';
+  showMiaTyping();
   setTimeout(() => {
-    showMiaTyping();
-    setTimeout(() => {
-      hideMiaTyping();
-      // Re-read MIA_SCRIPTS at speak time to get the correct language
-      const scripts = MIA_SCRIPTS_ALL[currentLang] || MIA_SCRIPTS_ALL['en'];
-      const script  = scripts[ctx] || scripts['home'];
-      appendMiaMessage(script.greeting);
-      setMiaQuickBtns(script.quick || []);
-      if (miaSoundOn) miaSpeak(script.greeting.replace(/\*\*/g, ''));
-    }, 900);
-  }, 200);
+    hideMiaTyping();
+    appendMiaMessage(script.greeting);
+    setMiaQuickBtns(script.quick || []);
+    if (miaSoundOn) miaSpeak(script.greeting.replace(/\*\*/g, ''));
+  }, 700);
 }
 
 function setMiaContext(ctx) {
   miaContext = ctx;
-  // Update hint bubble
-  const script = MIA_SCRIPTS[ctx] || MIA_SCRIPTS['home'];
-  document.getElementById('mia-hint-text').innerHTML = script.hint || "👋 Need help? I'm Mia!";
-  // If panel is open, re-greet with new context
-  if (miaOpen) {
-    document.getElementById('mia-messages').innerHTML = '';
-    miaGreet(ctx);
-  } else {
-    // Show hint bubble briefly
-    clearTimeout(miaHintTimer);
-    const hint = document.getElementById('mia-hint');
-    hint.style.display = 'block';
-    miaHintTimer = setTimeout(() => { hint.style.display = 'none'; }, 5000);
-  }
+  const scripts = MIA_SCRIPTS_ALL[currentLang] || MIA_SCRIPTS_ALL['en'];
+  const script  = scripts[ctx] || scripts['home'];
+  const hintEl  = document.getElementById('mia-hint-text');
+  if (hintEl) hintEl.innerHTML = script.hint || "👋 Need help? I'm Mia!";
+  if (miaOpen) miaGreet(ctx);
 }
 
 function appendMiaMessage(text, isUser = false) {
