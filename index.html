@@ -4768,9 +4768,12 @@ function miaGreet(ctx) {
   showMiaTyping();
   setTimeout(() => {
     hideMiaTyping();
-    // Read language HERE — inside the callback — never outside
+    console.log('[MIA DEBUG] miaGreet called. currentLang:', currentLang, 'ctx:', ctx);
+    console.log('[MIA DEBUG] MIA_SCRIPTS_ALL keys:', Object.keys(MIA_SCRIPTS_ALL));
+    console.log('[MIA DEBUG] scripts for lang:', MIA_SCRIPTS_ALL[currentLang] ? 'found' : 'NOT FOUND');
     const scripts = MIA_SCRIPTS_ALL[currentLang] || MIA_SCRIPTS_ALL['en'];
     const script  = scripts[ctx] || scripts['home'];
+    console.log('[MIA DEBUG] greeting preview:', script.greeting.substring(0,50));
     appendMiaMessage(script.greeting);
     setMiaQuickBtns(script.quick || []);
     if (miaSoundOn) miaSpeak(script.greeting.replace(/\*\*/g, ''));
