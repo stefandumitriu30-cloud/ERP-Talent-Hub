@@ -1,4 +1,4 @@
-const CACHE_NAME = 'erp-talent-hub-v21';
+const CACHE_NAME = 'erp-talent-hub-v22';
 const ASSETS = [
   '/ERP-Talent-Hub/',
   '/ERP-Talent-Hub/index.html',
