@@ -1165,6 +1165,13 @@ input[type=file].photo-input{display:none}
       <button class="btn-add" onclick="addEntry('award')" data-i18n="f.addAward">+ Add award</button>
     </div>
 
+    <!-- LANGUAGES -->
+    <div class="form-card">
+      <div class="section-header"><i class="fa-solid fa-language"></i><h3 data-i18n="sec.languages">Languages</h3></div>
+      <div id="lang-list"></div>
+      <button class="btn-add" onclick="addEntry('lang')" data-i18n="f.addLang">+ Add language</button>
+    </div>
+
     <div class="form-submit">
       <button class="btn-submit" id="submit-btn" onclick="handleSubmit()"><span data-i18n="form.submit">Publish profile</span></button>
     </div>
@@ -1246,6 +1253,12 @@ input[type=file].photo-input{display:none}
     <div class="form-card" style="margin-bottom:16px">
       <div class="section-header"><i class="fa-solid fa-trophy"></i><h3 data-i18n="sec.awards">Awards &amp; recognition</h3></div>
       <div id="mp-awards"></div>
+    </div>
+
+    <!-- Languages -->
+    <div class="form-card" style="margin-bottom:16px">
+      <div class="section-header"><i class="fa-solid fa-language"></i><h3 data-i18n="sec.languages">Languages</h3></div>
+      <div id="mp-languages"></div>
     </div>
 
     <!-- Privacy notice -->
@@ -1625,7 +1638,7 @@ const TRANSLATIONS = {
     "f.addExp":"+ Add another role",
     "f.degree":"Degree / qualification","f.institution":"Institution","f.gradYear":"Year","f.addEdu":"+ Add education",
     "f.certName":"Certification name","f.issuer":"Issuing body","f.certYear":"Year","f.addCert":"+ Add certification",
-    "f.awardName":"Award / recognition","f.awardOrg":"Organisation","f.awardYear":"Year","f.addAward":"+ Add award",
+    "f.awardName":"Award / recognition","f.awardOrg":"Organisation","f.awardYear":"Year","f.addAward":"+ Add award","sec.languages":"Languages","f.langName":"Language","f.langSpoken":"Spoken level","f.langWritten":"Written level","f.langSelect":"Select level","f.addLang":"+ Add language",
     "form.submit":"Publish profile","form.submitting":"Publishing...",
     "success.title":"Your profile has been published!","success.sub":"Recruiters can now discover your profile. You'll receive an email confirmation shortly.","success.back":"Back to homepage",
     "rec.title":"Access the ERP talent pool","rec.sub":"Request verified recruiter access to search, filter, and connect with thousands of ERP professionals across all major systems and industries.","rec.back":"Back to homepage",
@@ -1665,7 +1678,7 @@ const TRANSLATIONS = {
     "f.addExp":"+ Aggiungi un'altra posizione",
     "f.degree":"Titolo di studio","f.institution":"Istituto","f.gradYear":"Anno","f.addEdu":"+ Aggiungi formazione",
     "f.certName":"Nome certificazione","f.issuer":"Ente rilasciante","f.certYear":"Anno","f.addCert":"+ Aggiungi certificazione",
-    "f.awardName":"Premio / riconoscimento","f.awardOrg":"Organizzazione","f.awardYear":"Anno","f.addAward":"+ Aggiungi premio",
+    "f.awardName":"Premio / riconoscimento","f.awardOrg":"Organizzazione","f.awardYear":"Anno","f.addAward":"+ Aggiungi premio","sec.languages":"Lingue","f.langName":"Lingua","f.langSpoken":"Livello parlato","f.langWritten":"Livello scritto","f.langSelect":"Seleziona livello","f.addLang":"+ Aggiungi lingua",
     "form.submit":"Pubblica profilo","form.submitting":"Pubblicazione in corso...",
     "success.title":"Il tuo profilo è stato pubblicato!","success.sub":"I recruiter possono ora scoprire il tuo profilo. Riceverai a breve una conferma via email.","success.back":"Torna alla homepage",
     "rec.title":"Accedi al pool di talenti ERP","rec.sub":"Richiedi l'accesso come recruiter verificato per cercare, filtrare e connetterti con migliaia di professionisti ERP.","rec.back":"Torna alla homepage",
@@ -1705,7 +1718,7 @@ const TRANSLATIONS = {
     "f.addExp":"+ Añadir otro puesto",
     "f.degree":"Título / calificación","f.institution":"Institución","f.gradYear":"Año","f.addEdu":"+ Añadir educación",
     "f.certName":"Nombre de la certificación","f.issuer":"Organismo emisor","f.certYear":"Año","f.addCert":"+ Añadir certificación",
-    "f.awardName":"Premio / reconocimiento","f.awardOrg":"Organización","f.awardYear":"Año","f.addAward":"+ Añadir premio",
+    "f.awardName":"Premio / reconocimiento","f.awardOrg":"Organización","f.awardYear":"Año","f.addAward":"+ Añadir premio","sec.languages":"Idiomas","f.langName":"Idioma","f.langSpoken":"Nivel oral","f.langWritten":"Nivel escrito","f.langSelect":"Seleccionar nivel","f.addLang":"+ Añadir idioma",
     "form.submit":"Publicar perfil","form.submitting":"Publicando...",
     "success.title":"¡Tu perfil ha sido publicado!","success.sub":"Los recruiters ya pueden descubrir tu perfil. Recibirás un correo de confirmación en breve.","success.back":"Volver a la página principal",
     "rec.title":"Accede al banco de talento ERP","rec.sub":"Solicita acceso como recruiter verificado para buscar, filtrar y conectar con miles de profesionales ERP.","rec.back":"Volver a la página principal",
@@ -1745,7 +1758,7 @@ const TRANSLATIONS = {
     "f.addExp":"+ Weitere Stelle hinzufügen",
     "f.degree":"Abschluss / Qualifikation","f.institution":"Institution","f.gradYear":"Jahr","f.addEdu":"+ Ausbildung hinzufügen",
     "f.certName":"Zertifizierungsname","f.issuer":"Ausstellende Organisation","f.certYear":"Jahr","f.addCert":"+ Zertifizierung hinzufügen",
-    "f.awardName":"Auszeichnung / Anerkennung","f.awardOrg":"Organisation","f.awardYear":"Jahr","f.addAward":"+ Auszeichnung hinzufügen",
+    "f.awardName":"Auszeichnung / Anerkennung","f.awardOrg":"Organisation","f.awardYear":"Jahr","f.addAward":"+ Auszeichnung hinzufügen","sec.languages":"Sprachen","f.langName":"Sprache","f.langSpoken":"Sprachniveau mündlich","f.langWritten":"Sprachniveau schriftlich","f.langSelect":"Niveau wählen","f.addLang":"+ Sprache hinzufügen",
     "form.submit":"Profil veröffentlichen","form.submitting":"Wird veröffentlicht...",
     "success.title":"Ihr Profil wurde veröffentlicht!","success.sub":"Recruiter können Ihr Profil jetzt entdecken. Sie erhalten in Kürze eine E-Mail-Bestätigung.","success.back":"Zurück zur Startseite",
     "rec.title":"Auf den ERP-Talentpool zugreifen","rec.sub":"Fordern Sie verifizierten Recruiter-Zugang an, um Tausende von ERP-Fachleuten zu suchen, filtern und zu kontaktieren.","rec.back":"Zurück zur Startseite",
@@ -1785,58 +1798,18 @@ const TRANSLATIONS = {
     "f.addExp":"+ Ajouter un autre poste",
     "f.degree":"Diplôme / qualification","f.institution":"Établissement","f.gradYear":"Année","f.addEdu":"+ Ajouter une formation",
     "f.certName":"Nom de la certification","f.issuer":"Organisme émetteur","f.certYear":"Année","f.addCert":"+ Ajouter une certification",
-    "f.awardName":"Prix / distinction","f.awardOrg":"Organisation","f.awardYear":"Année","f.addAward":"+ Ajouter un prix",
+    "f.awardName":"Prix / distinction","f.awardOrg":"Organisation","f.awardYear":"Année","f.addAward":"+ Ajouter un prix","sec.languages":"Langues","f.langName":"Langue","f.langSpoken":"Niveau oral","f.langWritten":"Niveau écrit","f.langSelect":"Sélectionner niveau","f.addLang":"+ Ajouter une langue",
     "form.submit":"Publier le profil","form.submitting":"Publication en cours...",
     "success.title":"Votre profil a été publié !","success.sub":"Les recruteurs peuvent désormais découvrir votre profil. Vous recevrez bientôt un e-mail de confirmation.","success.back":"Retour à l'accueil",
     "rec.title":"Accéder au vivier de talents ERP","rec.sub":"Demandez un accès recruteur vérifié pour rechercher, filtrer et contacter des milliers de professionnels ERP.","rec.back":"Retour à l'accueil",
     "countries":["Autriche","Belgique","Canada","Danemark","Finlande","France","Allemagne","Italie","Pays-Bas","Norvège","Pologne","Portugal","Espagne","Suède","Suisse","Royaume-Uni","États-Unis","Autre"]
-  },
-  pt:{
-    "candidates":"Minhas mensagens","recruiters":"Para recrutadores","submit":"Enviar meu CV",
-    "nav.login":"Entrar","auth.emailNotFound":"Nenhuma conta encontrada com este e-mail. Verifique e tente novamente.","dd.myprofile":"Meu perfil","dd.messages":"Minhas mensagens","dd.recruiter":"Portal recrutador","dd.admin":"Painel admin","dd.changePassword":"Alterar senha","dd.logout":"Sair","dd.deleteAccount":"Excluir conta","auth.welcome":"Bem-vindo ao ERP Talent Hub","auth.signinSub":"Entre para acessar seu perfil","auth.registerSub":"Crie sua conta gratuita","auth.tabLogin":"Entrar","auth.tabRegister":"Registrar","auth.submitLogin":"Entrar","auth.submitRegister":"Criar conta","auth.roleLabel":"Sou","auth.roleCandidate":"Profissional ERP","auth.roleRecruiter":"Recrutador","auth.nameLabel":"Nome completo","auth.passwordLabel":"Senha","auth.forgotTitle":"Redefinir senha","auth.forgotSub":"Digite seu e-mail e enviaremos um link de redefinição.","auth.backToLogin":"← Voltar ao login","cp.title":"Alterar senha","cp.sub":"Escolha uma nova senha segura","cp.current":"Senha atual","cp.new":"Nova senha","cp.confirm":"Confirmar nova senha","cp.submit":"Atualizar senha","cp.cancel":"Cancelar","da.title":"Excluir conta","da.sub":"Esta ação é permanente e não pode ser desfeita","da.warning":"Excluir sua conta removerá permanentemente todos os seus dados.","da.passLabel":"Digite sua senha para confirmar","da.confirmLabel":"Digite EXCLUIR para confirmar","da.submit":"Excluir minha conta permanentemente","da.cancel":"Cancelar","gate.title1":"Acesso de Recrutador Necessário","gate.sub1":"O ERP Talent Hub é exclusivo para titulares de conta <strong>LinkedIn Recruiter verificada</strong>.","gate.step1t":"Conectar LinkedIn","gate.step1d":"Insira o URL do seu perfil LinkedIn Recruiter","gate.step2t":"Verificar tipo de conta","gate.step2d":"Verificamos se sua conta tem licença LinkedIn Recruiter","gate.step3t":"Acesso concedido","gate.step3d":"Comece a se conectar com profissionais ERP","gate.connectBtn":"Conectar com LinkedIn Recruiter","gate.title2":"Insira seu URL do LinkedIn Recruiter","gate.sub2":"Cole o URL do seu perfil LinkedIn Recruiter.","gate.urlLabel":"URL do perfil LinkedIn Recruiter","gate.nameLabel":"Nome completo (como no LinkedIn)","gate.companyLabel":"Empresa / Agência","gate.verifyBtn":"Verificar conta LinkedIn Recruiter","score.title":"Completude do perfil","score.complete":"✓ Perfil completo! Os recrutadores podem encontrá-lo facilmente.","score.missing":"Faltando:","stats.views":"Visualizações do perfil","stats.contacts":"Contactos de recrutadores","stats.week":"Esta semana","ob.skip":"Ignorar","mp.downloadPdf":"Baixar PDF","nav.register":"Registrar",
-    "auth.login":"Entrar","auth.createAccount":"Criar conta","auth.noAccount":"Não tem conta?","auth.registerNow":"Registre-se","auth.haveAccount":"Já tem uma conta?","auth.loginLink":"Entrar","auth.forgot":"Esqueceu a senha?","auth.forgotDesc":"Digite seu endereço de e-mail e enviaremos um link para redefinir sua senha.","auth.emailLabel":"Endereço de e-mail","auth.sendReset":"Enviar link de redefinição","auth.sending":"A enviar…","auth.resetSent":"Verifique a sua caixa de entrada! O link foi enviado.","auth.emailRequired":"Por favor, insira seu endereço de e-mail.","auth.emailInvalid":"Por favor, insira um endereço de e-mail válido.",
-    "mia.guide":"O seu guia no ERP Talent Hub","mia.soundOff":"Som desligado","mia.soundOn":"Som ligado","mia.placeholder":"Pergunte algo à Mia…","mia.hint":"👋 Olá! Sou a <strong>Mia</strong>, sua guia. Clique em mim para começar!",
-    "myprofile":"Meu perfil",
-    "mp.live":"Perfil ativo","mp.edit":"Editar perfil",
-    "mp.privacy":"Os seus dados de contacto (e-mail, telefone, LinkedIn) estão ocultos dos recrutadores até que solicitem acesso e você aceite.",
-    "mp.present":"Presente","mp.nodata":"Não fornecido",
-    "success.viewprofile":"Ver meu perfil",
-    "footer.owned":"Propriedade de © 2026 Vantage Finance & Tech · NIF 13449530016",
-    "hero.badge":"Plataforma dedicada de recrutamento ERP",
-    "hero.title":"A sua expertise ERP,<br><span>visível para o mundo.</span>",
-    "hero.sub":"Junte-se à plataforma dedicada onde profissionais SAP, Oracle, Microsoft Dynamics e outros ERPs mostram as suas carreiras aos melhores recrutadores.",
-    "hero.cta":"Criar meu perfil","hero.secondary":"Sou recrutador",
-    "features.why":"Porquê ERP Talent Hub","features.title":"Criado para profissionais ERP","features.sub":"Sem ruído generalista. Cada recrutador nesta plataforma está ativamente a contratar para funções ERP.",
-    "feat1.t":"Privacidade em primeiro lugar","feat1.d":"Os seus dados de contacto ficam ocultos até que um recrutador verificado solicite acesso.",
-    "feat2.t":"Pesquisa específica de ERP","feat2.d":"Os recrutadores filtram por sistema, módulo, setor e senioridade — só chegam oportunidades relevantes.",
-    "feat3.t":"Alertas instantâneos","feat3.d":"Seja notificado quando um recrutador visualizar o seu perfil ou enviar um pedido de ligação.",
-    "erp.covered":"Sistemas cobertos","erp.title":"Todas as grandes plataformas ERP",
-    "cta.title":"Pronto para ser descoberto?","cta.sub":"Leva 5 minutos para criar um perfil que trabalha por você 24 horas.",
-    "form.title":"Crie o seu perfil ERP","form.sub":"O seu perfil é visível apenas para recrutadores verificados. Sem spam.",
-    "sec.personal":"Informações pessoais","sec.contact":"Dados de contacto","sec.summary":"Resumo profissional",
-    "sec.erp":"Sistemas ERP (selecione todos que se aplicam)","sec.experience":"Experiência profissional",
-    "sec.education":"Formação","sec.certs":"Certificações e licenças","sec.awards":"Prémios e reconhecimentos",
-    "f.firstName":"Nome","f.lastName":"Apelido","f.city":"Cidade","f.country":"País","f.province":"Estado / Província",
-    "f.email":"Endereço de e-mail","f.phone":"Número de telefone","f.linkedin":"URL do perfil LinkedIn",
-    "f.photoHint":"Adicione uma foto profissional. Será mostrada aos recrutadores.","f.uploadPhoto":"Carregar foto","f.removePhoto":"Remover","f.photoRules":"JPG ou PNG · Máx 5 MB · Formato quadrado recomendado",
-    "f.summary":"Resumo","f.summaryPh":"Descreva a sua expertise ERP, os sistemas em que se especializa, o seu foco setorial e o que o diferencia...",
-    "words":"palavras",
-    "f.jobTitle":"Cargo","f.company":"Empresa","f.startDate":"Início","f.endDate":"Fim","f.current":"Posição atual","f.description":"Responsabilidades e conquistas",
-    "f.addExp":"+ Adicionar outra função",
-    "f.degree":"Grau / qualificação","f.institution":"Instituição","f.gradYear":"Ano","f.addEdu":"+ Adicionar formação",
-    "f.certName":"Nome da certificação","f.issuer":"Emissor","f.certYear":"Ano","f.addCert":"+ Adicionar certificação",
-    "f.awardName":"Prémio / reconhecimento","f.awardOrg":"Organização","f.awardYear":"Ano","f.addAward":"+ Adicionar prémio",
-    "form.submit":"Publicar perfil","form.submitting":"A publicar...",
-    "success.title":"O seu perfil foi publicado!","success.sub":"Os recrutadores podem agora descobrir o seu perfil.","success.back":"Voltar à página inicial",
-    "rec.title":"Aceder ao pool de talentos ERP","rec.sub":"Solicite acesso verificado de recrutador para pesquisar e contactar profissionais ERP.","rec.back":"Voltar à página inicial",
-    "countries":["Áustria","Bélgica","Canadá","Dinamarca","Finlândia","França","Alemanha","Itália","Países Baixos","Noruega","Polónia","Portugal","Espanha","Suécia","Suíça","Reino Unido","Estados Unidos","Outro"]
   }
 };
 
 const ERP_SYSTEMS = ["SAP S/4HANA","SAP ECC","Oracle EBS","Oracle Fusion","Microsoft Dynamics 365","Microsoft AX","Infor LN","Infor M3","Sage X3","Workday","NetSuite","IFS"];
 
 let currentLang = 'en';
-let expCount = 0, eduCount = 0, certCount = 0, awardCount = 0;
+let expCount = 0, eduCount = 0, certCount = 0, awardCount = 0, langCount = 0;
 let selectedErp = new Set();
 
 // ─────────────────────────────────────────
@@ -2021,7 +1994,7 @@ function highlightSelectedMonth(id) {
 // ─────────────────────────────────────────
 // DYNAMIC ENTRIES
 // ─────────────────────────────────────────
-const entries = { exp: [], edu: [], cert: [], award: [] };
+const entries = { exp: [], edu: [], cert: [], award: [], lang: [] };
 
 function addEntry(type) {
   const id = Date.now();
@@ -2094,6 +2067,21 @@ function buildEntryHTML(type, id) {
       </div>
       <button class="btn-remove" onclick="removeEntry('award',${id})" title="Remove"><i class="fa-solid fa-xmark"></i></button>
     </div>`;
+  if (type === 'lang') {
+    const levels = ['A1','A2','B1','B2','C1','C2','Native'];
+    const opts = levels.map(l => `<option value="${l}">${l}</option>`).join('');
+    return `
+    <div class="entry-header">
+      <div class="entry-body">
+        <div class="grid-2" style="grid-template-columns:2fr 1fr 1fr">
+          <div class="field"><label>${t('f.langName')}</label><input type="text" id="lang-name-${p}" placeholder="English, Italian…" /></div>
+          <div class="field"><label>${t('f.langSpoken')}</label><select id="lang-spoken-${p}"><option value="">${t('f.langSelect')}</option>${opts}</select></div>
+          <div class="field"><label>${t('f.langWritten')}</label><select id="lang-written-${p}"><option value="">${t('f.langSelect')}</option>${opts}</select></div>
+        </div>
+      </div>
+      <button class="btn-remove" onclick="removeEntry('lang',${id})" title="Remove"><i class="fa-solid fa-xmark"></i></button>
+    </div>`;
+  }
 }
 
 function rebuildAllEntries() {
@@ -2101,7 +2089,7 @@ function rebuildAllEntries() {
   const formView = document.getElementById('form-view');
   if (!formView || !formView.classList.contains('active')) return;
 
-  ['exp','edu','cert','award'].forEach(type => {
+  ['exp','edu','cert','award','lang'].forEach(type => {
     const container = document.getElementById(type + '-list');
     if (!container) return;
     const ids = [...entries[type]];
@@ -3625,7 +3613,14 @@ function collectProfileData() {
     awardYear: document.getElementById('award-yr-' + id)?.value || '',
   })).filter(e => e.awardName);
 
-  return { firstName, lastName, city, province, country, email, phone, linkedin, summary, erp, exps, edus, certs, awards, photo: candPhotoBase64 };
+  // Languages
+  const langs = entries.lang.map(id => ({
+    langName: document.getElementById('lang-name-' + id)?.value.trim() || '',
+    spoken:   document.getElementById('lang-spoken-' + id)?.value || '',
+    written:  document.getElementById('lang-written-' + id)?.value || '',
+  })).filter(e => e.langName);
+
+  return { firstName, lastName, city, province, country, email, phone, linkedin, summary, erp, exps, edus, certs, awards, langs, photo: candPhotoBase64 };
 }
 
 function renderMyProfile() {
@@ -3751,6 +3746,16 @@ function renderMyProfile() {
       </div>
       ${e.awardYear ? `<span style="font-size:12px;color:var(--gray-400);background:var(--gray-50);border:1px solid var(--gray-200);border-radius:6px;padding:3px 9px">${e.awardYear}</span>` : ''}
     </div>`);
+
+  // Languages
+  renderProfileList('mp-languages', p.langs, (e) => `
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+      <div style="font-size:14px;font-weight:600">${escHtml(e.langName)}</div>
+      <div style="display:flex;gap:10px;font-size:12px;color:var(--gray-600)">
+        ${e.spoken  ? `<span style="background:var(--blue-light);border:1px solid var(--blue-mid);border-radius:12px;padding:2px 10px;color:var(--blue)"><i class="fa-solid fa-microphone" style="margin-right:4px;font-size:10px"></i>${t('f.langSpoken')}: <strong>${escHtml(e.spoken)}</strong></span>` : ''}
+        ${e.written ? `<span style="background:var(--blue-light);border:1px solid var(--blue-mid);border-radius:12px;padding:2px 10px;color:var(--blue)"><i class="fa-solid fa-pen" style="margin-right:4px;font-size:10px"></i>${t('f.langWritten')}: <strong>${escHtml(e.written)}</strong></span>` : ''}
+      </div>
+    </div>`);
 }
 
 function renderProfileList(containerId, items, renderFn) {
@@ -3840,6 +3845,7 @@ async function initAdminPortal() {
             edus:       p.profile_data?.edus      || [],
             certs:      p.profile_data?.certs     || [],
             awards:     p.profile_data?.awards    || [],
+            langs:      p.profile_data?.langs     || [],
             photo:      p.photo || null,
             submittedAt: p.created_at,
             hasProfile: !!p.profile_data,
@@ -3942,6 +3948,19 @@ function showAdminCandidateDetail(p) {
     <div style="font-size:13px;margin-bottom:6px"><strong>${escHtml(c.certName)}</strong> · <span style="color:var(--gray-500)">${escHtml(c.issuer)}</span> ${c.certYear ? '· ' + c.certYear : ''}</div>`
   ).join('') || '<p style="color:var(--gray-400);font-size:13px">None provided.</p>';
 
+  const langHTMLRec = (p.langs && p.langs.length > 0) ? `
+    <div class="form-card">
+      <div class="section-header"><i class="fa-solid fa-language"></i><h3>Languages</h3></div>
+      ${(p.langs).map(l => `
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+          <div style="font-size:14px;font-weight:600">${escHtml(l.langName)}</div>
+          <div style="display:flex;gap:8px;font-size:12px">
+            ${l.spoken  ? `<span style="background:var(--blue-light);border:1px solid var(--blue-mid);border-radius:12px;padding:2px 10px;color:var(--blue)"><i class="fa-solid fa-microphone" style="margin-right:4px;font-size:10px"></i>Spoken: <strong>${escHtml(l.spoken)}</strong></span>` : ''}
+            ${l.written ? `<span style="background:var(--blue-light);border:1px solid var(--blue-mid);border-radius:12px;padding:2px 10px;color:var(--blue)"><i class="fa-solid fa-pen" style="margin-right:4px;font-size:10px"></i>Written: <strong>${escHtml(l.written)}</strong></span>` : ''}
+          </div>
+        </div>`).join('')}
+    </div>` : '';
+
   detail.innerHTML = `
     <div style="padding:28px;overflow-y:auto;height:100%">
       <!-- Header -->
@@ -3985,10 +4004,13 @@ function showAdminCandidateDetail(p) {
       </div>
 
       <!-- Certifications -->
-      <div class="form-card">
+      <div class="form-card" style="margin-bottom:16px">
         <div class="section-header"><i class="fa-solid fa-certificate"></i><h3>Certifications</h3></div>
         ${certHTML}
       </div>
+
+      <!-- Languages -->
+      ${langHTMLRec}
     </div>`;
 }
 
@@ -4888,7 +4910,7 @@ const MIA_SCRIPTS_ALL = {
     success:          { greeting: "Congratulations! 🎉 Your profile is now **live** on ERP Talent Hub!\n\nHere's what happens next:\n1. 🔍 Recruiters browse profiles and **contact you first**\n2. 🔔 You get a **notification** when someone views your profile\n3. 💬 You **reply in the chat** once they open a conversation\n4. 📊 Track your **selection progress** stage by stage in Messages\n\nTip: a complete profile with photo gets **3x more recruiter views**! 💙", hint: "🎉 Your profile is live! What's next?", quick: ["What happens next?","How will I know if a recruiter is interested?","How do I see my profile?","How do I edit my profile?","What are the pipeline stages?","How do notifications work?"] },
     admin:            { greeting: "Welcome to the **Admin Dashboard** 🛡️\n\nHere you have full visibility:\n• **Candidates tab** — all registered ERP professionals, with ✓ CV submitted or ⏳ Registered only badges\n• **Recruiters tab** — all verified LinkedIn Recruiters with their company and verification date\n• Click any profile for **full details** including contact info, ERP systems, experience and certifications\n• Use the **search bar** to filter by name, email, ERP system or location", hint: "🛡️ Admin guide — click for an overview", quick: ["How do I see a candidate's full profile?","How do I count registered users?","How do I see recruiter details?","What does 'Registered, no CV yet' mean?"] },
   pt:{
-    "auth.emailNotFound":"Nenhuma conta encontrada com este e-mail. Verifique e tente novamente.","dd.myprofile":"Meu perfil","dd.messages":"Minhas mensagens","dd.recruiter":"Portal recruiter","dd.admin":"Painel admin","dd.changePassword":"Alterar senha","dd.logout":"Sair","dd.deleteAccount":"Excluir conta","auth.welcome":"Bem-vindo ao ERP Talent Hub","auth.signinSub":"Entre para acessar seu perfil","auth.registerSub":"Crie sua conta gratuita","auth.tabLogin":"Entrar","auth.tabRegister":"Registrar","auth.submitLogin":"Entrar","auth.submitRegister":"Criar conta","auth.noAccount":"Não tem conta?","auth.registerNow":"Registre-se","auth.haveAccount":"Já tem uma conta?","auth.loginLink":"Entrar","auth.roleLabel":"Sou","auth.roleCandidate":"Profissional ERP","auth.roleRecruiter":"Recrutador","auth.nameLabel":"Nome completo","auth.passwordLabel":"Senha","auth.forgotTitle":"Redefinir senha","auth.forgotSub":"Digite seu e-mail e enviaremos um link de redefinição.","auth.backToLogin":"← Voltar ao login","auth.forgot":"Esqueceu a senha?","auth.forgotDesc":"Digite seu endereço de e-mail e enviaremos um link para redefinir sua senha.","auth.emailLabel":"Endereço de e-mail","auth.sendReset":"Enviar link de redefinição","auth.sending":"Enviando…","auth.resetSent":"Verifique sua caixa de entrada! O link foi enviado.","auth.emailRequired":"Por favor, insira seu endereço de e-mail.","auth.emailInvalid":"Por favor, insira um endereço de e-mail válido.","auth.login":"Entrar","auth.createAccount":"Criar conta","cp.title":"Alterar senha","cp.sub":"Escolha uma nova senha segura","cp.current":"Senha atual","cp.new":"Nova senha","cp.confirm":"Confirmar nova senha","cp.submit":"Atualizar senha","cp.cancel":"Cancelar","da.title":"Excluir conta","da.sub":"Esta ação é permanente e não pode ser desfeita","da.warning":"Excluir sua conta removerá permanentemente todos os seus dados.","da.passLabel":"Digite sua senha para confirmar","da.confirmLabel":"Digite EXCLUIR para confirmar","da.submit":"Excluir minha conta permanentemente","da.cancel":"Cancelar","gate.title1":"Acesso de Recrutador Necessário","gate.sub1":"O ERP Talent Hub é exclusivo para titulares de conta <strong>LinkedIn Recruiter verificada</strong>.","gate.step1t":"Conectar LinkedIn","gate.step1d":"Insira o URL do seu perfil LinkedIn Recruiter","gate.step2t":"Verificar tipo de conta","gate.step2d":"Verificamos se sua conta tem licença LinkedIn Recruiter","gate.step3t":"Acesso concedido","gate.step3d":"Comece a se conectar com profissionais ERP","gate.connectBtn":"Conectar com LinkedIn Recruiter","gate.title2":"Insira seu URL do LinkedIn Recruiter","gate.sub2":"Cole o URL do seu perfil LinkedIn Recruiter.","gate.urlLabel":"URL do perfil LinkedIn Recruiter","gate.nameLabel":"Nome completo (como no LinkedIn)","gate.companyLabel":"Empresa / Agência","gate.verifyBtn":"Verificar conta LinkedIn Recruiter","score.title":"Completude do perfil","score.complete":"✓ Perfil completo! Os recrutadores podem encontrá-lo facilmente.","score.missing":"Faltando:","stats.views":"Visualizações do perfil","stats.contacts":"Contatos de recrutadores","stats.week":"Esta semana","ob.skip":"Pular","mp.downloadPdf":"Baixar PDF","mia.guide":"Seu guia no ERP Talent Hub","mia.soundOff":"Som desligado","mia.soundOn":"Som ligado","mia.placeholder":"Pergunte algo à Mia…","mia.hint":"👋 Olá! Sou a <strong>Mia</strong>, sua guia. Clique em mim para começar!","myprofile":"Meu perfil","mp.live":"Perfil ativo","mp.edit":"Editar perfil","mp.privacy":"Seus dados de contato (e-mail, telefone, LinkedIn) estão ocultos dos recrutadores até que eles solicitem acesso e você aceite.","mp.present":"Presente","mp.nodata":"Não fornecido","success.viewprofile":"Ver meu perfil","hero.badge":"Plataforma dedicada de recrutamento ERP","hero.title":"Sua expertise ERP,<br><span>visível para o mundo.</span>","hero.sub":"Junte-se à plataforma dedicada onde profissionais SAP, Oracle, Microsoft Dynamics e outros ERPs mostram suas carreiras aos melhores recrutadores.","hero.cta":"Criar meu perfil","hero.secondary":"Sou recrutador","features.why":"Por que ERP Talent Hub","features.title":"Criado para profissionais ERP","features.sub":"Sem ruído generalista. Cada recrutador nesta plataforma está ativamente contratando para funções ERP.","feat1.t":"Privacidade em primeiro lugar","feat1.d":"Seus dados de contato ficam ocultos até que um recrutador verificado solicite acesso.","feat2.t":"Busca específica de ERP","feat2.d":"Os recrutadores filtram por sistema, módulo, setor e senioridade.","feat3.t":"Alertas instantâneos","feat3.d":"Seja notificado quando um recrutador visualizar seu perfil ou enviar uma solicitação de conexão.","erp.covered":"Sistemas cobertos","erp.title":"Todas as principais plataformas ERP","cta.title":"Pronto para ser descoberto?","cta.sub":"Leva 5 minutos para criar um perfil que trabalha por você 24 horas.","form.title":"Crie seu perfil ERP","form.sub":"Seu perfil é visível apenas para recrutadores verificados. Sem spam.","sec.personal":"Informações pessoais","sec.contact":"Dados de contato","sec.summary":"Resumo profissional","sec.erp":"Sistemas ERP (selecione todos que se aplicam)","sec.experience":"Experiência profissional","sec.education":"Educação","sec.certs":"Certificações e licenças","sec.awards":"Prêmios e reconhecimentos","f.firstName":"Nome","f.lastName":"Sobrenome","f.city":"Cidade","f.country":"País","f.province":"Estado / Província","f.email":"Endereço de e-mail","f.phone":"Número de telefone","f.linkedin":"URL do perfil LinkedIn","f.photoHint":"Adicione uma foto profissional. Será mostrada aos recrutadores.","f.uploadPhoto":"Carregar foto","f.removePhoto":"Remover","f.photoRules":"JPG ou PNG · Máx 5 MB · Formato quadrado recomendado","f.summary":"Resumo","f.summaryPh":"Descreva sua expertise ERP, os sistemas em que se especializa, seu foco setorial e o que o destaca...","words":"palavras","f.jobTitle":"Cargo","f.company":"Empresa","f.startDate":"Início","f.endDate":"Fim","f.current":"Posição atual","f.description":"Responsabilidades e conquistas","f.addExp":"+ Adicionar outra função","f.degree":"Grau / qualificação","f.institution":"Instituição","f.gradYear":"Ano","f.addEdu":"+ Adicionar educação","f.certName":"Nome da certificação","f.issuer":"Emissor","f.certYear":"Ano","f.addCert":"+ Adicionar certificação","f.awardName":"Prêmio / reconhecimento","f.awardOrg":"Organização","f.awardYear":"Ano","f.addAward":"+ Adicionar prêmio","form.submit":"Publicar perfil","form.submitting":"Publicando...","success.title":"Seu perfil foi publicado!","success.sub":"Os recrutadores agora podem descobrir seu perfil.","success.back":"Voltar à página inicial","rec.title":"Acessar o pool de talentos ERP","rec.sub":"Solicite acesso verificado de recrutador para pesquisar e conectar com profissionais ERP.","rec.back":"Voltar à página inicial","candidates":"Minhas mensagens","recruiters":"Para recrutadores","submit":"Enviar meu CV","nav.login":"Entrar","nav.register":"Registrar","countries":["Áustria","Bélgica","Canadá","Dinamarca","Finlândia","França","Alemanha","Itália","Países Baixos","Noruega","Polônia","Portugal","Espanha","Suécia","Suíça","Reino Unido","Estados Unidos","Outro"]
+    "auth.emailNotFound":"Nenhuma conta encontrada com este e-mail. Verifique e tente novamente.","dd.myprofile":"Meu perfil","dd.messages":"Minhas mensagens","dd.recruiter":"Portal recruiter","dd.admin":"Painel admin","dd.changePassword":"Alterar senha","dd.logout":"Sair","dd.deleteAccount":"Excluir conta","auth.welcome":"Bem-vindo ao ERP Talent Hub","auth.signinSub":"Entre para acessar seu perfil","auth.registerSub":"Crie sua conta gratuita","auth.tabLogin":"Entrar","auth.tabRegister":"Registrar","auth.submitLogin":"Entrar","auth.submitRegister":"Criar conta","auth.noAccount":"Não tem conta?","auth.registerNow":"Registre-se","auth.haveAccount":"Já tem uma conta?","auth.loginLink":"Entrar","auth.roleLabel":"Sou","auth.roleCandidate":"Profissional ERP","auth.roleRecruiter":"Recrutador","auth.nameLabel":"Nome completo","auth.passwordLabel":"Senha","auth.forgotTitle":"Redefinir senha","auth.forgotSub":"Digite seu e-mail e enviaremos um link de redefinição.","auth.backToLogin":"← Voltar ao login","auth.forgot":"Esqueceu a senha?","auth.forgotDesc":"Digite seu endereço de e-mail e enviaremos um link para redefinir sua senha.","auth.emailLabel":"Endereço de e-mail","auth.sendReset":"Enviar link de redefinição","auth.sending":"Enviando…","auth.resetSent":"Verifique sua caixa de entrada! O link foi enviado.","auth.emailRequired":"Por favor, insira seu endereço de e-mail.","auth.emailInvalid":"Por favor, insira um endereço de e-mail válido.","auth.login":"Entrar","auth.createAccount":"Criar conta","cp.title":"Alterar senha","cp.sub":"Escolha uma nova senha segura","cp.current":"Senha atual","cp.new":"Nova senha","cp.confirm":"Confirmar nova senha","cp.submit":"Atualizar senha","cp.cancel":"Cancelar","da.title":"Excluir conta","da.sub":"Esta ação é permanente e não pode ser desfeita","da.warning":"Excluir sua conta removerá permanentemente todos os seus dados.","da.passLabel":"Digite sua senha para confirmar","da.confirmLabel":"Digite EXCLUIR para confirmar","da.submit":"Excluir minha conta permanentemente","da.cancel":"Cancelar","gate.title1":"Acesso de Recrutador Necessário","gate.sub1":"O ERP Talent Hub é exclusivo para titulares de conta <strong>LinkedIn Recruiter verificada</strong>.","gate.step1t":"Conectar LinkedIn","gate.step1d":"Insira o URL do seu perfil LinkedIn Recruiter","gate.step2t":"Verificar tipo de conta","gate.step2d":"Verificamos se sua conta tem licença LinkedIn Recruiter","gate.step3t":"Acesso concedido","gate.step3d":"Comece a se conectar com profissionais ERP","gate.connectBtn":"Conectar com LinkedIn Recruiter","gate.title2":"Insira seu URL do LinkedIn Recruiter","gate.sub2":"Cole o URL do seu perfil LinkedIn Recruiter.","gate.urlLabel":"URL do perfil LinkedIn Recruiter","gate.nameLabel":"Nome completo (como no LinkedIn)","gate.companyLabel":"Empresa / Agência","gate.verifyBtn":"Verificar conta LinkedIn Recruiter","score.title":"Completude do perfil","score.complete":"✓ Perfil completo! Os recrutadores podem encontrá-lo facilmente.","score.missing":"Faltando:","stats.views":"Visualizações do perfil","stats.contacts":"Contatos de recrutadores","stats.week":"Esta semana","ob.skip":"Pular","mp.downloadPdf":"Baixar PDF","mia.guide":"Seu guia no ERP Talent Hub","mia.soundOff":"Som desligado","mia.soundOn":"Som ligado","mia.placeholder":"Pergunte algo à Mia…","mia.hint":"👋 Olá! Sou a <strong>Mia</strong>, sua guia. Clique em mim para começar!","myprofile":"Meu perfil","mp.live":"Perfil ativo","mp.edit":"Editar perfil","mp.privacy":"Seus dados de contato (e-mail, telefone, LinkedIn) estão ocultos dos recrutadores até que eles solicitem acesso e você aceite.","mp.present":"Presente","mp.nodata":"Não fornecido","success.viewprofile":"Ver meu perfil","hero.badge":"Plataforma dedicada de recrutamento ERP","hero.title":"Sua expertise ERP,<br><span>visível para o mundo.</span>","hero.sub":"Junte-se à plataforma dedicada onde profissionais SAP, Oracle, Microsoft Dynamics e outros ERPs mostram suas carreiras aos melhores recrutadores.","hero.cta":"Criar meu perfil","hero.secondary":"Sou recrutador","features.why":"Por que ERP Talent Hub","features.title":"Criado para profissionais ERP","features.sub":"Sem ruído generalista. Cada recrutador nesta plataforma está ativamente contratando para funções ERP.","feat1.t":"Privacidade em primeiro lugar","feat1.d":"Seus dados de contato ficam ocultos até que um recrutador verificado solicite acesso.","feat2.t":"Busca específica de ERP","feat2.d":"Os recrutadores filtram por sistema, módulo, setor e senioridade.","feat3.t":"Alertas instantâneos","feat3.d":"Seja notificado quando um recrutador visualizar seu perfil ou enviar uma solicitação de conexão.","erp.covered":"Sistemas cobertos","erp.title":"Todas as principais plataformas ERP","cta.title":"Pronto para ser descoberto?","cta.sub":"Leva 5 minutos para criar um perfil que trabalha por você 24 horas.","form.title":"Crie seu perfil ERP","form.sub":"Seu perfil é visível apenas para recrutadores verificados. Sem spam.","sec.personal":"Informações pessoais","sec.contact":"Dados de contato","sec.summary":"Resumo profissional","sec.erp":"Sistemas ERP (selecione todos que se aplicam)","sec.experience":"Experiência profissional","sec.education":"Educação","sec.certs":"Certificações e licenças","sec.awards":"Prêmios e reconhecimentos","f.firstName":"Nome","f.lastName":"Sobrenome","f.city":"Cidade","f.country":"País","f.province":"Estado / Província","f.email":"Endereço de e-mail","f.phone":"Número de telefone","f.linkedin":"URL do perfil LinkedIn","f.photoHint":"Adicione uma foto profissional. Será mostrada aos recrutadores.","f.uploadPhoto":"Carregar foto","f.removePhoto":"Remover","f.photoRules":"JPG ou PNG · Máx 5 MB · Formato quadrado recomendado","f.summary":"Resumo","f.summaryPh":"Descreva sua expertise ERP, os sistemas em que se especializa, seu foco setorial e o que o destaca...","words":"palavras","f.jobTitle":"Cargo","f.company":"Empresa","f.startDate":"Início","f.endDate":"Fim","f.current":"Posição atual","f.description":"Responsabilidades e conquistas","f.addExp":"+ Adicionar outra função","f.degree":"Grau / qualificação","f.institution":"Instituição","f.gradYear":"Ano","f.addEdu":"+ Adicionar educação","f.certName":"Nome da certificação","f.issuer":"Emissor","f.certYear":"Ano","f.addCert":"+ Adicionar certificação","f.awardName":"Prêmio / reconhecimento","f.awardOrg":"Organização","f.awardYear":"Ano","f.addAward":"+ Adicionar prêmio","sec.languages":"Idiomas","f.langName":"Idioma","f.langSpoken":"Nível oral","f.langWritten":"Nível escrito","f.langSelect":"Selecionar nível","f.addLang":"+ Adicionar idioma","form.submit":"Publicar perfil","form.submitting":"Publicando...","success.title":"Seu perfil foi publicado!","success.sub":"Os recrutadores agora podem descobrir seu perfil.","success.back":"Voltar à página inicial","rec.title":"Acessar o pool de talentos ERP","rec.sub":"Solicite acesso verificado de recrutador para pesquisar e conectar com profissionais ERP.","rec.back":"Voltar à página inicial","candidates":"Minhas mensagens","recruiters":"Para recrutadores","submit":"Enviar meu CV","nav.login":"Entrar","nav.register":"Registrar","countries":["Áustria","Bélgica","Canadá","Dinamarca","Finlândia","França","Alemanha","Itália","Países Baixos","Noruega","Polônia","Portugal","Espanha","Suécia","Suíça","Reino Unido","Estados Unidos","Outro"]
   },
   },
   it: {
@@ -5211,7 +5233,7 @@ async function miaHandleQuestion(question, isQuickBtn = false) {
 
   // Always call Claude for free-text questions (handles any language correctly)
   try {
-    const langName = { en:'English', it:'Italian', es:'Spanish', de:'German', fr:'French', pt:'Portuguese' }[currentLang] || 'English';
+    const langName = { en:'English', it:'Italian', es:'Spanish', de:'German', fr:'French' }[currentLang] || 'English';
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -5471,7 +5493,7 @@ async function miaElevenLabsSpeak(text) {
         body: JSON.stringify({
           text,
           model_id: 'eleven_turbo_v2_5',
-          language_code: currentLang === 'it' ? 'it' : currentLang === 'es' ? 'es' : currentLang === 'de' ? 'de' : currentLang === 'fr' ? 'fr' : currentLang === 'pt' ? 'pt' : 'en',
+          language_code: currentLang === 'it' ? 'it' : currentLang === 'es' ? 'es' : currentLang === 'de' ? 'de' : currentLang === 'fr' ? 'fr' : 'en',
           voice_settings: {
             stability: 0.45,
             similarity_boost: 0.82,
@@ -5684,6 +5706,7 @@ function populateFormFromProfile(p) {
   entries.cert = [];
   document.getElementById('cert-list').innerHTML = '';
   const certsToFill = (p.certs && p.certs.length > 0) ? p.certs : [{ certName:'', issuer:'', certYear:'' }];
+  const langsToFill = (p.langs && p.langs.length > 0) ? p.langs : [];
   certsToFill.forEach(cert => {
       const id = Date.now() + Math.random();
       entries.cert.push(id);
@@ -5720,6 +5743,27 @@ function populateFormFromProfile(p) {
       }, 60);
     });
 
+  // ── Languages ──
+  entries.lang = [];
+  document.getElementById('lang-list').innerHTML = '';
+  if (langsToFill.length > 0) {
+    langsToFill.forEach(lang => {
+      const id = Date.now() + Math.random();
+      entries.lang.push(id);
+      const div = document.createElement('div');
+      div.className = 'entry-block';
+      div.id = 'entry-lang-' + id;
+      div.innerHTML = buildEntryHTML('lang', id);
+      document.getElementById('lang-list').appendChild(div);
+      setTimeout(() => {
+        const s = (fid, val) => { const el = document.getElementById(fid); if (el) el.value = val || ''; };
+        s('lang-name-' + id,    lang.langName);
+        s('lang-spoken-' + id,  lang.spoken);
+        s('lang-written-' + id, lang.written);
+      }, 60);
+    });
+  }
+
   // Scroll to top of form
   window.scrollTo(0, 0);
 }
@@ -5742,6 +5786,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     addEntry('edu');
     addEntry('cert');
     addEntry('award');
+    addEntry('lang');
     initMia();
     return;
   }
@@ -5792,6 +5837,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   addEntry('edu');
   addEntry('cert');
   addEntry('award');
+  addEntry('lang');
   initMia();
 });
 
@@ -5966,17 +6012,17 @@ function downloadProfilePDF(lang) {
   // PDF labels per language
   const L = {
     en: { prof:'ERP Professional', summary:'Professional Summary', erp:'ERP Systems',
-          exp:'Experience', edu:'Education', cert:'Certifications', present:'Present', footer:'Generated from ERP Talent Hub' },
+          exp:'Experience', edu:'Education', cert:'Certifications', present:'Present', footer:'Generated from ERP Talent Hub', langs:'Languages', langName:'Language', langSpoken:'Spoken', langWritten:'Written' },
     it: { prof:'Professionista ERP', summary:'Sommario Professionale', erp:'Sistemi ERP',
-          exp:'Esperienza', edu:'Formazione', cert:'Certificazioni', present:'Presente', footer:'Generato da ERP Talent Hub' },
+          exp:'Esperienza', edu:'Formazione', cert:'Certificazioni', present:'Presente', footer:'Generato da ERP Talent Hub', langs:'Lingue', langName:'Lingua', langSpoken:'Parlato', langWritten:'Scritto' },
     es: { prof:'Profesional ERP', summary:'Resumen Profesional', erp:'Sistemas ERP',
-          exp:'Experiencia', edu:'Educación', cert:'Certificaciones', present:'Presente', footer:'Generado por ERP Talent Hub' },
+          exp:'Experiencia', edu:'Educación', cert:'Certificaciones', present:'Presente', footer:'Generado por ERP Talent Hub', langs:'Idiomas', langName:'Idioma', langSpoken:'Oral', langWritten:'Escrito' },
     de: { prof:'ERP-Fachmann', summary:'Berufliches Profil', erp:'ERP-Systeme',
-          exp:'Berufserfahrung', edu:'Ausbildung', cert:'Zertifizierungen', present:'Heute', footer:'Erstellt von ERP Talent Hub' },
+          exp:'Berufserfahrung', edu:'Ausbildung', cert:'Zertifizierungen', present:'Heute', footer:'Erstellt von ERP Talent Hub', langs:'Sprachen', langName:'Sprache', langSpoken:'Mündlich', langWritten:'Schriftlich' },
     fr: { prof:'Professionnel ERP', summary:'Résumé Professionnel', erp:'Systèmes ERP',
-          exp:'Expérience', edu:'Formation', cert:'Certifications', present:'Présent', footer:'Généré par ERP Talent Hub' },
+          exp:'Expérience', edu:'Formation', cert:'Certifications', present:'Présent', footer:'Généré par ERP Talent Hub', langs:'Langues', langName:'Langue', langSpoken:'Oral', langWritten:'Écrit' },
     pt: { prof:'Profissional ERP', summary:'Resumo Profissional', erp:'Sistemas ERP',
-          exp:'Experiência', edu:'Educação', cert:'Certificações', present:'Presente', footer:'Gerado pelo ERP Talent Hub' },
+          exp:'Experiência', edu:'Educação', cert:'Certificações', present:'Presente', footer:'Gerado pelo ERP Talent Hub', langs:'Idiomas', langName:'Idioma', langSpoken:'Oral', langWritten:'Escrito' },
   };
   const lb = L[lang] || L['en'];
 
@@ -6000,6 +6046,7 @@ function downloadProfilePDF(lang) {
   ${(p.exps||[]).length?`<h2>${lb.exp}</h2>`+(p.exps||[]).map(e=>`<div class="exp"><div class="exp-t">${e.jobTitle} — ${e.company}</div><div class="exp-s">${e.startDate||''}${e.current?' – '+lb.present:e.endDate?' – '+e.endDate:''}</div><p>${(e.description||'').replace(/\n/g,'<br>')}</p></div>`).join(''):''}
   ${(p.edus||[]).length?`<h2>${lb.edu}</h2>`+(p.edus||[]).map(e=>`<p>${e.degree} — ${e.institution} ${e.gradYear||''}</p>`).join(''):''}
   ${(p.certs||[]).length?`<h2>${lb.cert}</h2>`+(p.certs||[]).map(c=>`<p>${c.certName} — ${c.issuer||''} ${c.certYear||''}</p>`).join(''):''}
+  ${(p.langs||[]).length?`<h2>${lb.langs}</h2><table style="width:100%;border-collapse:collapse;font-size:12px"><tr style="border-bottom:1px solid #eee"><th style="text-align:left;padding:4px 8px 4px 0;color:#555">${lb.langName}</th><th style="text-align:left;padding:4px 8px;color:#555">${lb.langSpoken}</th><th style="text-align:left;padding:4px 0;color:#555">${lb.langWritten}</th></tr>`+(p.langs||[]).map(l=>`<tr style="border-bottom:1px solid #f0f0f0"><td style="padding:5px 8px 5px 0;font-weight:600">${l.langName||''}</td><td style="padding:5px 8px">${l.spoken||'—'}</td><td style="padding:5px 0">${l.written||'—'}</td></tr>`).join('')+'</table>':''}
   <div class="footer">${lb.footer} · stefandumitriu30-cloud.github.io/ERP-Talent-Hub</div>
   </body></html>`;
 
