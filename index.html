@@ -1794,8 +1794,8 @@ function applyTranslations() {
                       document.getElementById('auth-tab-register')?.classList.contains('active') ? 'register' : null;
     if (activeTab) setTimeout(() => switchAuthTab(activeTab), 0);
   }
-  // Refresh change password modal labels
-  const cpModal = document.getElementById('change-pw-modal');
+  // Refresh profile stats labels on language change
+  if (document.getElementById('profile-stats-bar')) renderProfileStats();
   if (cpModal && cpModal.style.display !== 'none') {
     const btn = document.getElementById('cp-btn');
     if (btn && !btn.disabled) btn.textContent = t('cp.submit') || 'Update password';
@@ -5779,18 +5779,24 @@ function loadProfileStats() {
 function renderProfileStats() {
   const container = document.getElementById('profile-stats-bar');
   if (!container) return;
+  const labels = {
+    views:    { en:'Profile views',      it:'Visualizzazioni',     es:'Vistas del perfil',    de:'Profilaufrufe',         fr:'Vues du profil' },
+    contacts: { en:'Recruiter contacts', it:'Contatti recruiter',  es:'Contactos recruiter',  de:'Recruiter-Kontakte',    fr:'Contacts recruteurs' },
+    week:     { en:'This week',          it:'Questa settimana',    es:'Esta semana',           de:'Diese Woche',           fr:'Cette semaine' },
+  };
+  const l = currentLang || 'en';
   container.innerHTML = `
     <div class="stat-card">
       <div class="stat-value">${profileStats.views}</div>
-      <div class="stat-label">Profile views</div>
+      <div class="stat-label">${labels.views[l] || labels.views.en}</div>
     </div>
     <div class="stat-card">
       <div class="stat-value">${profileStats.contacts}</div>
-      <div class="stat-label">Recruiter contacts</div>
+      <div class="stat-label">${labels.contacts[l] || labels.contacts.en}</div>
     </div>
     <div class="stat-card">
       <div class="stat-value">${profileStats.thisWeek}</div>
-      <div class="stat-label">This week</div>
+      <div class="stat-label">${labels.week[l] || labels.week.en}</div>
     </div>`;
 }
 
