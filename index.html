@@ -737,16 +737,16 @@ input[type=file].photo-input{display:none}
     <!-- Header -->
     <div class="auth-modal-header">
       <div class="auth-logo"></div>
-      <h2 id="auth-modal-title">Welcome to ERP Talent Hub</h2>
-      <p id="auth-modal-sub">Sign in to access your profile</p>
+      <h2 id="auth-modal-title" data-i18n="auth.welcome">Welcome to ERP Talent Hub</h2>
+      <p id="auth-modal-sub" data-i18n="auth.signinSub">Sign in to access your profile</p>
     </div>
 
     <!-- Body -->
     <div class="auth-modal-body">
       <!-- Login / Register tabs -->
       <div class="auth-tabs">
-        <button class="auth-tab active" id="auth-tab-login" onclick="switchAuthTab('login')">Login</button>
-        <button class="auth-tab" id="auth-tab-register" onclick="switchAuthTab('register')">Register</button>
+        <button class="auth-tab active" id="auth-tab-login" onclick="switchAuthTab('login')" data-i18n="auth.tabLogin">Login</button>
+        <button class="auth-tab" id="auth-tab-register" onclick="switchAuthTab('register')" data-i18n="auth.tabRegister">Register</button>
       </div>
 
       <!-- Role selector (register only) -->
@@ -881,7 +881,7 @@ input[type=file].photo-input{display:none}
 <!-- ═══════════════════ CHANGE PASSWORD MODAL ═══════════════════ -->
 <div id="change-pw-modal" style="display:none" class="auth-modal-overlay" onclick="if(event.target===this)closeChangePasswordModal()">
   <div class="auth-modal">
-    <div class="auth-modal-header"><h2>Change password</h2><p>Choose a new secure password</p></div>
+    <div class="auth-modal-header"><h2 data-i18n="cp.title">Change password</h2><p data-i18n="cp.sub">Choose a new secure password</p></div>
     <div class="auth-modal-body">
       <div class="auth-field"><label>Current password</label><input type="password" id="cp-current" placeholder="••••••••" onkeydown="if(event.key==='Enter')submitChangePassword()" /></div>
       <div class="auth-field"><label>New password</label><input type="password" id="cp-new" placeholder="••••••••" onkeydown="if(event.key==='Enter')submitChangePassword()" /></div>
@@ -897,7 +897,7 @@ input[type=file].photo-input{display:none}
 <!-- ═══════════════════ DELETE ACCOUNT MODAL ═══════════════════ -->
 <div id="delete-account-modal" style="display:none" class="auth-modal-overlay" onclick="if(event.target===this)closeDeleteAccountModal()">
   <div class="auth-modal">
-    <div class="auth-modal-header" style="background:linear-gradient(135deg,#DC2626,#B91C1C)"><h2>Delete account</h2><p>This action is permanent and cannot be undone</p></div>
+    <div class="auth-modal-header" style="background:linear-gradient(135deg,#DC2626,#B91C1C)"><h2 data-i18n="da.title">Delete account</h2><p data-i18n="da.sub">This action is permanent and cannot be undone</p></div>
     <div class="auth-modal-body">
       <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:var(--radius);padding:14px;margin-bottom:18px;font-size:13px;color:#DC2626"><i class="fa-solid fa-triangle-exclamation" style="margin-right:6px"></i><strong>Warning:</strong> Deleting your account will permanently remove all your data.</div>
       <div class="auth-field"><label>Type your password to confirm</label><input type="password" id="da-password" placeholder="••••••••" /></div>
@@ -1562,7 +1562,7 @@ input[type=file].photo-input{display:none}
 const TRANSLATIONS = {
   en:{
     "candidates":"My messages","recruiters":"For recruiters","submit":"Submit your CV",
-    "nav.login":"Login","nav.register":"Register",
+    "nav.login":"Login","auth.welcome":"Welcome to ERP Talent Hub","auth.signinSub":"Sign in to access your profile","auth.registerSub":"Create your free account","auth.tabLogin":"Login","auth.tabRegister":"Register","auth.submitLogin":"Login","auth.submitRegister":"Create account","auth.roleLabel":"I am a","auth.roleCandidate":"ERP Professional","auth.roleRecruiter":"Recruiter","auth.nameLabel":"Full name","auth.passwordLabel":"Password","auth.forgotTitle":"Reset your password","auth.forgotSub":"Enter your email and we'll send a reset link.","auth.backToLogin":"← Back to login","cp.title":"Change password","cp.sub":"Choose a new secure password","cp.current":"Current password","cp.new":"New password","cp.confirm":"Confirm new password","cp.submit":"Update password","cp.cancel":"Cancel","da.title":"Delete account","da.sub":"This action is permanent and cannot be undone","da.passLabel":"Type your password to confirm","da.confirmLabel":"Type DELETE to confirm","da.submit":"Delete my account permanently","da.cancel":"Cancel","nav.register":"Register",
     "auth.login":"Login","auth.createAccount":"Create account","auth.noAccount":"No account yet?","auth.registerNow":"Register now","auth.haveAccount":"Already have an account?","auth.loginLink":"Login","auth.forgot":"Forgot password?","auth.forgotDesc":"Enter your email address and we'll send you a link to reset your password.","auth.emailLabel":"Email address","auth.sendReset":"Send reset link","auth.sending":"Sending…","auth.resetSent":"Check your inbox! A reset link has been sent.","auth.emailRequired":"Please enter your email address.","auth.emailInvalid":"Please enter a valid email address.",
     "mia.guide":"Your ERP Talent Hub guide","mia.soundOff":"Sound off","mia.soundOn":"Sound on","mia.placeholder":"Ask Mia anything…","mia.hint":"👋 Hi! I'm <strong>Mia</strong>, your guide. Click me to get started!",
     "myprofile":"My profile",
@@ -1602,7 +1602,7 @@ const TRANSLATIONS = {
   },
   it:{
     "candidates":"I miei messaggi","recruiters":"Per recruiter","submit":"Invia il tuo CV",
-    "nav.login":"Accedi","nav.register":"Registrati",
+    "nav.login":"Accedi","auth.welcome":"Benvenuto su ERP Talent Hub","auth.signinSub":"Accedi per vedere il tuo profilo","auth.registerSub":"Crea il tuo account gratuito","auth.tabLogin":"Accedi","auth.tabRegister":"Registrati","auth.submitLogin":"Accedi","auth.submitRegister":"Crea account","auth.roleLabel":"Sono un","auth.roleCandidate":"Professionista ERP","auth.roleRecruiter":"Recruiter","auth.nameLabel":"Nome completo","auth.passwordLabel":"Password","auth.forgotTitle":"Reimposta la password","auth.forgotSub":"Inserisci la tua email e ti invieremo un link di reset.","auth.backToLogin":"← Torna al login","cp.title":"Cambia password","cp.sub":"Scegli una nuova password sicura","cp.current":"Password attuale","cp.new":"Nuova password","cp.confirm":"Conferma nuova password","cp.submit":"Aggiorna password","cp.cancel":"Annulla","da.title":"Elimina account","da.sub":"Questa azione è permanente e non può essere annullata","da.passLabel":"Digita la tua password per confermare","da.confirmLabel":"Digita ELIMINA per confermare","da.submit":"Elimina il mio account definitivamente","da.cancel":"Annulla","nav.register":"Registrati",
     "auth.login":"Accedi","auth.createAccount":"Crea account","auth.noAccount":"Non hai un account?","auth.registerNow":"Registrati","auth.haveAccount":"Hai già un account?","auth.loginLink":"Accedi","auth.forgot":"Password dimenticata?","auth.forgotDesc":"Inserisci il tuo indirizzo email e ti invieremo un link per reimpostare la password.","auth.emailLabel":"Indirizzo email","auth.sendReset":"Invia link di reset","auth.sending":"Invio in corso…","auth.resetSent":"Controlla la tua casella! Il link di reset è stato inviato.","auth.emailRequired":"Inserisci il tuo indirizzo email.","auth.emailInvalid":"Inserisci un indirizzo email valido.",
     "mia.guide":"La tua guida su ERP Talent Hub","mia.soundOff":"Audio spento","mia.soundOn":"Audio acceso","mia.placeholder":"Chiedi qualcosa a Mia…","mia.hint":"👋 Ciao! Sono <strong>Mia</strong>, la tua guida. Clicca su di me!",
     "myprofile":"Il mio profilo",
@@ -1642,7 +1642,7 @@ const TRANSLATIONS = {
   },
   es:{
     "candidates":"Mis mensajes","recruiters":"Para recruiters","submit":"Envía tu CV",
-    "nav.login":"Iniciar sesión","nav.register":"Registrarse",
+    "nav.login":"Iniciar sesión","auth.welcome":"Bienvenido a ERP Talent Hub","auth.signinSub":"Inicia sesión para acceder a tu perfil","auth.registerSub":"Crea tu cuenta gratuita","auth.tabLogin":"Iniciar sesión","auth.tabRegister":"Registrarse","auth.submitLogin":"Iniciar sesión","auth.submitRegister":"Crear cuenta","auth.roleLabel":"Soy","auth.roleCandidate":"Profesional ERP","auth.roleRecruiter":"Reclutador","auth.nameLabel":"Nombre completo","auth.passwordLabel":"Contraseña","auth.forgotTitle":"Restablecer contraseña","auth.forgotSub":"Ingresa tu email y te enviaremos un enlace de restablecimiento.","auth.backToLogin":"← Volver al inicio de sesión","cp.title":"Cambiar contraseña","cp.sub":"Elige una nueva contraseña segura","cp.current":"Contraseña actual","cp.new":"Nueva contraseña","cp.confirm":"Confirmar nueva contraseña","cp.submit":"Actualizar contraseña","cp.cancel":"Cancelar","da.title":"Eliminar cuenta","da.sub":"Esta acción es permanente y no se puede deshacer","da.passLabel":"Escribe tu contraseña para confirmar","da.confirmLabel":"Escribe ELIMINAR para confirmar","da.submit":"Eliminar mi cuenta permanentemente","da.cancel":"Cancelar","nav.register":"Registrarse",
     "auth.login":"Iniciar sesión","auth.createAccount":"Crear cuenta","auth.noAccount":"¿No tienes cuenta?","auth.registerNow":"Regístrate","auth.haveAccount":"¿Ya tienes cuenta?","auth.loginLink":"Iniciar sesión","auth.forgot":"¿Olvidaste tu contraseña?","auth.forgotDesc":"Introduce tu email y te enviaremos un enlace para restablecer tu contraseña.","auth.emailLabel":"Correo electrónico","auth.sendReset":"Enviar enlace de restablecimiento","auth.sending":"Enviando…","auth.resetSent":"¡Revisa tu bandeja! Se ha enviado el enlace de restablecimiento.","auth.emailRequired":"Por favor introduce tu correo electrónico.","auth.emailInvalid":"Por favor introduce un correo electrónico válido.",
     "mia.guide":"Tu guía en ERP Talent Hub","mia.soundOff":"Sonido apagado","mia.soundOn":"Sonido encendido","mia.placeholder":"Pregúntale algo a Mia…","mia.hint":"👋 ¡Hola! Soy <strong>Mia</strong>, tu guía. ¡Haz clic en mí!",
     "myprofile":"Mi perfil",
@@ -1682,7 +1682,7 @@ const TRANSLATIONS = {
   },
   de:{
     "candidates":"Meine Nachrichten","recruiters":"Für Recruiter","submit":"Lebenslauf einreichen",
-    "nav.login":"Anmelden","nav.register":"Registrieren",
+    "nav.login":"Anmelden","auth.welcome":"Willkommen bei ERP Talent Hub","auth.signinSub":"Melden Sie sich an, um Ihr Profil aufzurufen","auth.registerSub":"Erstellen Sie Ihr kostenloses Konto","auth.tabLogin":"Anmelden","auth.tabRegister":"Registrieren","auth.submitLogin":"Anmelden","auth.submitRegister":"Konto erstellen","auth.roleLabel":"Ich bin","auth.roleCandidate":"ERP-Fachmann","auth.roleRecruiter":"Recruiter","auth.nameLabel":"Vollständiger Name","auth.passwordLabel":"Passwort","auth.forgotTitle":"Passwort zurücksetzen","auth.forgotSub":"Geben Sie Ihre E-Mail ein und wir senden Ihnen einen Reset-Link.","auth.backToLogin":"← Zurück zur Anmeldung","cp.title":"Passwort ändern","cp.sub":"Wählen Sie ein neues sicheres Passwort","cp.current":"Aktuelles Passwort","cp.new":"Neues Passwort","cp.confirm":"Neues Passwort bestätigen","cp.submit":"Passwort aktualisieren","cp.cancel":"Abbrechen","da.title":"Konto löschen","da.sub":"Diese Aktion ist dauerhaft und kann nicht rückgängig gemacht werden","da.passLabel":"Geben Sie Ihr Passwort zur Bestätigung ein","da.confirmLabel":"Geben Sie LÖSCHEN zur Bestätigung ein","da.submit":"Mein Konto dauerhaft löschen","da.cancel":"Abbrechen","nav.register":"Registrieren",
     "auth.login":"Anmelden","auth.createAccount":"Konto erstellen","auth.noAccount":"Noch kein Konto?","auth.registerNow":"Jetzt registrieren","auth.haveAccount":"Bereits ein Konto?","auth.loginLink":"Anmelden","auth.forgot":"Passwort vergessen?","auth.forgotDesc":"Geben Sie Ihre E-Mail-Adresse ein und wir senden Ihnen einen Link zum Zurücksetzen des Passworts.","auth.emailLabel":"E-Mail-Adresse","auth.sendReset":"Link zum Zurücksetzen senden","auth.sending":"Wird gesendet…","auth.resetSent":"Prüfen Sie Ihr Postfach! Ein Reset-Link wurde gesendet.","auth.emailRequired":"Bitte geben Sie Ihre E-Mail-Adresse ein.","auth.emailInvalid":"Bitte geben Sie eine gültige E-Mail-Adresse ein.",
     "mia.guide":"Ihre Führerin auf ERP Talent Hub","mia.soundOff":"Ton aus","mia.soundOn":"Ton an","mia.placeholder":"Fragen Sie Mia…","mia.hint":"👋 Hallo! Ich bin <strong>Mia</strong>, Ihre Führerin. Klicken Sie mich an!",
     "myprofile":"Mein Profil",
@@ -1722,7 +1722,7 @@ const TRANSLATIONS = {
   },
   fr:{
     "candidates":"Mes messages","recruiters":"Pour les recruteurs","submit":"Déposer mon CV",
-    "nav.login":"Connexion","nav.register":"S'inscrire",
+    "nav.login":"Connexion","auth.welcome":"Bienvenue sur ERP Talent Hub","auth.signinSub":"Connectez-vous pour accéder à votre profil","auth.registerSub":"Créez votre compte gratuit","auth.tabLogin":"Connexion","auth.tabRegister":"S'inscrire","auth.submitLogin":"Se connecter","auth.submitRegister":"Créer un compte","auth.roleLabel":"Je suis","auth.roleCandidate":"Professionnel ERP","auth.roleRecruiter":"Recruteur","auth.nameLabel":"Nom complet","auth.passwordLabel":"Mot de passe","auth.forgotTitle":"Réinitialiser le mot de passe","auth.forgotSub":"Entrez votre email et nous vous enverrons un lien de réinitialisation.","auth.backToLogin":"← Retour à la connexion","cp.title":"Changer le mot de passe","cp.sub":"Choisissez un nouveau mot de passe sécurisé","cp.current":"Mot de passe actuel","cp.new":"Nouveau mot de passe","cp.confirm":"Confirmer le nouveau mot de passe","cp.submit":"Mettre à jour le mot de passe","cp.cancel":"Annuler","da.title":"Supprimer le compte","da.sub":"Cette action est permanente et ne peut pas être annulée","da.passLabel":"Tapez votre mot de passe pour confirmer","da.confirmLabel":"Tapez SUPPRIMER pour confirmer","da.submit":"Supprimer mon compte définitivement","da.cancel":"Annuler","nav.register":"S'inscrire",
     "auth.login":"Connexion","auth.createAccount":"Créer un compte","auth.noAccount":"Pas encore de compte ?","auth.registerNow":"S'inscrire","auth.haveAccount":"Vous avez déjà un compte ?","auth.loginLink":"Connexion","auth.forgot":"Mot de passe oublié ?","auth.forgotDesc":"Entrez votre adresse email et nous vous enverrons un lien pour réinitialiser votre mot de passe.","auth.emailLabel":"Adresse email","auth.sendReset":"Envoyer le lien de réinitialisation","auth.sending":"Envoi en cours…","auth.resetSent":"Vérifiez votre boîte mail ! Un lien de réinitialisation a été envoyé.","auth.emailRequired":"Veuillez entrer votre adresse email.","auth.emailInvalid":"Veuillez entrer une adresse email valide.",
     "mia.guide":"Votre guide sur ERP Talent Hub","mia.soundOff":"Son désactivé","mia.soundOn":"Son activé","mia.placeholder":"Posez une question à Mia…","mia.hint":"👋 Je suis <strong>Mia</strong>, votre guide. Cliquez sur moi !",
     "myprofile":"Mon profil",
@@ -1787,6 +1787,19 @@ function setLang(lang) {
 }
 
 function applyTranslations() {
+  // Refresh auth modal if open
+  const authModal = document.getElementById('auth-modal');
+  if (authModal && authModal.style.display !== 'none') {
+    const activeTab = document.getElementById('auth-tab-login')?.classList.contains('active') ? 'login' :
+                      document.getElementById('auth-tab-register')?.classList.contains('active') ? 'register' : null;
+    if (activeTab) setTimeout(() => switchAuthTab(activeTab), 0);
+  }
+  // Refresh change password modal labels
+  const cpModal = document.getElementById('change-pw-modal');
+  if (cpModal && cpModal.style.display !== 'none') {
+    const btn = document.getElementById('cp-btn');
+    if (btn && !btn.disabled) btn.textContent = t('cp.submit') || 'Update password';
+  }
   // Static i18n attributes
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
