@@ -4745,7 +4745,10 @@ function openMiaPanel() {
   document.getElementById('mia-panel').classList.add('open');
   document.getElementById('mia-hint').style.display = 'none';
   clearTimeout(miaHintTimer);
-  // Always greet fresh — uses currentLang at this exact moment
+  // Clear and greet fresh in current language every time
+  const msgs = document.getElementById('mia-messages');
+  if (msgs) msgs.innerHTML = '';
+  setMiaQuickBtns([]);
   miaGreet(miaContext);
 }
 
@@ -4753,10 +4756,6 @@ function closeMiaPanel() {
   miaOpen = false;
   document.getElementById('mia-panel').classList.remove('open');
   stopMiaSpeech();
-  // Clear messages on close so re-open always greets fresh in current language
-  const msgs = document.getElementById('mia-messages');
-  if (msgs) msgs.innerHTML = '';
-  setMiaQuickBtns([]);
 }
 
 function toggleMiaPanel() {
