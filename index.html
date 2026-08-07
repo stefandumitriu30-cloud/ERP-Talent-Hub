@@ -3543,74 +3543,59 @@ async function initAdminPortal() {
   if (list) list.innerHTML = '<div style="padding:24px;text-align:center;font-size:13px;color:var(--gray-400)"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading…</div>';
 
   if (SUPABASE_READY && sb()) {
+    // Fetch ALL profiles from Supabase — reset arrays first to avoid duplicates
     allCandidateProfiles.length = 0;
     verifiedRecruiters.length   = 0;
 
-    // Admin bypasses Supabase auth — use anon key directly via REST fetch
+    let profiles = [];
     try {
       const res = await fetch(
         `${SUPABASE_URL}/rest/v1/profiles?select=*&order=created_at.desc`,
-        {
-          headers: {
-            'apikey': SUPABASE_ANON,
-            'Authorization': `Bearer ${SUPABASE_ANON}`,
-            'Content-Type': 'application/json',
-          }
-        }
+        { headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` } }
       );
-
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.message || `HTTP ${res.status}`);
-      }
-
-      const profiles = await res.json();
-
-      if (profiles && profiles.length > 0) {
-        profiles.forEach(p => {
-          if (p.role === 'candidate') {
-            allCandidateProfiles.push({
-              firstName:  p.profile_data?.firstName || p.name?.split(' ')[0] || '—',
-              lastName:   p.profile_data?.lastName  || p.name?.split(' ').slice(1).join(' ') || '',
-              city:       p.profile_data?.city      || '—',
-              province:   p.profile_data?.province  || '',
-              country:    p.profile_data?.country   || '—',
-              email:      p.email,
-              phone:      p.profile_data?.phone     || '—',
-              linkedin:   p.profile_data?.linkedin  || '',
-              summary:    p.profile_data?.summary   || '',
-              erp:        p.profile_data?.erp       || [],
-              exps:       p.profile_data?.exps      || [],
-              edus:       p.profile_data?.edus      || [],
-              certs:      p.profile_data?.certs     || [],
-              awards:     p.profile_data?.awards    || [],
-              photo:      p.photo || null,
-              submittedAt: p.created_at,
-              hasProfile: !!p.profile_data,
-            });
-          }
-          if (p.role === 'recruiter') {
-            verifiedRecruiters.push({
-              name:        p.recruiter_data?.name    || p.name || '—',
-              company:     p.recruiter_data?.company || '—',
-              url:         p.recruiter_data?.url     || '',
-              photo:       p.photo || null,
-              verifiedAt:  p.recruiter_data?.verifiedAt || p.created_at,
-              email:       p.email,
-            });
-          }
-        });
-      }
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      profiles = await res.json();
     } catch(err) {
-      console.error('Admin portal load error:', err.message);
-      if (list) list.innerHTML = `<div style="padding:24px;text-align:center;font-size:13px;color:#DC2626">
-        <i class="fa-solid fa-triangle-exclamation"></i> Could not load profiles.<br>
-        <span style="color:var(--gray-400);font-size:12px">${err.message}</span><br><br>
-        <span style="font-size:12px;color:var(--gray-500)">Run this SQL in Supabase:<br>
-        <code style="background:#F1F5F9;padding:4px 8px;border-radius:4px;display:inline-block;margin-top:6px">create policy "Public read" on profiles for select using (true);</code></span>
-      </div>`;
-      renderAdminList();
-      return;
+      console.error('Admin load error:', err.message);
+      if (list) list.innerHTML = `<div style="padding:24px;text-align:center;color:#DC2626;font-size:13px">Could not load profiles: ${err.message}</div>`;
+      renderAdminList(); return;
+    }
+
+    if (profiles && profiles.length > 0) {
+      profiles.forEach(p => {
+        if (p.role === 'candidate') {
+          // Include ALL candidates — even those who registered but haven't submitted CV yet
+          allCandidateProfiles.push({
+            firstName:  p.profile_data?.firstName || p.name?.split(' ')[0] || '—',
+            lastName:   p.profile_data?.lastName  || p.name?.split(' ').slice(1).join(' ') || '',
+            city:       p.profile_data?.city      || '—',
+            province:   p.profile_data?.province  || '',
+            country:    p.profile_data?.country   || '—',
+            email:      p.email,
+            phone:      p.profile_data?.phone     || '—',
+            linkedin:   p.profile_data?.linkedin  || '',
+            summary:    p.profile_data?.summary   || '',
+            erp:        p.profile_data?.erp       || [],
+            exps:       p.profile_data?.exps      || [],
+            edus:       p.profile_data?.edus      || [],
+            certs:      p.profile_data?.certs     || [],
+            awards:     p.profile_data?.awards    || [],
+            photo:      p.photo || null,
+            submittedAt: p.created_at,
+            hasProfile: !!p.profile_data,
+          });
+        }
+        if (p.role === 'recruiter') {
+          verifiedRecruiters.push({
+            name:        p.recruiter_data?.name    || p.name || '—',
+            company:     p.recruiter_data?.company || '—',
+            url:         p.recruiter_data?.url     || '',
+            photo:       p.photo || null,
+            verifiedAt:  p.recruiter_data?.verifiedAt || p.created_at,
+            email:       p.email,
+          });
+        }
+      });
     }
   }
   renderAdminList();
@@ -3795,7 +3780,15 @@ const SUPABASE_READY = SUPABASE_URL !== 'YOUR_SUPABASE_URL' && SUPABASE_ANON !==
 let _sb = null;
 function sb() {
   if (!_sb && SUPABASE_READY && window.supabase) {
-    _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+    _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON, {
+      auth: {
+        persistSession:    true,          // keep session in localStorage
+        autoRefreshToken:  true,          // auto-refresh before expiry
+        storageKey:        'erpth_sb',    // custom key to avoid conflicts
+        storage:           window.localStorage,
+        detectSessionInUrl: true,         // handles password reset redirects
+      }
+    });
   }
   return _sb;
 }
