@@ -678,6 +678,86 @@ input[type=file].photo-input{display:none}
   <link rel="canonical" href="https://stefandumitriu30-cloud.github.io/ERP-Talent-Hub/" />
 </head>
 <body>
+<!-- GDPR Cookie Consent Banner -->
+<div id="cookie-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:99999;background:#0F172A;border-top:2px solid #2563EB;padding:16px 24px;box-shadow:0 -4px 24px rgba(0,0,0,0.3);">
+  <div style="max-width:960px;margin:0 auto;display:flex;align-items:flex-start;gap:20px;flex-wrap:wrap;">
+    <div style="flex:1;min-width:260px;">
+      <div style="font-size:14px;font-weight:700;color:#FFFFFF;margin-bottom:6px;">&#x1F36A; This site uses cookies &amp; local storage</div>
+      <div style="font-size:12px;color:#94A3B8;line-height:1.6;">
+        We use local storage to save your preferences (theme, onboarding, stats).
+        Third-party services: <strong style="color:#CBD5E1;">Supabase</strong> (database),
+        <strong style="color:#CBD5E1;">Anthropic</strong> (AI / PDF),
+        <strong style="color:#CBD5E1;">ElevenLabs</strong> (voice),
+        <strong style="color:#CBD5E1;">EmailJS</strong> (email). Some are based outside the EU.
+        <a href="#" onclick="showPrivacyPolicy();return false;" style="color:#60A5FA;text-decoration:underline;">Privacy Policy</a>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;flex-shrink:0;">
+      <button onclick="acceptCookies()" style="background:#2563EB;color:#fff;border:none;border-radius:8px;padding:10px 24px;font-size:13px;font-weight:600;cursor:pointer;">Accept all</button>
+      <button onclick="rejectCookies()" style="background:transparent;color:#94A3B8;border:1px solid #334155;border-radius:8px;padding:8px 24px;font-size:12px;cursor:pointer;">Essential only</button>
+    </div>
+  </div>
+</div>
+
+<!-- Privacy Policy Modal -->
+<div id="privacy-modal" style="display:none;position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,0.7);overflow-y:auto;padding:20px;" onclick="if(event.target===this)closePrivacyPolicy()">
+  <div style="max-width:760px;margin:0 auto;background:#FFFFFF;border-radius:16px;overflow:hidden;">
+    <div style="background:#0F172A;padding:24px 28px;display:flex;justify-content:space-between;align-items:center;">
+      <div>
+        <div style="font-size:20px;font-weight:700;color:#FFFFFF;">Privacy Policy</div>
+        <div style="font-size:12px;color:#94A3B8;margin-top:4px;">ERP Talent Hub &middot; Last updated: August 2026</div>
+      </div>
+      <button onclick="closePrivacyPolicy()" style="background:#1E293B;border:none;color:#94A3B8;width:36px;height:36px;border-radius:50%;font-size:18px;cursor:pointer;">&#x2715;</button>
+    </div>
+    <div style="padding:28px;font-size:13px;color:#374151;line-height:1.8;">
+      <h2 style="font-size:15px;font-weight:700;color:#0F172A;margin:0 0 8px;">1. Data Controller</h2>
+      <p>ERP Talent Hub is operated by <strong>Vantage Finance &amp; Tech</strong>. Contact: <a href="mailto:admin@erp-talent-hub.com" style="color:#2563EB;">admin@erp-talent-hub.com</a></p>
+
+      <h2 style="font-size:15px;font-weight:700;color:#0F172A;margin:20px 0 8px;">2. Data We Collect</h2>
+      <p><strong>Account:</strong> email, full name, role (candidate/recruiter).</p>
+      <p><strong>Candidate profile:</strong> name, location, phone, LinkedIn, summary, ERP systems, experience, education, certifications, awards, languages, photo.</p>
+      <p><strong>Recruiter data:</strong> name, company, LinkedIn Recruiter URL.</p>
+      <p><strong>Local browser data:</strong> profile view stats, theme preference, onboarding status (stored only on your device).</p>
+
+      <h2 style="font-size:15px;font-weight:700;color:#0F172A;margin:20px 0 8px;">3. Legal Basis (GDPR Art. 6)</h2>
+      <p><strong>Contract (Art. 6.1.b):</strong> account and profile data to provide the service.</p>
+      <p><strong>Legitimate interest (Art. 6.1.f):</strong> platform security and abuse prevention.</p>
+      <p><strong>Consent (Art. 6.1.a):</strong> optional local storage for preferences and statistics.</p>
+
+      <h2 style="font-size:15px;font-weight:700;color:#0F172A;margin:20px 0 8px;">4. Privacy by Design</h2>
+      <p>Your contact details (email, phone, LinkedIn) are <strong>never shown to recruiters</strong> by default. Only you control when to share them.</p>
+
+      <h2 style="font-size:15px;font-weight:700;color:#0F172A;margin:20px 0 8px;">5. Third-Party Services &amp; Data Transfers</h2>
+      <table style="width:100%;border-collapse:collapse;font-size:12px;margin-top:8px;">
+        <tr style="background:#F8FAFC;"><th style="padding:8px;text-align:left;border-bottom:2px solid #E2E8F0;">Service</th><th style="padding:8px;text-align:left;border-bottom:2px solid #E2E8F0;">Purpose</th><th style="padding:8px;text-align:left;border-bottom:2px solid #E2E8F0;">Location</th></tr>
+        <tr><td style="padding:8px;border-bottom:1px solid #F1F5F9;"><strong>Supabase</strong></td><td style="padding:8px;border-bottom:1px solid #F1F5F9;">Database &amp; auth</td><td style="padding:8px;border-bottom:1px solid #F1F5F9;">EU West (Ireland)</td></tr>
+        <tr><td style="padding:8px;border-bottom:1px solid #F1F5F9;"><strong>Anthropic</strong></td><td style="padding:8px;border-bottom:1px solid #F1F5F9;">AI assistant &amp; PDF</td><td style="padding:8px;border-bottom:1px solid #F1F5F9;">USA (SCCs)</td></tr>
+        <tr><td style="padding:8px;border-bottom:1px solid #F1F5F9;"><strong>ElevenLabs</strong></td><td style="padding:8px;border-bottom:1px solid #F1F5F9;">Voice synthesis</td><td style="padding:8px;border-bottom:1px solid #F1F5F9;">USA (SCCs)</td></tr>
+        <tr><td style="padding:8px;border-bottom:1px solid #F1F5F9;"><strong>EmailJS</strong></td><td style="padding:8px;border-bottom:1px solid #F1F5F9;">Email notifications</td><td style="padding:8px;border-bottom:1px solid #F1F5F9;">USA (SCCs)</td></tr>
+      </table>
+      <p style="font-size:11px;color:#64748B;margin-top:6px;"></p>
+
+      <h2 style="font-size:15px;font-weight:700;color:#0F172A;margin:20px 0 8px;">6. Data Retention</h2>
+      <p>Data retained until account deletion. Upon deletion, all data is permanently removed. Local browser data clears when you clear your browser storage.</p>
+
+      <h2 style="font-size:15px;font-weight:700;color:#0F172A;margin:20px 0 8px;">7. Your Rights (GDPR Art. 15-22)</h2>
+      <p>
+        <strong>Access</strong> &mdash; request a copy of your data<br>
+        <strong>Rectification</strong> &mdash; correct data via Edit Profile<br>
+        <strong>Erasure</strong> &mdash; delete account via Settings<br>
+        <strong>Portability</strong> &mdash; export profile as PDF<br>
+        <strong>Restriction &amp; Objection</strong> &mdash; contact us at <a href="mailto:admin@erp-talent-hub.com" style="color:#2563EB;">admin@erp-talent-hub.com</a>
+      </p>
+
+      <h2 style="font-size:15px;font-weight:700;color:#0F172A;margin:20px 0 8px;">8. Complaints</h2>
+      <p>You may lodge a complaint with the Italian data protection authority: <a href="https://www.garanteprivacy.it" target="_blank" style="color:#2563EB;">Garante per la protezione dei dati personali</a>.</p>
+    </div>
+    <div style="padding:16px 28px;border-top:1px solid #E2E8F0;background:#F8FAFC;display:flex;justify-content:flex-end;">
+      <button onclick="closePrivacyPolicy()" style="background:#2563EB;color:#fff;border:none;border-radius:8px;padding:10px 28px;font-size:13px;font-weight:600;cursor:pointer;">Close</button>
+    </div>
+  </div>
+</div>
+
 
 <!-- ═══════════════════ NAV ═══════════════════ -->
 <nav id="nav" role="navigation" aria-label="Main navigation">
@@ -1596,6 +1676,7 @@ input[type=file].photo-input{display:none}
   <br style="margin-bottom:6px">
   <span id="footer-ownership"></span>
   <br>
+  <a href="#" onclick="showPrivacyPolicy();return false;" style="color:rgba(255,255,255,.4);font-size:11px;text-decoration:none;display:inline-block;margin-top:4px;">Privacy Policy &amp; GDPR</a>
   <button onclick="openAdminModal()" style="background:none;border:none;color:rgba(255,255,255,.12);font-size:11px;cursor:pointer;margin-top:8px;padding:4px 8px;border-radius:4px" title="Admin">⚙</button>
 </footer>
 
@@ -1839,9 +1920,11 @@ function setLang(lang) {
     pt: "Para um PDF perfeito em português, preenche o CV em português. O conteúdo já estará na língua certa!"
   };
   if (lang !== "en" && _mTips[lang]) {
-    window._pendingMiaTip = _mTips[lang];
-  } else {
-    window._pendingMiaTip = null;
+    setTimeout(function() {
+      var w = document.getElementById("mia-widget");
+      if (w && w.classList.contains("collapsed")) w.classList.remove("collapsed");
+      appendMiaMessage(_mTips[lang]);
+    }, 500);
   }
 }
 
@@ -5127,25 +5210,12 @@ function setMiaContext(ctx) {
   if (miaOpen) {
     document.getElementById('mia-messages').innerHTML = '';
     miaGreet(ctx);
-    if (window._pendingMiaTip) {
-      setTimeout(function() {
-        appendMiaMessage(window._pendingMiaTip);
-        window._pendingMiaTip = null;
-      }, 800);
-    }
   } else {
     // Show hint bubble briefly
     clearTimeout(miaHintTimer);
     const hint = document.getElementById('mia-hint');
     hint.style.display = 'block';
     miaHintTimer = setTimeout(() => { hint.style.display = 'none'; }, 5000);
-    if (window._pendingMiaTip) {
-      var tip = window._pendingMiaTip;
-      window._pendingMiaTip = null;
-      var w = document.getElementById('mia-widget');
-      if (w && w.classList.contains('collapsed')) w.classList.remove('collapsed');
-      setTimeout(function() { appendMiaMessage(tip); }, 800);
-    }
   }
 }
 
@@ -5849,6 +5919,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   addEntry('award');
   addEntry('lang');
   initMia();
+  initCookieBanner();
 });
 
 // ─────────────────────────────────────────
@@ -6379,6 +6450,38 @@ function sendNativeNotification(title, body, url) {
 function clearAdvFilters() {
   ['filter-erp','filter-country','filter-exp'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
   renderRecCandidateList();
+}
+
+
+// ── GDPR ──────────────────────────────────────────────────────
+function initCookieBanner() {
+  try {
+    if (!localStorage.getItem('erpth_consent')) {
+      document.getElementById('cookie-banner').style.display = 'block';
+    }
+  } catch(e) {
+    document.getElementById('cookie-banner').style.display = 'block';
+  }
+}
+function acceptCookies() {
+  try { localStorage.setItem('erpth_consent', 'all'); } catch(e) {}
+  document.getElementById('cookie-banner').style.display = 'none';
+}
+function rejectCookies() {
+  try {
+    localStorage.removeItem('erpth_stats');
+    localStorage.removeItem('erpth_onboarded');
+    localStorage.setItem('erpth_consent', 'essential');
+  } catch(e) {}
+  document.getElementById('cookie-banner').style.display = 'none';
+}
+function showPrivacyPolicy() {
+  document.getElementById('privacy-modal').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+}
+function closePrivacyPolicy() {
+  document.getElementById('privacy-modal').style.display = 'none';
+  document.body.style.overflow = '';
 }
 
 </script>
