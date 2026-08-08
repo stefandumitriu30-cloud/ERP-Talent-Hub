@@ -5169,16 +5169,18 @@ function toggleMiaPanel() {
 function miaGreet(ctx) {
   const msgs = document.getElementById('mia-messages');
   msgs.innerHTML = '';
+  // Capture lang at call time — before any async delay
+  const _greetLang = currentLang;
   setTimeout(() => {
     showMiaTyping();
     setTimeout(() => {
       hideMiaTyping();
-      const scripts = MIA_SCRIPTS_ALL[currentLang] || MIA_SCRIPTS_ALL['en'];
+      const scripts = MIA_SCRIPTS_ALL[_greetLang] || MIA_SCRIPTS_ALL['en'];
       const script  = scripts[ctx] || scripts['home'];
       appendMiaMessage(script.greeting);
       setMiaQuickBtns(script.quick || []);
       if (miaSoundOn) miaSpeak(script.greeting.replace(/\*\*/g, ''));
-      // Show PDF tip after greeting
+      // Show PDF tip after greeting — use same captured lang
       var _pdfTips = {
         en: "For a perfect PDF in English, fill in your CV in English. The content will already be in the right language when you download it!",
         it: "Per un PDF perfetto in italiano, compila il CV in italiano. Il contenuto sarà già nella lingua giusta!",
@@ -5187,7 +5189,7 @@ function miaGreet(ctx) {
         fr: "Pour un PDF parfait en français, remplis le CV en français. Le contenu sera déjà dans la bonne langue!",
         pt: "Para um PDF perfeito em português, preenche o CV em português. O conteúdo já estará na língua certa!"
       };
-      var _tip = _pdfTips[currentLang] || _pdfTips['en'];
+      var _tip = _pdfTips[_greetLang] || _pdfTips['en'];
       setTimeout(() => { appendMiaMessage(_tip); }, 1200);
     }, 900);
   }, 200);
