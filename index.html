@@ -1843,7 +1843,7 @@ function setLang(lang) {
       var w = document.getElementById("mia-widget");
       if (w && w.classList.contains("collapsed")) w.classList.remove("collapsed");
       appendMiaMessage(_mTips[lang]);
-    }, 500);
+    }, 1500);
   }
 }
 
@@ -4429,7 +4429,7 @@ async function submitForgotPassword() {
 
   // ── 2. Strict international email format validation ─────────────────
   // RFC 5322 simplified — covers all real-world international formats
-  const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*\.[a-zA-Z]{2,}$/;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
     errEl.textContent = t('auth.emailInvalid') || 'Please enter a valid email address (e.g. name@domain.com).';
     errEl.classList.add('show');
@@ -6041,9 +6041,7 @@ function downloadProfilePDF(lang) {
       max_tokens: 3000,
       messages: [{
         role: 'user',
-        content: 'Translate into ' + langName + ' for a professional CV. Segments separated by __TXTSEP__. Return ONLY the translated segments separated by __TXTSEP__. Keep unchanged: company names, SAP/Oracle/Dynamics/NetSuite/Workday/Infor/IFS/Sage, institution names, dates, numbers, emails, URLs. Translate empty segments as empty.
-
-' + texts.join(SEP)
+        content: 'Translate into ' + langName + ' for a professional CV. Segments separated by __TXTSEP__. Return ONLY the translated segments separated by __TXTSEP__. Keep unchanged: company names, SAP/Oracle/Dynamics/NetSuite/Workday/Infor/IFS/Sage, institution names, dates, numbers, emails, URLs. Translate empty segments as empty.\n\n' + texts.join(SEP)
       }]
     })
   })
