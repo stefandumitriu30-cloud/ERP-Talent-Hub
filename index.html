@@ -2325,6 +2325,17 @@ function handleSubmit() {
   const summary    = document.getElementById('f-summary')?.value.trim() || '';
   const erpSystems = [...selectedErp].join(', ') || '—';
 
+  // Translated email content based on current UI language
+  const _emailTr = {
+    en: { subject: 'Your ERP profile is now live!', greeting: 'Hello', body: 'your ERP profile is now live and visible to verified recruiters.', profile_label: 'YOUR PROFILE AT A GLANCE', field_name: 'Full name', field_location: 'Location', field_email: 'Email', field_erp: 'ERP systems', next_title: 'WHAT HAPPENS NEXT', next1: 'Verified recruiters can now discover your profile', next2: 'Your contact details remain hidden until a recruiter requests access', next3: 'You will be notified when a recruiter views your profile', cta: 'View my profile', footer: 'You received this email because you registered on ERP Talent Hub.' },
+    it: { subject: 'Il tuo profilo ERP è ora attivo!', greeting: 'Ciao', body: 'il tuo profilo ERP è ora attivo e visibile ai recruiter verificati.', profile_label: 'IL TUO PROFILO IN SINTESI', field_name: 'Nome completo', field_location: 'Località', field_email: 'Email', field_erp: 'Sistemi ERP', next_title: 'COSA SUCCEDE ORA', next1: 'I recruiter verificati possono ora trovare il tuo profilo', next2: 'I tuoi contatti restano nascosti finché un recruiter non richiede accesso', next3: 'Riceverai una notifica quando un recruiter visualizza il tuo profilo', cta: 'Visualizza il mio profilo', footer: 'Hai ricevuto questa email perché ti sei registrato su ERP Talent Hub.' },
+    es: { subject: '¡Tu perfil ERP ya está activo!', greeting: 'Hola', body: 'tu perfil ERP ya está activo y visible para los reclutadores verificados.', profile_label: 'TU PERFIL EN RESUMEN', field_name: 'Nombre completo', field_location: 'Ubicación', field_email: 'Email', field_erp: 'Sistemas ERP', next_title: 'QUÉ PASA AHORA', next1: 'Los reclutadores verificados ya pueden descubrir tu perfil', next2: 'Tus datos de contacto permanecen ocultos hasta que un reclutador solicite acceso', next3: 'Recibirás una notificación cuando un reclutador vea tu perfil', cta: 'Ver mi perfil', footer: 'Recibiste este email porque te registraste en ERP Talent Hub.' },
+    de: { subject: 'Dein ERP-Profil ist jetzt live!', greeting: 'Hallo', body: 'Ihr ERP-Profil ist jetzt live und für verifizierte Recruiter sichtbar.', profile_label: 'IHR PROFIL AUF EINEN BLICK', field_name: 'Vollständiger Name', field_location: 'Standort', field_email: 'E-Mail', field_erp: 'ERP-Systeme', next_title: 'WAS ALS NÄCHSTES PASSIERT', next1: 'Verifizierte Recruiter können Ihr Profil jetzt entdecken', next2: 'Ihre Kontaktdaten bleiben verborgen, bis ein Recruiter Zugang anfordert', next3: 'Sie werden benachrichtigt, wenn ein Recruiter Ihr Profil anzeigt', cta: 'Mein Profil anzeigen', footer: 'Sie haben diese E-Mail erhalten, weil Sie sich bei ERP Talent Hub registriert haben.' },
+    fr: { subject: 'Votre profil ERP est maintenant en ligne !', greeting: 'Bonjour', body: 'votre profil ERP est maintenant en ligne et visible par les recruteurs vérifiés.', profile_label: 'VOTRE PROFIL EN UN COUP D’ŒIL', field_name: 'Nom complet', field_location: 'Localisation', field_email: 'Email', field_erp: 'Systèmes ERP', next_title: 'QUE SE PASSE-T-IL MAINTENANT', next1: 'Les recruteurs vérifiés peuvent désormais découvrir votre profil', next2: 'Vos coordonnées restent cachées jusqu’à ce qu’un recruteur demande l’accès', next3: 'Vous serez notifié lorsqu’un recruteur consultera votre profil', cta: 'Voir mon profil', footer: 'Vous avez reçu cet email car vous vous êtes inscrit sur ERP Talent Hub.' },
+    pt: { subject: 'O seu perfil ERP está agora ativo!', greeting: 'Olá', body: 'o seu perfil ERP está agora ativo e visível para os recrutadores verificados.', profile_label: 'O SEU PERFIL EM RESUMO', field_name: 'Nome completo', field_location: 'Localização', field_email: 'Email', field_erp: 'Sistemas ERP', next_title: 'O QUE ACONTECE A SEGUIR', next1: 'Os recrutadores verificados podem agora descobrir o seu perfil', next2: 'Os seus contactos permanecem ocultos até um recrutador solicitar acesso', next3: 'Será notificado quando um recrutador visualizar o seu perfil', cta: 'Ver o meu perfil', footer: 'Recebeu este email porque se registou no ERP Talent Hub.' },
+  };
+  const _et = _emailTr[currentLang] || _emailTr['en'];
+
   const templateParams = {
     to_email:    email,
     to_name:     firstName + ' ' + lastName,
@@ -2338,11 +2349,27 @@ function handleSubmit() {
     erp_systems: erpSystems,
     summary:     summary.slice(0, 400) + (summary.length > 400 ? '…' : ''),
     reply_to:    email,
-    // Explicit recipient fields recognised by EmailJS
     user_email:  email,
     user_name:   firstName + ' ' + lastName,
     email:       email,
     name:        firstName + ' ' + lastName,
+    // Translated fields
+    lang:           currentLang,
+    subject:        _et.subject,
+    greeting:       _et.greeting,
+    body:           _et.body,
+    profile_label:  _et.profile_label,
+    field_name:     _et.field_name,
+    field_location: _et.field_location,
+    field_email:    _et.field_email,
+    field_erp:      _et.field_erp,
+    next_title:     _et.next_title,
+    next1:          _et.next1,
+    next2:          _et.next2,
+    next3:          _et.next3,
+    cta:            _et.cta,
+    footer:         _et.footer,
+    site_url:       'https://stefandumitriu30-cloud.github.io/ERP-Talent-Hub/',
   };
 
   const finish = (success, errMsg) => {
