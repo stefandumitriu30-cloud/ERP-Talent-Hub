@@ -3831,14 +3831,23 @@ function renderMyProfile() {
       </div>
       ${e.awardYear ? `<span style="font-size:12px;color:var(--gray-400);background:var(--gray-50);border:1px solid var(--gray-200);border-radius:6px;padding:3px 9px">${e.awardYear}</span>` : ''}
     </div>`);
-  renderProfileList('mp-languages', p.langs, (e) => `
+  renderProfileList('mp-languages', p.langs, (e) => {
+    const nativeLbl = {en:'Native',it:'Madrelingua',es:'Nativa',de:'Muttersprache',fr:'Natif',pt:'Nativa'}[currentLang] || 'Native';
+    const spokenTxt  = e.spoken  === 'Native' ? nativeLbl : e.spoken;
+    const writtenTxt = e.written === 'Native' ? nativeLbl : e.written;
+    const isNative   = (!e.spoken && !e.written) || (e.spoken === 'Native' && e.written === 'Native');
+    return `
     <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:8px 0;border-bottom:1px solid var(--gray-100)">
       <div style="font-size:14px;font-weight:600;min-width:80px">${escHtml(e.langName)}</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
-        ${e.spoken  ? `<span style="display:inline-flex;align-items:center;gap:4px;background:var(--blue-light);border:1px solid var(--blue-mid);border-radius:12px;padding:3px 10px;font-size:12px;color:var(--blue)"><i class="fa-solid fa-microphone" style="font-size:10px"></i>${t('f.langSpoken')}: <strong>${escHtml(e.spoken)}</strong></span>` : ''}
-        ${e.written ? `<span style="display:inline-flex;align-items:center;gap:4px;background:var(--blue-light);border:1px solid var(--blue-mid);border-radius:12px;padding:3px 10px;font-size:12px;color:var(--blue)"><i class="fa-solid fa-pen" style="font-size:10px"></i>${t('f.langWritten')}: <strong>${escHtml(e.written)}</strong></span>` : ''}
+        ${isNative
+          ? `<span style="display:inline-flex;align-items:center;gap:4px;background:var(--blue-light);border:1px solid var(--blue-mid);border-radius:12px;padding:3px 10px;font-size:12px;color:var(--blue)">⭐ <strong>${nativeLbl}</strong></span>`
+          : `${e.spoken  ? `<span style="display:inline-flex;align-items:center;gap:4px;background:var(--blue-light);border:1px solid var(--blue-mid);border-radius:12px;padding:3px 10px;font-size:12px;color:var(--blue)"><i class="fa-solid fa-microphone" style="font-size:10px"></i>${t('f.langSpoken')}: <strong>${escHtml(spokenTxt)}</strong></span>` : ''}
+            ${e.written ? `<span style="display:inline-flex;align-items:center;gap:4px;background:var(--blue-light);border:1px solid var(--blue-mid);border-radius:12px;padding:3px 10px;font-size:12px;color:var(--blue)"><i class="fa-solid fa-pen" style="font-size:10px"></i>${t('f.langWritten')}: <strong>${escHtml(writtenTxt)}</strong></span>` : ''}`
+        }
       </div>
-    </div>`);
+    </div>`;
+  });
 }
 
 function renderProfileList(containerId, items, renderFn) {
