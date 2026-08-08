@@ -1839,11 +1839,9 @@ function setLang(lang) {
     pt: "Para um PDF perfeito em português, preenche o CV em português. O conteúdo já estará na língua certa!"
   };
   if (lang !== "en" && _mTips[lang]) {
-    setTimeout(function() {
-      var w = document.getElementById("mia-widget");
-      if (w && w.classList.contains("collapsed")) w.classList.remove("collapsed");
-      appendMiaMessage(_mTips[lang]);
-    }, 1500);
+    window._pendingMiaTip = _mTips[lang];
+  } else {
+    window._pendingMiaTip = null;
   }
 }
 
@@ -5129,12 +5127,25 @@ function setMiaContext(ctx) {
   if (miaOpen) {
     document.getElementById('mia-messages').innerHTML = '';
     miaGreet(ctx);
+    if (window._pendingMiaTip) {
+      setTimeout(function() {
+        appendMiaMessage(window._pendingMiaTip);
+        window._pendingMiaTip = null;
+      }, 800);
+    }
   } else {
     // Show hint bubble briefly
     clearTimeout(miaHintTimer);
     const hint = document.getElementById('mia-hint');
     hint.style.display = 'block';
     miaHintTimer = setTimeout(() => { hint.style.display = 'none'; }, 5000);
+    if (window._pendingMiaTip) {
+      var tip = window._pendingMiaTip;
+      window._pendingMiaTip = null;
+      var w = document.getElementById('mia-widget');
+      if (w && w.classList.contains('collapsed')) w.classList.remove('collapsed');
+      setTimeout(function() { appendMiaMessage(tip); }, 800);
+    }
   }
 }
 
@@ -5415,8 +5426,7 @@ function getPrebuiltAnswer(label) {
 // ─────────────────────────────────────────
 // Mia uses ElevenLabs for a realistic, sweet, expressive voice.
 // Free tier: 10,000 characters/month — plenty for onboarding.
-//
-// To activate:
+//\n// To activate:
 //   1. Go to elevenlabs.io → sign up free
 //   2. Go to your Profile → API Keys → copy your key
 //   3. Go to Voices → choose a voice (recommended: "Aria", "Charlotte" or "Elli")
@@ -6072,8 +6082,7 @@ function _pdfRender(p, lb) {
   var exH = (p.exps || []).map(function(e) {
     return '<div class="exp"><div class="exp-t">' + (e.jobTitle||'') + ' &mdash; ' + (e.company||'') + '</div>'
       + '<div class="exp-s">' + (e.startDate||'') + (e.current ? ' &ndash; '+lb.present : (e.endDate ? ' &ndash; '+e.endDate : '')) + '</div>'
-      + '<p>' + (e.description||'').replace(/
-/g,'<br>') + '</p></div>';
+      + '<p>' + (e.description||'').replace(/\n/g,'<br>') + '</p></div>';
   }).join('');
   var edH = (p.edus || []).map(function(e) {
     return '<p><strong>' + (e.degree||'') + '</strong> &mdash; ' + (e.institution||'') + ' ' + (e.gradYear||'') + '</p>';
@@ -6110,8 +6119,7 @@ function _pdfRender(p, lb) {
     + '</style></head><body>'
     + '<h1>' + name + '</h1><div class="sub">' + lb.prof + '</div>'
     + '<div class="ct">' + contact + '</div>'
-    + sec(lb.summary, '<p>' + (p.summary||'').replace(/
-/g,'<br>') + '</p>')
+    + sec(lb.summary, '<p>' + (p.summary||'').replace(/\n/g,'<br>') + '</p>')
     + sec(lb.erp, '<div class="tags">' + erpTags + '</div>')
     + sec(lb.exp, exH)
     + sec(lb.edu, edH)
