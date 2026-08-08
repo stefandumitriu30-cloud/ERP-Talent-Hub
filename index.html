@@ -6459,6 +6459,12 @@ function initCookieBanner() {
   try {
     if (!localStorage.getItem('erpth_consent')) {
       document.getElementById('cookie-banner').style.display = 'block';
+      // Detect lang: use currentLang if set, else browser language
+      var bl = (navigator.language || 'en').slice(0, 2).toLowerCase();
+      var supported = ['en','it','es','de','fr','pt'];
+      var detectLang = supported.indexOf(currentLang) >= 0 ? currentLang
+                     : (supported.indexOf(bl) >= 0 ? bl : 'en');
+      updateCookieBannerLang(detectLang);
     }
   } catch(e) {
     document.getElementById('cookie-banner').style.display = 'block';
