@@ -2337,7 +2337,8 @@ function handleSubmit() {
   const country    = document.getElementById('f-country').value.trim();
   const phone      = (document.getElementById('f-phone-prefix')?.value || '') +
                      ' ' + (document.getElementById('f-phone')?.value.trim() || '');
-  const linkedin   = document.getElementById('f-linkedin')?.value.trim() || '';
+  var _liRaw = document.getElementById('f-linkedin')?.value.trim() || '';
+  const linkedin = _liRaw && !_liRaw.startsWith('http') ? 'https://' + _liRaw : _liRaw;
   const summary    = document.getElementById('f-summary')?.value.trim() || '';
   const erpSystems = [...selectedErp].join(', ') || '—';
 
@@ -3729,7 +3730,7 @@ function renderMyProfile() {
     const chips = [
       p.email    && { icon: 'fa-envelope',  text: p.email,    href: 'mailto:' + p.email },
       p.phone.trim().length > 2 && { icon: 'fa-phone', text: p.phone.trim() },
-      p.linkedin && { icon: 'fa-brands fa-linkedin', text: 'LinkedIn', href: p.linkedin, color: '#0A66C2' },
+      p.linkedin && { icon: 'fa-brands fa-linkedin', text: 'LinkedIn', href: (p.linkedin.startsWith('http') ? p.linkedin : 'https://' + p.linkedin), color: '#0A66C2' },
     ].filter(Boolean);
     chips.forEach(c => {
       const chip = document.createElement('a');
@@ -4054,7 +4055,7 @@ function showAdminCandidateDetail(p) {
         <div style="display:flex;flex-direction:column;gap:8px;font-size:13px">
           <div><i class="fa-solid fa-envelope" style="color:var(--blue);width:16px"></i> <a href="mailto:${escHtml(p.email)}" style="color:var(--blue)">${escHtml(p.email)}</a></div>
           ${p.phone?.trim().length > 2 ? `<div><i class="fa-solid fa-phone" style="color:var(--blue);width:16px"></i> ${escHtml(p.phone)}</div>` : ''}
-          ${p.linkedin ? `<div><i class="fa-brands fa-linkedin" style="color:#0A66C2;width:16px"></i> <a href="${escHtml(p.linkedin)}" target="_blank" style="color:#0A66C2">${escHtml(p.linkedin)}</a></div>` : ''}
+          ${p.linkedin ? `<div><i class="fa-brands fa-linkedin" style="color:#0A66C2;width:16px"></i> <a href="${p.linkedin.startsWith('http') ? escHtml(p.linkedin) : 'https://' + escHtml(p.linkedin)}" target="_blank" style="color:#0A66C2">${escHtml(p.linkedin)}</a></div>` : ''}
         </div>
       </div>
 
