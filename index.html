@@ -706,53 +706,33 @@ input[type=file].photo-input{display:none}
         <div style="font-size:20px;font-weight:700;color:#FFFFFF;">Privacy Policy</div>
         <div style="font-size:12px;color:#94A3B8;margin-top:4px;">ERP Talent Hub &middot; Last updated: August 2026</div>
       </div>
-      <button onclick="closePrivacyPolicy()" style="background:#1E293B;border:none;color:#94A3B8;width:36px;height:36px;border-radius:50%;font-size:18px;cursor:pointer;">&#x2715;</button>
+      <button onclick="closePrivacyPolicy()" class="modal-close-btn" style="background:#1E293B;border:none;color:#94A3B8;width:36px;height:36px;border-radius:50%;font-size:18px;cursor:pointer;">&#x2715;</button>
     </div>
-    <div style="padding:28px;font-size:13px;color:#374151;line-height:1.8;">
-      <h2 style="font-size:15px;font-weight:700;color:#0F172A;margin:0 0 8px;">1. Data Controller</h2>
-      <p>ERP Talent Hub is operated by <strong>Vantage Finance &amp; Tech</strong>. Contact: <a href="mailto:admin@erp-talent-hub.com" style="color:#2563EB;">admin@erp-talent-hub.com</a></p>
-
-      <h2 style="font-size:15px;font-weight:700;color:#0F172A;margin:20px 0 8px;">2. Data We Collect</h2>
-      <p><strong>Account:</strong> email, full name, role (candidate/recruiter).</p>
-      <p><strong>Candidate profile:</strong> name, location, phone, LinkedIn, summary, ERP systems, experience, education, certifications, awards, languages, photo.</p>
-      <p><strong>Recruiter data:</strong> name, company, LinkedIn Recruiter URL.</p>
-      <p><strong>Local browser data:</strong> profile view stats, theme preference, onboarding status (stored only on your device).</p>
-
-      <h2 style="font-size:15px;font-weight:700;color:#0F172A;margin:20px 0 8px;">3. Legal Basis (GDPR Art. 6)</h2>
-      <p><strong>Contract (Art. 6.1.b):</strong> account and profile data to provide the service.</p>
-      <p><strong>Legitimate interest (Art. 6.1.f):</strong> platform security and abuse prevention.</p>
-      <p><strong>Consent (Art. 6.1.a):</strong> optional local storage for preferences and statistics.</p>
-
-      <h2 style="font-size:15px;font-weight:700;color:#0F172A;margin:20px 0 8px;">4. Privacy by Design</h2>
-      <p>Your contact details (email, phone, LinkedIn) are <strong>never shown to recruiters</strong> by default. Only you control when to share them.</p>
-
-      <h2 style="font-size:15px;font-weight:700;color:#0F172A;margin:20px 0 8px;">5. Third-Party Services &amp; Data Transfers</h2>
+    <div id="pp-content" style="padding:28px;font-size:13px;color:#374151;line-height:1.8;">
+      <h2 style="font-size:15px;font-weight:700;color:#0F172A;margin:0 0 8px;" id="pp-h1"></h2>
+      <p id="pp-p1"></p>
+      <h2 style="font-size:15px;font-weight:700;color:#0F172A;margin:20px 0 8px;" id="pp-h2"></h2>
+      <p id="pp-p2a"></p><p id="pp-p2b"></p><p id="pp-p2c"></p><p id="pp-p2d"></p>
+      <h2 style="font-size:15px;font-weight:700;color:#0F172A;margin:20px 0 8px;" id="pp-h3"></h2>
+      <p id="pp-p3a"></p><p id="pp-p3b"></p><p id="pp-p3c"></p>
+      <h2 style="font-size:15px;font-weight:700;color:#0F172A;margin:20px 0 8px;" id="pp-h4"></h2>
+      <p id="pp-p4"></p>
+      <h2 style="font-size:15px;font-weight:700;color:#0F172A;margin:20px 0 8px;" id="pp-h5"></h2>
       <table style="width:100%;border-collapse:collapse;font-size:12px;margin-top:8px;">
-        <tr style="background:#F8FAFC;"><th style="padding:8px;text-align:left;border-bottom:2px solid #E2E8F0;">Service</th><th style="padding:8px;text-align:left;border-bottom:2px solid #E2E8F0;">Purpose</th><th style="padding:8px;text-align:left;border-bottom:2px solid #E2E8F0;">Location</th></tr>
-        <tr><td style="padding:8px;border-bottom:1px solid #F1F5F9;"><strong>Supabase</strong></td><td style="padding:8px;border-bottom:1px solid #F1F5F9;">Database &amp; auth</td><td style="padding:8px;border-bottom:1px solid #F1F5F9;">EU West (Ireland)</td></tr>
-        <tr><td style="padding:8px;border-bottom:1px solid #F1F5F9;"><strong>Anthropic</strong></td><td style="padding:8px;border-bottom:1px solid #F1F5F9;">AI assistant &amp; PDF</td><td style="padding:8px;border-bottom:1px solid #F1F5F9;">USA (SCCs)</td></tr>
-        
-        <tr><td style="padding:8px;border-bottom:1px solid #F1F5F9;"><strong>EmailJS</strong></td><td style="padding:8px;border-bottom:1px solid #F1F5F9;">Email notifications</td><td style="padding:8px;border-bottom:1px solid #F1F5F9;">USA (SCCs)</td></tr>
+        <tr style="background:#F8FAFC;"><th style="padding:8px;text-align:left;border-bottom:2px solid #E2E8F0;" id="pp-th1"></th><th style="padding:8px;text-align:left;border-bottom:2px solid #E2E8F0;" id="pp-th2"></th><th style="padding:8px;text-align:left;border-bottom:2px solid #E2E8F0;" id="pp-th3"></th></tr>
+        <tr><td style="padding:8px;border-bottom:1px solid #F1F5F9;"><strong>Supabase</strong></td><td style="padding:8px;border-bottom:1px solid #F1F5F9;" id="pp-td-sb"></td><td style="padding:8px;border-bottom:1px solid #F1F5F9;">EU West (Ireland)</td></tr>
+        <tr><td style="padding:8px;border-bottom:1px solid #F1F5F9;"><strong>Anthropic</strong></td><td style="padding:8px;border-bottom:1px solid #F1F5F9;" id="pp-td-an"></td><td style="padding:8px;border-bottom:1px solid #F1F5F9;">USA (SCCs)</td></tr>
+        <tr><td style="padding:8px;border-bottom:1px solid #F1F5F9;"><strong>EmailJS</strong></td><td style="padding:8px;border-bottom:1px solid #F1F5F9;" id="pp-td-ej"></td><td style="padding:8px;border-bottom:1px solid #F1F5F9;">USA (SCCs)</td></tr>
       </table>
-      <p style="font-size:11px;color:#64748B;margin-top:6px;"></p>
-
-      <h2 style="font-size:15px;font-weight:700;color:#0F172A;margin:20px 0 8px;">6. Data Retention</h2>
-      <p>Data retained until account deletion. Upon deletion, all data is permanently removed. Local browser data clears when you clear your browser storage.</p>
-
-      <h2 style="font-size:15px;font-weight:700;color:#0F172A;margin:20px 0 8px;">7. Your Rights (GDPR Art. 15-22)</h2>
-      <p>
-        <strong>Access</strong> &mdash; request a copy of your data<br>
-        <strong>Rectification</strong> &mdash; correct data via Edit Profile<br>
-        <strong>Erasure</strong> &mdash; delete account via Settings<br>
-        <strong>Portability</strong> &mdash; export profile as PDF<br>
-        <strong>Restriction &amp; Objection</strong> &mdash; contact us at <a href="mailto:admin@erp-talent-hub.com" style="color:#2563EB;">admin@erp-talent-hub.com</a>
-      </p>
-
-      <h2 style="font-size:15px;font-weight:700;color:#0F172A;margin:20px 0 8px;">8. Complaints</h2>
-      <p>You may lodge a complaint with the Italian data protection authority: <a href="https://www.garanteprivacy.it" target="_blank" style="color:#2563EB;">Garante per la protezione dei dati personali</a>.</p>
+      <h2 style="font-size:15px;font-weight:700;color:#0F172A;margin:20px 0 8px;" id="pp-h6"></h2>
+      <p id="pp-p6"></p>
+      <h2 style="font-size:15px;font-weight:700;color:#0F172A;margin:20px 0 8px;" id="pp-h7"></h2>
+      <p id="pp-p7"></p>
+      <h2 style="font-size:15px;font-weight:700;color:#0F172A;margin:20px 0 8px;" id="pp-h8"></h2>
+      <p id="pp-p8"></p>
     </div>
     <div style="padding:16px 28px;border-top:1px solid #E2E8F0;background:#F8FAFC;display:flex;justify-content:flex-end;">
-      <button onclick="closePrivacyPolicy()" style="background:#2563EB;color:#fff;border:none;border-radius:8px;padding:10px 28px;font-size:13px;font-weight:600;cursor:pointer;">Close</button>
+      <button onclick="closePrivacyPolicy()" class="modal-close-btn" style="background:#2563EB;color:#fff;border:none;border-radius:8px;padding:10px 28px;font-size:13px;font-weight:600;cursor:pointer;">Close</button>
     </div>
   </div>
 </div>
@@ -1914,6 +1894,9 @@ function setLang(lang, suppressTip) {
   setMiaLang(lang);
 
   updateCookieBannerLang(lang);
+  if (document.getElementById('privacy-modal') && document.getElementById('privacy-modal').style.display === 'block') {
+    renderPrivacyPolicy(lang);
+  }
 }
 
 function applyTranslations() {
@@ -3872,7 +3855,7 @@ function formatDate(ym) {
 // ADMIN PORTAL
 // ─────────────────────────────────────────
 
-const ADMIN_PASSWORD = 'VFT@Admin2026'; // change this to your own password
+const ADMIN_PASSWORD = 'ETH!Admin2026';
 let adminAuthenticated = false;
 let adminTab = 'candidates'; // 'candidates' | 'recruiters'
 
@@ -4156,8 +4139,8 @@ function sb() {
 // AUTH SYSTEM (Supabase + session cache)
 // ─────────────────────────────────────────
 
-const ADMIN_EMAIL  = 'admin@erp-talent-hub.com';
-const ADMIN_PASS   = 'VFT@Admin2026';
+const ADMIN_EMAIL  = 'erptalenthub@gmail.com';
+const ADMIN_PASS   = 'ETH!Admin2026';
 const SESSION_KEY  = 'erpth_session';
 
 let currentUser      = null;
@@ -5089,7 +5072,7 @@ const MIA_FALLBACKS_ALL = {
     "linkedin username": "Your LinkedIn **username** is the part after `/in/` in your profile URL.\n\nExample: `linkedin.com/in/sarah-johnson` → username is **sarah-johnson**",
     "edit": "Go to **My profile** → click **Edit profile** → update your data → click **Publish profile** again.",
     "notification": "You get notifications 🔔 when a recruiter views your profile, sends a connection request, messages you, or updates your selection status.",
-    "password": "Please contact the administrator at **admin@erp-talent-hub.com** to reset your password.",
+    "password": "Please contact the administrator at **erptalenthub@gmail.com** to reset your password.",
     "role": "Roles are chosen at registration and cannot be changed. Contact the administrator if you chose the wrong role.",
     "default": "Hehe, I honestly have no idea about that one — you're on your own here! 😄\n\nBut I *can* help with registering, filling in your profile, the chat, the pipeline, or privacy!",
   },
@@ -5098,7 +5081,7 @@ const MIA_FALLBACKS_ALL = {
     "privacy": "La tua privacy è la nostra priorità 🔒\n\nEmail, telefono e LinkedIn non vengono mai mostrati pubblicamente. Sono condivisi solo con un recruiter specifico dopo che richiede l'accesso e tu accetti.",
     "sommario": "Il tuo **sommario professionale** deve essere di 200–500 parole e includere:\n• I **sistemi ERP** in cui sei specializzato\n• La tua **esperienza di settore**\n• I tuoi **risultati chiave**\n• Cosa ti **distingue** dagli altri",
     "pipeline": "Il **pipeline di selezione** ha 7 fasi:\n1. ✉ Contattato  2. 📋 Screening  3. 🎤 1° Colloquio  4. 🎤 2° Colloquio  5. 📝 Assessment  6. 📄 Offerta  7. ✅ Assunto",
-    "password": "Contatta l'amministratore a **admin@erp-talent-hub.com** per reimpostare la password.",
+    "password": "Contatta l'amministratore a **erptalenthub@gmail.com** per reimpostare la password.",
     "default": "Eheh, su questa non saprei proprio — qua devi fare da te! 😄\n\nPosso però aiutarti con la registrazione, il profilo, la chat, il pipeline o la privacy!",
   },
   es: {
@@ -5106,7 +5089,7 @@ const MIA_FALLBACKS_ALL = {
     "privacidad": "Tu privacidad es nuestra prioridad 🔒\n\nEmail, teléfono y LinkedIn nunca se muestran públicamente. Solo se comparten con un recruiter tras su solicitud de acceso y tu aceptación.",
     "resumen": "Tu **resumen profesional** debe tener 200–500 palabras e incluir:\n• Los **sistemas ERP** en que te especializas\n• Tu **experiencia sectorial**\n• Tus **logros clave**\n• Lo que te **diferencia**",
     "pipeline": "El **pipeline de selección** tiene 7 etapas:\n1. ✉ Contactado  2. 📋 Screening  3. 🎤 1ª Entrevista  4. 🎤 2ª Entrevista  5. 📝 Assessment  6. 📄 Oferta  7. ✅ Contratado",
-    "contraseña": "Contacta al administrador en **admin@erp-talent-hub.com** para restablecer tu contraseña.",
+    "contraseña": "Contacta al administrador en **erptalenthub@gmail.com** para restablecer tu contraseña.",
     "default": "¡Jeje, esta no me la sé — aquí tendrás que apañarte tú solo! 😄\n\n¡Pero sí puedo ayudarte con el registro, el perfil, el chat, el pipeline o la privacidad!",
   },
   de: {
@@ -5114,7 +5097,7 @@ const MIA_FALLBACKS_ALL = {
     "datenschutz": "Ihr Datenschutz hat Priorität 🔒\n\nE-Mail, Telefon und LinkedIn werden nie öffentlich angezeigt. Sie werden nur mit einem spezifischen Recruiter geteilt, nachdem er Zugang anfordert und Sie zustimmen.",
     "kurzprofil": "Ihr **Kurzprofil** sollte 200–500 Wörter umfassen:\n• Die **ERP-Systeme**, auf die Sie spezialisiert sind\n• Ihre **Branchenerfahrung**\n• Ihre **wichtigsten Erfolge**\n• Was Sie **auszeichnet**",
     "pipeline": "Die **Auswahlpipeline** hat 7 Stufen:\n1. ✉ Kontaktiert  2. 📋 Screening  3. 🎤 1. Interview  4. 🎤 2. Interview  5. 📝 Assessment  6. 📄 Angebot  7. ✅ Eingestellt",
-    "passwort": "Bitte kontaktieren Sie den Administrator unter **admin@erp-talent-hub.com**, um Ihr Passwort zurückzusetzen.",
+    "passwort": "Bitte kontaktieren Sie den Administrator unter **erptalenthub@gmail.com**, um Ihr Passwort zurückzusetzen.",
     "default": "Haha, da bin ich überfragt — da musst du selbst ran! 😄\n\nAber ich helfe dir gerne bei Registrierung, Profil, Chat, Pipeline oder Datenschutz!",
   },
   fr: {
@@ -5122,7 +5105,7 @@ const MIA_FALLBACKS_ALL = {
     "confidentialité": "Votre confidentialité est notre priorité 🔒\n\nEmail, téléphone et LinkedIn ne sont jamais affichés publiquement. Ils ne sont partagés qu'avec un recruteur spécifique après sa demande d'accès et votre accord.",
     "résumé": "Votre **résumé professionnel** doit faire 200–500 mots et inclure :\n• Les **systèmes ERP** dans lesquels vous êtes spécialisé\n• Votre **expérience sectorielle**\n• Vos **réalisations clés**\n• Ce qui vous **démarque**",
     "pipeline": "Le **pipeline de sélection** comporte 7 étapes :\n1. ✉ Contacté  2. 📋 Screening  3. 🎤 1er Entretien  4. 🎤 2e Entretien  5. 📝 Assessment  6. 📄 Offre  7. ✅ Embauché",
-    "mot de passe": "Veuillez contacter l'administrateur à **admin@erp-talent-hub.com** pour réinitialiser votre mot de passe.",
+    "mot de passe": "Veuillez contacter l'administrateur à **erptalenthub@gmail.com** pour réinitialiser votre mot de passe.",
     "default": "Hehe, là je sèche complètement — tu vas devoir te débrouiller tout seul ! 😄\n\nMais je peux t'aider avec l'inscription, le profil, le chat, le pipeline ou la confidentialité !",
   },
 };
@@ -5338,7 +5321,7 @@ async function miaHandleQuestion(question, isQuickBtn = false) {
 
 CRITICAL: You MUST reply ONLY in ${langName}. Never use any other language under any circumstances.
 
-Platform sections: HOME (landing), REGISTER/LOGIN (choose role: ERP Professional or Recruiter), CV FORM (personal info with geo-verified city/province/country, contact details, professional summary 200–500 words, ERP systems multi-select, work experience with calendar date picker, education, certifications, awards, profile photo), MY PROFILE (read-only, contact details hidden from recruiters), RECRUITER PORTAL (LinkedIn Recruiter account verification required via 4-step gate), CANDIDATE INBOX (chat + 7-stage pipeline: Contacted→Screening→1st Interview→2nd Interview→Assessment→Offer→Hired, 5-day stall warning), ADMIN DASHBOARD (login: admin@erp-talent-hub.com / VFT@Admin2026), NOTIFICATIONS (bell icon: profile views, connection requests, messages, stage changes).
+Platform sections: HOME (landing), REGISTER/LOGIN (choose role: ERP Professional or Recruiter), CV FORM (personal info with geo-verified city/province/country, contact details, professional summary 200–500 words, ERP systems multi-select, work experience with calendar date picker, education, certifications, awards, profile photo), MY PROFILE (read-only, contact details hidden from recruiters), RECRUITER PORTAL (LinkedIn Recruiter account verification required via 4-step gate), CANDIDATE INBOX (chat + 7-stage pipeline: Contacted→Screening→1st Interview→2nd Interview→Assessment→Offer→Hired, 5-day stall warning), ADMIN DASHBOARD (login: erptalenthub@gmail.com / ETH!Admin2026), NOTIFICATIONS (bell icon: profile views, connection requests, messages, stage changes).
 
 Current page: ${miaContext}. User role: ${currentUser?.role || 'guest'}. User: ${currentUser?.name || 'visitor'}.
 
@@ -5378,7 +5361,7 @@ function getPrebuiltAnswer(label) {
     "Posso contattare prima il recruiter?": "No — su ERP Talent Hub i **recruiter scrivono sempre per primi**. Questa regola ti protegge e garantisce che solo recruiter seri e verificati ti contattino. Una volta che un recruiter apre una conversazione, puoi rispondere liberamente! 💬",
     "Cosa significa 'Scaduto'?":         "Il badge ⚠️ **Scaduto** appare quando il recruiter non ha aggiornato la **fase di selezione** per **5+ giorni lavorativi**. I weekend non contano. Come candidato, vedrai un messaggio nel pipeline che dice che il recruiter è stato avvisato.",
     "Cosa succede dopo la registrazione?": "Dopo la registrazione verrai portato direttamente al **form CV** (candidato) o al **gate di verifica recruiter** (recruiter). Il tuo account è salvato in Supabase — puoi accedere da qualsiasi dispositivo!",
-    "Qual è il mio ruolo?":              "Il tuo ruolo è stato scelto alla registrazione:\n• **Professionista ERP** — crei un profilo e vieni trovato dai recruiter\n• **Recruiter** — verifichi LinkedIn Recruiter e contatti i candidati\n\nPer cambiare ruolo contatta **admin@erp-talent-hub.com**.",
+    "Qual è il mio ruolo?":              "Il tuo ruolo è stato scelto alla registrazione:\n• **Professionista ERP** — crei un profilo e vieni trovato dai recruiter\n• **Recruiter** — verifichi LinkedIn Recruiter e contatti i candidati\n\nPer cambiare ruolo contatta **erptalenthub@gmail.com**.",
     "Quali notifiche ricevo?":           "Ricevi 🔔 notifiche quando un recruiter visualizza il tuo profilo, invia una richiesta di contatto, ti scrive un messaggio, aggiorna la tua fase di selezione, o quando il suo aggiornamento è scaduto.",
     "Come so se un recruiter è interessato?": "Ricevi una 🔔 notifica quando un recruiter **visualizza il tuo profilo**, ti invia una **richiesta di contatto** o ti scrive. Controlla la campanella in alto nel nav!",
     "Cos'è il pipeline di selezione?":   "Il **pipeline** ha 7 fasi:\n✉ Contattato → 📋 Screening → 🎤 1° Colloquio → 🎤 2° Colloquio → 📝 Assessment → 📄 Offerta → ✅ Assunto\n\nMonitora la tua fase nella sezione **Messaggi**. Ricevi una notifica ad ogni cambio!",
@@ -5405,7 +5388,7 @@ function getPrebuiltAnswer(label) {
     "Tell me about privacy":    "Your **email, phone and LinkedIn** are never shown publicly 🔒\n\nThey're only shared with a specific recruiter after they request access and you accept. Only verified LinkedIn Recruiter accounts can reach you.",
     "What's the difference between roles?": "**ERP Professional** = you're looking for opportunities and want recruiters to find you.\n\n**Recruiter** = you're hiring and need to verify your LinkedIn Recruiter account first.",
     "Is my data secure?":       "Absolutely! 🔒 Your contact details are hidden by default. Supabase stores your data securely. Only you and the admin can see your full profile.",
-    "Can I change my role later?": "Not directly — roles are fixed at registration. But don't worry! Contact the admin at **admin@erp-talent-hub.com** and they'll sort it out for you 😊",
+    "Can I change my role later?": "Not directly — roles are fixed at registration. But don't worry! Contact the admin at **erptalenthub@gmail.com** and they'll sort it out for you 😊",
     "What should I write in the summary?": "Your **professional summary** should cover:\n• ERP systems you specialise in (SAP FI/CO, Oracle Fusion…)\n• Your industry experience (manufacturing, finance, retail…)\n• Key projects and achievements\n• What makes you stand out\n\nBe specific — recruiters search by module!",
     "How do I add work experience?": "In the **Work experience** section:\n1. Click **+ Add another role**\n2. Enter job title and company\n3. Pick start/end dates from the **calendar**\n4. Tick **Current position** if still there\n5. Describe your responsibilities\n\nAdd roles from most recent to oldest! 📅",
     "Which ERP systems should I select?": "Select **all systems you have real hands-on experience with** — SAP, Oracle, Dynamics, Workday, NetSuite… The more you select, the more searches you appear in! Don't be shy 😄",
@@ -5431,7 +5414,7 @@ function getPrebuiltAnswer(label) {
     "Dimmi della privacy":      "La tua **email, telefono e LinkedIn** non vengono mai mostrati pubblicamente 🔒\n\nSono condivisi solo con un recruiter specifico dopo che richiede l'accesso e tu accetti.",
     "Qual è la differenza tra i ruoli?": "**Professionista ERP** = stai cercando opportunità e vuoi essere trovato dai recruiter.\n\n**Recruiter** = stai assumendo e devi prima verificare il tuo account LinkedIn Recruiter.",
     "I miei dati sono al sicuro?": "Assolutamente! 🔒 I tuoi recapiti sono nascosti per impostazione predefinita. Supabase archivia i dati in modo sicuro. Solo tu e l'admin vedete il profilo completo.",
-    "Posso cambiare ruolo in seguito?": "Non direttamente — i ruoli sono fissi alla registrazione. Ma non preoccuparti! Contatta l'admin a **admin@erp-talent-hub.com** e sistemerà tutto per te 😊",
+    "Posso cambiare ruolo in seguito?": "Non direttamente — i ruoli sono fissi alla registrazione. Ma non preoccuparti! Contatta l'admin a **erptalenthub@gmail.com** e sistemerà tutto per te 😊",
     "Cosa scrivo nel sommario?": "Il tuo **sommario professionale** deve includere:\n• I sistemi ERP in cui sei specializzato (SAP FI/CO, Oracle Fusion…)\n• La tua esperienza di settore (manifatturiero, finance, retail…)\n• Progetti e risultati chiave\n• Cosa ti distingue\n\nSii specifico — i recruiter cercano per modulo!",
     "Come aggiungo un'esperienza?": "Nella sezione **Esperienze lavorative**:\n1. Clicca **+ Aggiungi un'altra posizione**\n2. Inserisci titolo e azienda\n3. Scegli le date dal **calendario**\n4. Spunta **Posizione attuale** se ci sei ancora\n5. Descrivi le responsabilità\n\nAggiungi dalla più recente alla più remota! 📅",
     "Quali sistemi ERP seleziono?": "Seleziona **tutti i sistemi con cui hai esperienza reale** — SAP, Oracle, Dynamics, Workday, NetSuite… Più ne selezioni, più ricerche intercetti! Non essere timido 😄",
@@ -5459,7 +5442,7 @@ function getPrebuiltAnswer(label) {
     "Cuéntame sobre la privacidad": "Tu **email, teléfono y LinkedIn** nunca se muestran públicamente 🔒\n\nSolo se comparten con un recruiter específico tras su solicitud de acceso y tu aceptación.",
     "¿Cuál es la diferencia entre roles?": "**Profesional ERP** = buscas oportunidades y quieres que los recruiters te encuentren.\n\n**Recruiter** = estás contratando y primero debes verificar tu cuenta LinkedIn Recruiter.",
     "¿Mis datos están seguros?": "¡Absolutamente! 🔒 Tus datos de contacto están ocultos por defecto. Supabase almacena los datos de forma segura. Solo tú y el admin ven el perfil completo.",
-    "¿Puedo cambiar de rol después?": "No directamente — los roles se fijan al registrarse. ¡Pero no te preocupes! Contacta al admin en **admin@erp-talent-hub.com** y lo resolverá para ti 😊",
+    "¿Puedo cambiar de rol después?": "No directamente — los roles se fijan al registrarse. ¡Pero no te preocupes! Contacta al admin en **erptalenthub@gmail.com** y lo resolverá para ti 😊",
     "¿Qué escribo en el resumen?": "Tu **resumen profesional** debe incluir:\n• Los sistemas ERP en que te especializas (SAP FI/CO, Oracle Fusion…)\n• Tu experiencia sectorial (fabricación, finanzas, retail…)\n• Proyectos y logros clave\n• Lo que te diferencia\n\n¡Sé específico — los recruiters buscan por módulo!",
     "¿Cómo añado experiencia?":  "En la sección **Experiencia laboral**:\n1. Haz clic en **+ Añadir otro puesto**\n2. Introduce título y empresa\n3. Elige fechas con el **calendario**\n4. Marca **Posición actual** si sigues ahí\n5. Describe tus responsabilidades\n\n¡Añade de más reciente a más antigua! 📅",
     "¿Qué sistemas ERP selecciono?": "Selecciona **todos los sistemas con experiencia real** — SAP, Oracle, Dynamics, Workday, NetSuite… ¡Cuantos más selecciones, más búsquedas interceptas! No seas tímido 😄",
@@ -5477,7 +5460,7 @@ function getPrebuiltAnswer(label) {
     "Datenschutz erklären":     "Ihre **E-Mail, Telefonnummer und LinkedIn** werden nie öffentlich angezeigt 🔒\n\nSie werden nur mit einem spezifischen Recruiter geteilt, nachdem er Zugang anfordert und Sie zustimmen.",
     "Was ist der Unterschied zwischen den Rollen?": "**ERP-Fachmann** = Sie suchen Möglichkeiten und möchten von Recruitern gefunden werden.\n\n**Recruiter** = Sie stellen ein und müssen zunächst Ihr LinkedIn Recruiter-Konto verifizieren.",
     "Sind meine Daten sicher?": "Absolut! 🔒 Ihre Kontaktdaten sind standardmäßig verborgen. Supabase speichert Daten sicher. Nur Sie und der Admin sehen Ihr vollständiges Profil.",
-    "Kann ich die Rolle später ändern?": "Nicht direkt — Rollen werden bei der Registrierung festgelegt. Aber keine Sorge! Kontaktieren Sie den Admin unter **admin@erp-talent-hub.com** 😊",
+    "Kann ich die Rolle später ändern?": "Nicht direkt — Rollen werden bei der Registrierung festgelegt. Aber keine Sorge! Kontaktieren Sie den Admin unter **erptalenthub@gmail.com** 😊",
     "Was schreibe ich ins Kurzprofil?": "Ihr **Kurzprofil** sollte umfassen:\n• ERP-Systeme, auf die Sie spezialisiert sind (SAP FI/CO, Oracle Fusion…)\n• Ihre Branchenerfahrung\n• Wichtigste Projekte und Erfolge\n• Was Sie auszeichnet\n\nSeien Sie spezifisch — Recruiter suchen nach Modulen!",
     "Wie füge ich Erfahrung hinzu?": "Im Bereich **Berufserfahrung**:\n1. Klicken Sie auf **+ Weitere Stelle hinzufügen**\n2. Titel und Unternehmen eingeben\n3. Daten aus dem **Kalender** wählen\n4. **Aktuelle Position** ankreuzen, falls noch dort\n5. Aufgaben beschreiben\n\nVon neuester zu ältester Stelle! 📅",
     "Welche ERP-Systeme wähle ich?": "Wählen Sie **alle Systeme mit echter Erfahrung** — SAP, Oracle, Dynamics, Workday, NetSuite… Je mehr Sie wählen, desto mehr Suchanfragen erreichen Sie! Seien Sie nicht schüchtern 😄",
@@ -5490,7 +5473,7 @@ function getPrebuiltAnswer(label) {
     "Parlez-moi de la confidentialité": "Votre **email, téléphone et LinkedIn** ne sont jamais affichés publiquement 🔒\n\nIls ne sont partagés qu'avec un recruteur spécifique après sa demande d'accès et votre accord.",
     "Quelle est la différence entre les rôles ?": "**Professionnel ERP** = vous cherchez des opportunités et voulez être trouvé par les recruteurs.\n\n**Recruteur** = vous recrutez et devez d'abord vérifier votre compte LinkedIn Recruiter.",
     "Mes données sont-elles sécurisées ?": "Absolument ! 🔒 Vos coordonnées sont masquées par défaut. Supabase stocke les données en toute sécurité. Seuls vous et l'admin voyez votre profil complet.",
-    "Puis-je changer de rôle plus tard ?": "Pas directement — les rôles sont fixés à l'inscription. Mais ne vous inquiétez pas ! Contactez l'admin à **admin@erp-talent-hub.com** 😊",
+    "Puis-je changer de rôle plus tard ?": "Pas directement — les rôles sont fixés à l'inscription. Mais ne vous inquiétez pas ! Contactez l'admin à **erptalenthub@gmail.com** 😊",
     "Que dois-je écrire dans le résumé ?": "Votre **résumé professionnel** doit couvrir :\n• Les systèmes ERP dans lesquels vous êtes spécialisé\n• Votre expérience sectorielle\n• Vos projets et réalisations clés\n• Ce qui vous démarque\n\nSoyez précis — les recruteurs cherchent par module !",
     "Comment ajouter une expérience ?": "Dans la section **Expérience professionnelle** :\n1. Cliquez sur **+ Ajouter un poste**\n2. Saisissez titre et entreprise\n3. Choisissez les dates dans le **calendrier**\n4. Cochez **Poste actuel** si vous y êtes encore\n5. Décrivez vos responsabilités\n\nDu plus récent au plus ancien ! 📅",
     "Quels systèmes ERP sélectionner ?": "Sélectionnez **tous les systèmes avec une vraie expérience** — SAP, Oracle, Dynamics, Workday, NetSuite… Plus vous en sélectionnez, plus vous apparaissez dans les recherches ! 😄",
@@ -6496,6 +6479,7 @@ function rejectCookies() {
   document.getElementById('cookie-banner').style.display = 'none';
 }
 function showPrivacyPolicy() {
+  renderPrivacyPolicy(currentLang);
   document.getElementById('privacy-modal').style.display = 'block';
   document.body.style.overflow = 'hidden';
 }
@@ -6520,6 +6504,22 @@ function updateCookieBannerLang(lang) {
   if (t('cookie-desc'))        t('cookie-desc').innerHTML         = tr[1] + ' <a href="#" onclick="showPrivacyPolicy();return false;" style="color:#60A5FA;text-decoration:underline;">' + tr[2] + '</a>';
   if (t('cookie-accept-btn'))  t('cookie-accept-btn').textContent = tr[3];
   if (t('cookie-reject-btn'))  t('cookie-reject-btn').textContent = tr[4];
+}
+var _PP = {"en": {"h1": "1. Data Controller", "p1": "ERP Talent Hub is operated by <strong>Vantage Finance &amp; Tech</strong>. Contact: <a href=\"mailto:erptalenthub@gmail.com\" style=\"color:#2563EB;\">erptalenthub@gmail.com</a>", "h2": "2. Data We Collect", "p2a": "<strong>Account:</strong> email, full name, role (candidate / recruiter).", "p2b": "<strong>Candidate profile:</strong> name, location, phone, LinkedIn, summary, ERP systems, experience, education, certifications, awards, languages, photo.", "p2c": "<strong>Recruiter data:</strong> name, company, LinkedIn Recruiter URL.", "p2d": "<strong>Local browser data:</strong> profile view stats, theme preference, onboarding status (stored only on your device).", "h3": "3. Legal Basis (GDPR Art. 6)", "p3a": "<strong>Contract (Art. 6.1.b):</strong> account and profile data to provide the service.", "p3b": "<strong>Legitimate interest (Art. 6.1.f):</strong> platform security and abuse prevention.", "p3c": "<strong>Consent (Art. 6.1.a):</strong> optional local storage for preferences and statistics.", "h4": "4. Privacy by Design", "p4": "Your contact details (email, phone, LinkedIn) are <strong>never shown to recruiters</strong> by default. Only you control when to share them.", "h5": "5. Third-Party Services &amp; Data Transfers", "th1": "Service", "th2": "Purpose", "th3": "Location", "tdSb": "Database &amp; authentication", "tdAn": "AI assistant &amp; PDF translation", "tdEj": "Email notifications", "h6": "6. Data Retention", "p6": "Data is retained until account deletion. Upon deletion, all your data is permanently removed.", "h7": "7. Your Rights (GDPR Art. 15-22)", "p7": "<strong>Access</strong> &mdash; request a copy of your data<br><strong>Rectification</strong> &mdash; correct data via Edit Profile<br><strong>Erasure</strong> &mdash; delete account via Settings<br><strong>Portability</strong> &mdash; export profile as PDF<br><strong>Restriction &amp; Objection</strong> &mdash; <a href=\"mailto:erptalenthub@gmail.com\" style=\"color:#2563EB;\">erptalenthub@gmail.com</a>", "h8": "8. Complaints", "p8": "You may lodge a complaint with the Italian data protection authority: <a href=\"https://www.garanteprivacy.it\" target=\"_blank\" style=\"color:#2563EB;\">Garante per la protezione dei dati personali</a>.", "close": "Close"}, "it": {"h1": "1. Titolare del trattamento", "p1": "ERP Talent Hub è gestito da <strong>Vantage Finance &amp; Tech</strong>. Contatto: <a href=\"mailto:erptalenthub@gmail.com\" style=\"color:#2563EB;\">erptalenthub@gmail.com</a>", "h2": "2. Dati che raccogliamo", "p2a": "<strong>Account:</strong> email, nome completo, ruolo (candidato / recruiter).", "p2b": "<strong>Profilo candidato:</strong> nome, località, telefono, LinkedIn, sommario, sistemi ERP, esperienze, formazione, certificazioni, premi, lingue, foto.", "p2c": "<strong>Dati recruiter:</strong> nome, azienda, URL LinkedIn Recruiter.", "p2d": "<strong>Dati locali del browser:</strong> statistiche visualizzazioni, preferenza tema, stato onboarding (salvati solo sul tuo dispositivo).", "h3": "3. Base giuridica (Art. 6 GDPR)", "p3a": "<strong>Contratto (Art. 6.1.b):</strong> dati account e profilo per fornire il servizio.", "p3b": "<strong>Legittimo interesse (Art. 6.1.f):</strong> sicurezza della piattaforma e prevenzione degli abusi.", "p3c": "<strong>Consenso (Art. 6.1.a):</strong> archiviazione locale opzionale per preferenze e statistiche.", "h4": "4. Privacy by Design", "p4": "I tuoi recapiti (email, telefono, LinkedIn) non vengono <strong>mai mostrati ai recruiter</strong> per impostazione predefinita. Solo tu decidi quando condividerli.", "h5": "5. Servizi di terze parti e trasferimenti di dati", "th1": "Servizio", "th2": "Finalità", "th3": "Sede", "tdSb": "Database e autenticazione", "tdAn": "Assistente AI e traduzione PDF", "tdEj": "Notifiche email", "h6": "6. Conservazione dei dati", "p6": "I dati vengono conservati fino all’eliminazione dell’account. All’eliminazione, tutti i tuoi dati vengono rimossi definitivamente.", "h7": "7. I tuoi diritti (GDPR Art. 15-22)", "p7": "<strong>Accesso</strong> &mdash; richiedi una copia dei tuoi dati<br><strong>Rettifica</strong> &mdash; correggi i dati tramite Modifica profilo<br><strong>Cancellazione</strong> &mdash; elimina l’account tramite Impostazioni<br><strong>Portabilità</strong> &mdash; esporta il profilo come PDF<br><strong>Limitazione e opposizione</strong> &mdash; <a href=\"mailto:erptalenthub@gmail.com\" style=\"color:#2563EB;\">erptalenthub@gmail.com</a>", "h8": "8. Reclami", "p8": "Puoi presentare un reclamo al Garante per la protezione dei dati personali: <a href=\"https://www.garanteprivacy.it\" target=\"_blank\" style=\"color:#2563EB;\">www.garanteprivacy.it</a>.", "close": "Chiudi"}, "es": {"h1": "1. Responsable del tratamiento", "p1": "ERP Talent Hub es operado por <strong>Vantage Finance &amp; Tech</strong>. Contacto: <a href=\"mailto:erptalenthub@gmail.com\" style=\"color:#2563EB;\">erptalenthub@gmail.com</a>", "h2": "2. Datos que recopilamos", "p2a": "<strong>Cuenta:</strong> email, nombre completo, rol (candidato / reclutador).", "p2b": "<strong>Perfil candidato:</strong> nombre, ubicación, teléfono, LinkedIn, resumen, sistemas ERP, experiencia, educación, certificaciones, premios, idiomas, foto.", "p2c": "<strong>Datos reclutador:</strong> nombre, empresa, URL LinkedIn Recruiter.", "p2d": "<strong>Datos locales del navegador:</strong> estadísticas, tema, estado de incorporación (almacenados solo en tu dispositivo).", "h3": "3. Base legal (RGPD Art. 6)", "p3a": "<strong>Contrato (Art. 6.1.b):</strong> datos de cuenta y perfil para prestar el servicio.", "p3b": "<strong>Interés legítimo (Art. 6.1.f):</strong> seguridad de la plataforma y prevención de abusos.", "p3c": "<strong>Consentimiento (Art. 6.1.a):</strong> almacenamiento local opcional para preferencias y estadísticas.", "h4": "4. Privacidad por diseño", "p4": "Tus datos de contacto (email, teléfono, LinkedIn) <strong>nunca se muestran a los reclutadores</strong> de forma predeterminada.", "h5": "5. Servicios de terceros y transferencias de datos", "th1": "Servicio", "th2": "Finalidad", "th3": "Ubicación", "tdSb": "Base de datos y autenticación", "tdAn": "Asistente IA y traducción PDF", "tdEj": "Notificaciones por email", "h6": "6. Conservación de datos", "p6": "Los datos se conservan hasta la eliminación de la cuenta. Al eliminarla, todos tus datos se eliminan permanentemente.", "h7": "7. Tus derechos (RGPD Art. 15-22)", "p7": "<strong>Acceso</strong> &mdash; solicita una copia de tus datos<br><strong>Rectificación</strong> &mdash; corrige datos en Editar perfil<br><strong>Supresión</strong> &mdash; elimina la cuenta en Configuración<br><strong>Portabilidad</strong> &mdash; exporta el perfil como PDF<br><strong>Limitación y oposición</strong> &mdash; <a href=\"mailto:erptalenthub@gmail.com\" style=\"color:#2563EB;\">erptalenthub@gmail.com</a>", "h8": "8. Reclamaciones", "p8": "Puedes presentar una reclamación ante la autoridad de protección de datos de tu país.", "close": "Cerrar"}, "de": {"h1": "1. Verantwortlicher", "p1": "ERP Talent Hub wird betrieben von <strong>Vantage Finance &amp; Tech</strong>. Kontakt: <a href=\"mailto:erptalenthub@gmail.com\" style=\"color:#2563EB;\">erptalenthub@gmail.com</a>", "h2": "2. Erhobene Daten", "p2a": "<strong>Konto:</strong> E-Mail, vollständiger Name, Rolle (Kandidat / Recruiter).", "p2b": "<strong>Kandidatenprofil:</strong> Name, Standort, Telefon, LinkedIn, Zusammenfassung, ERP-Systeme, Erfahrung, Ausbildung, Zertifizierungen, Auszeichnungen, Sprachen, Foto.", "p2c": "<strong>Recruiter-Daten:</strong> Name, Unternehmen, LinkedIn Recruiter-URL.", "p2d": "<strong>Lokale Browserdaten:</strong> Statistiken, Design, Onboarding-Status (nur auf Ihrem Gerät gespeichert).", "h3": "3. Rechtsgrundlage (DSGVO Art. 6)", "p3a": "<strong>Vertrag (Art. 6.1.b):</strong> Konto- und Profildaten zur Erbringung des Dienstes.", "p3b": "<strong>Berechtigtes Interesse (Art. 6.1.f):</strong> Plattformsicherheit und Missbrauchsprävention.", "p3c": "<strong>Einwilligung (Art. 6.1.a):</strong> optionaler lokaler Speicher für Einstellungen und Statistiken.", "h4": "4. Datenschutz by Design", "p4": "Ihre Kontaktdaten (E-Mail, Telefon, LinkedIn) werden Recruitern <strong>standardmäßig nie angezeigt</strong>.", "h5": "5. Drittanbieter und Datenübermittlungen", "th1": "Dienst", "th2": "Zweck", "th3": "Standort", "tdSb": "Datenbank und Authentifizierung", "tdAn": "KI-Assistent und PDF-Übersetzung", "tdEj": "E-Mail-Benachrichtigungen", "h6": "6. Datenspeicherung", "p6": "Daten werden bis zur Konto-Löschung aufbewahrt. Bei Löschung werden alle Ihre Daten dauerhaft entfernt.", "h7": "7. Ihre Rechte (DSGVO Art. 15-22)", "p7": "<strong>Auskunft</strong> &mdash; Kopie Ihrer Daten anfordern<br><strong>Berichtigung</strong> &mdash; Daten über Profil bearbeiten<br><strong>Löschung</strong> &mdash; Konto über Einstellungen löschen<br><strong>Portabilität</strong> &mdash; Profil als PDF exportieren<br><strong>Einschränkung &amp; Widerspruch</strong> &mdash; <a href=\"mailto:erptalenthub@gmail.com\" style=\"color:#2563EB;\">erptalenthub@gmail.com</a>", "h8": "8. Beschwerden", "p8": "Sie können eine Beschwerde bei Ihrer nationalen Datenschutzbehörde einreichen.", "close": "Schließen"}, "fr": {"h1": "1. Responsable du traitement", "p1": "ERP Talent Hub est exploité par <strong>Vantage Finance &amp; Tech</strong>. Contact : <a href=\"mailto:erptalenthub@gmail.com\" style=\"color:#2563EB;\">erptalenthub@gmail.com</a>", "h2": "2. Données collectées", "p2a": "<strong>Compte :</strong> email, nom complet, rôle (candidat / recruteur).", "p2b": "<strong>Profil candidat :</strong> nom, lieu, téléphone, LinkedIn, résumé, systèmes ERP, expérience, formation, certifications, récompenses, langues, photo.", "p2c": "<strong>Données recruteur :</strong> nom, entreprise, URL LinkedIn Recruiter.", "p2d": "<strong>Données locales du navigateur :</strong> statistiques, thème, état d’intégration (stockées uniquement sur votre appareil).", "h3": "3. Base légale (RGPD Art. 6)", "p3a": "<strong>Contrat (Art. 6.1.b) :</strong> données de compte et de profil pour fournir le service.", "p3b": "<strong>Intérêt légitime (Art. 6.1.f) :</strong> sécurité de la plateforme et prévention des abusp.", "p3c": "<strong>Consentement (Art. 6.1.a) :</strong> stockage local optionnel pour les préférences et statistiques.", "h4": "4. Vie privée par conception", "p4": "Vos coordonnées (email, téléphone, LinkedIn) ne sont <strong>jamais montrées aux recruteurs</strong> par défaut.", "h5": "5. Services tiers et transferts de données", "th1": "Service", "th2": "Finalité", "th3": "Lieu", "tdSb": "Base de données et authentification", "tdAn": "Assistant IA et traduction PDF", "tdEj": "Notifications par email", "h6": "6. Conservation des données", "p6": "Les données sont conservées jusqu’à la suppression du compte. À la suppression, toutes vos données sont définitivement effacées.", "h7": "7. Vos droits (RGPD Art. 15-22)", "p7": "<strong>Accès</strong> &mdash; demander une copie de vos données<br><strong>Rectification</strong> &mdash; corriger les données via Modifier le profil<br><strong>Effacement</strong> &mdash; supprimer le compte via Paramètres<br><strong>Portabilité</strong> &mdash; exporter le profil en PDF<br><strong>Limitation &amp; opposition</strong> &mdash; <a href=\"mailto:erptalenthub@gmail.com\" style=\"color:#2563EB;\">erptalenthub@gmail.com</a>", "h8": "8. Réclamations", "p8": "Vous pouvez déposer une réclamation auprès de votre autorité nationale de protection des données.", "close": "Fermer"}, "pt": {"h1": "1. Responsável pelo tratamento", "p1": "ERP Talent Hub é operado por <strong>Vantage Finance &amp; Tech</strong>. Contacto: <a href=\"mailto:erptalenthub@gmail.com\" style=\"color:#2563EB;\">erptalenthub@gmail.com</a>", "h2": "2. Dados que recolhemos", "p2a": "<strong>Conta:</strong> email, nome completo, função (candidato / recrutador).", "p2b": "<strong>Perfil candidato:</strong> nome, localização, telefone, LinkedIn, resumo, sistemas ERP, experiência, formação, certificações, prémios, idiomas, foto.", "p2c": "<strong>Dados recrutador:</strong> nome, empresa, URL LinkedIn Recruiter.", "p2d": "<strong>Dados locais do browser:</strong> estatísticas, tema, estado de integração (guardados apenas no seu dispositivo).", "h3": "3. Base jurídica (RGPD Art. 6)", "p3a": "<strong>Contrato (Art. 6.1.b):</strong> dados de conta e perfil para prestar o serviço.", "p3b": "<strong>Interesse legítimo (Art. 6.1.f):</strong> segurança da plataforma e prevenção de abusos.", "p3c": "<strong>Consentimento (Art. 6.1.a):</strong> armazenamento local opcional para preferências e estatísticas.", "h4": "4. Privacidade por design", "p4": "Os seus dados de contacto (email, telefone, LinkedIn) <strong>nunca são mostrados aos recrutadores</strong> por defeito.", "h5": "5. Serviços de terceiros e transferências de dados", "th1": "Serviço", "th2": "Finalidade", "th3": "Localização", "tdSb": "Base de dados e autenticação", "tdAn": "Assistente IA e tradução PDF", "tdEj": "Notificações por email", "h6": "6. Retenção de dados", "p6": "Os dados são retidos até à eliminação da conta. Após eliminação, todos os seus dados são removidos permanentemente.", "h7": "7. Os seus direitos (RGPD Art. 15-22)", "p7": "<strong>Acesso</strong> &mdash; solicitar cópia dos seus dados<br><strong>Retificação</strong> &mdash; corrigir dados em Editar perfil<br><strong>Apagamento</strong> &mdash; eliminar conta em Definições<br><strong>Portabilidade</strong> &mdash; exportar perfil como PDF<br><strong>Limitação e oposição</strong> &mdash; <a href=\"mailto:erptalenthub@gmail.com\" style=\"color:#2563EB;\">erptalenthub@gmail.com</a>", "h8": "8. Reclamações", "p8": "Pode apresentar uma reclamação à autoridade nacional de proteção de dados do seu país.", "close": "Fechar"}};
+
+function renderPrivacyPolicy(lang) {
+  var tr = _PP[lang] || _PP['en'];
+  var s = function(id, html) { var el = document.getElementById(id); if(el) el.innerHTML = html; };
+  s('pp-h1', tr.h1); s('pp-p1', tr.p1);
+  s('pp-h2', tr.h2); s('pp-p2a', tr.p2a); s('pp-p2b', tr.p2b); s('pp-p2c', tr.p2c); s('pp-p2d', tr.p2d);
+  s('pp-h3', tr.h3); s('pp-p3a', tr.p3a); s('pp-p3b', tr.p3b); s('pp-p3c', tr.p3c);
+  s('pp-h4', tr.h4); s('pp-p4', tr.p4);
+  s('pp-h5', tr.h5); s('pp-th1', tr.th1); s('pp-th2', tr.th2); s('pp-th3', tr.th3);
+  s('pp-td-sb', tr.tdSb); s('pp-td-an', tr.tdAn); s('pp-td-ej', tr.tdEj);
+  s('pp-h6', tr.h6); s('pp-p6', tr.p6);
+  s('pp-h7', tr.h7); s('pp-p7', tr.p7);
+  s('pp-h8', tr.h8); s('pp-p8', tr.p8);
+  document.querySelectorAll('.modal-close-btn').forEach(function(btn) { btn.textContent = tr.close; });
 }
 </script>
 </body>
