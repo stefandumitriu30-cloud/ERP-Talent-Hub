@@ -687,7 +687,6 @@ input[type=file].photo-input{display:none}
         We use local storage to save your preferences (theme, onboarding, stats).
         Third-party services: <strong style="color:#CBD5E1;">Supabase</strong> (database),
         <strong style="color:#CBD5E1;">Anthropic</strong> (AI / PDF),
-        <strong style="color:#CBD5E1;">ElevenLabs</strong> (voice),
         <strong style="color:#CBD5E1;">EmailJS</strong> (email). Some are based outside the EU.
         <a href="#" onclick="showPrivacyPolicy();return false;" style="color:#60A5FA;text-decoration:underline;">Privacy Policy</a>
       </div>
@@ -732,7 +731,7 @@ input[type=file].photo-input{display:none}
         <tr style="background:#F8FAFC;"><th style="padding:8px;text-align:left;border-bottom:2px solid #E2E8F0;">Service</th><th style="padding:8px;text-align:left;border-bottom:2px solid #E2E8F0;">Purpose</th><th style="padding:8px;text-align:left;border-bottom:2px solid #E2E8F0;">Location</th></tr>
         <tr><td style="padding:8px;border-bottom:1px solid #F1F5F9;"><strong>Supabase</strong></td><td style="padding:8px;border-bottom:1px solid #F1F5F9;">Database &amp; auth</td><td style="padding:8px;border-bottom:1px solid #F1F5F9;">EU West (Ireland)</td></tr>
         <tr><td style="padding:8px;border-bottom:1px solid #F1F5F9;"><strong>Anthropic</strong></td><td style="padding:8px;border-bottom:1px solid #F1F5F9;">AI assistant &amp; PDF</td><td style="padding:8px;border-bottom:1px solid #F1F5F9;">USA (SCCs)</td></tr>
-        <tr><td style="padding:8px;border-bottom:1px solid #F1F5F9;"><strong>ElevenLabs</strong></td><td style="padding:8px;border-bottom:1px solid #F1F5F9;">Voice synthesis</td><td style="padding:8px;border-bottom:1px solid #F1F5F9;">USA (SCCs)</td></tr>
+        
         <tr><td style="padding:8px;border-bottom:1px solid #F1F5F9;"><strong>EmailJS</strong></td><td style="padding:8px;border-bottom:1px solid #F1F5F9;">Email notifications</td><td style="padding:8px;border-bottom:1px solid #F1F5F9;">USA (SCCs)</td></tr>
       </table>
       <p style="font-size:11px;color:#64748B;margin-top:6px;"></p>
@@ -1926,6 +1925,7 @@ function setLang(lang) {
       appendMiaMessage(_mTips[lang]);
     }, 500);
   }
+  updateCookieBannerLang(lang);
 }
 
 function applyTranslations() {
@@ -5920,6 +5920,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   addEntry('lang');
   initMia();
   initCookieBanner();
+  updateCookieBannerLang(currentLang);
 });
 
 // ─────────────────────────────────────────
@@ -6484,6 +6485,23 @@ function closePrivacyPolicy() {
   document.body.style.overflow = '';
 }
 
+
+function updateCookieBannerLang(lang) {
+  var _CT = {
+    en: ["&#x1F36A; This site uses cookies &amp; local storage", "We use local storage to save your preferences (theme, onboarding, stats). Third-party services: <strong style=\"color:#CBD5E1;\">Supabase</strong> (database), <strong style=\"color:#CBD5E1;\">Anthropic</strong> (AI / PDF), <strong style=\"color:#CBD5E1;\">EmailJS</strong> (email). Some are based outside the EU.", "Privacy Policy", "Accept all", "Essential only"],
+    it: ["&#x1F36A; Questo sito usa cookie e memoria locale", "Usiamo la memoria locale per le tue preferenze (tema, onboarding, statistiche). Servizi di terze parti: <strong style=\"color:#CBD5E1;\">Supabase</strong> (database), <strong style=\"color:#CBD5E1;\">Anthropic</strong> (AI / PDF), <strong style=\"color:#CBD5E1;\">EmailJS</strong> (email). Alcuni si trovano fuori dall'UE.", "Informativa sulla privacy", "Accetta tutto", "Solo essenziali"],
+    es: ["&#x1F36A; Este sitio usa cookies y almacenamiento local", "Usamos almacenamiento local para tus preferencias. Servicios de terceros: <strong style=\"color:#CBD5E1;\">Supabase</strong>, <strong style=\"color:#CBD5E1;\">Anthropic</strong>, <strong style=\"color:#CBD5E1;\">EmailJS</strong>. Algunos est\u00e1n fuera de la UE.", "Pol\u00edtica de privacidad", "Aceptar todo", "Solo esenciales"],
+    de: ["&#x1F36A; Diese Website verwendet Cookies und lokalen Speicher", "Wir verwenden lokalen Speicher f\u00fcr Ihre Pr\u00e4ferenzen. Drittanbieter: <strong style=\"color:#CBD5E1;\">Supabase</strong>, <strong style=\"color:#CBD5E1;\">Anthropic</strong>, <strong style=\"color:#CBD5E1;\">EmailJS</strong>. Einige befinden sich au\u00dferhalb der EU.", "Datenschutzerkl\u00e4rung", "Alle akzeptieren", "Nur Wesentliches"],
+    fr: ["&#x1F36A; Ce site utilise des cookies et le stockage local", "Nous utilisons le stockage local pour vos pr\u00e9f\u00e9rences. Services tiers\u00a0: <strong style=\"color:#CBD5E1;\">Supabase</strong>, <strong style=\"color:#CBD5E1;\">Anthropic</strong>, <strong style=\"color:#CBD5E1;\">EmailJS</strong>. Certains sont hors de l'UE.", "Politique de confidentialit\u00e9", "Tout accepter", "Essentiels uniquement"],
+    pt: ["&#x1F36A; Este site usa cookies e armazenamento local", "Usamos armazenamento local para as suas prefer\u00eancias. Servi\u00e7os de terceiros: <strong style=\"color:#CBD5E1;\">Supabase</strong>, <strong style=\"color:#CBD5E1;\">Anthropic</strong>, <strong style=\"color:#CBD5E1;\">EmailJS</strong>. Alguns est\u00e3o fora da UE.", "Pol\u00edtica de privacidade", "Aceitar tudo", "Apenas essenciais"],
+  };
+  var tr = _CT[lang] || _CT['en'];
+  var t = function(id) { return document.getElementById(id); };
+  if (t('cookie-title'))       t('cookie-title').innerHTML        = tr[0];
+  if (t('cookie-desc'))        t('cookie-desc').innerHTML         = tr[1] + ' <a href="#" onclick="showPrivacyPolicy();return false;" style="color:#60A5FA;text-decoration:underline;">' + tr[2] + '</a>';
+  if (t('cookie-accept-btn'))  t('cookie-accept-btn').textContent = tr[3];
+  if (t('cookie-reject-btn'))  t('cookie-reject-btn').textContent = tr[4];
+}
 </script>
 </body>
 </html>
