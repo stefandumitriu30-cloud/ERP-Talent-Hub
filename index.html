@@ -4531,7 +4531,6 @@ async function initAdminPortal() {
     if (profiles && profiles.length > 0) {
       profiles.forEach(p => {
         if (p.role === 'candidate') {
-          // Include ALL candidates — even those who registered but haven't submitted CV yet
           allCandidateProfiles.push({
             firstName:  p.profile_data?.firstName || p.name?.split(' ')[0] || '—',
             lastName:   p.profile_data?.lastName  || p.name?.split(' ').slice(1).join(' ') || '',
@@ -4564,6 +4563,7 @@ async function initAdminPortal() {
           });
         }
       });
+      console.log(`[ERP Admin] Candidates: ${allCandidateProfiles.length}, Recruiters: ${verifiedRecruiters.length}`);
     }
   }
   renderAdminList();
