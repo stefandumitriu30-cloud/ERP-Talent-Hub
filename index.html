@@ -3,6 +3,10 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+<!-- ERP Talent Hub v2026.08.09 -->
 <title>ERP Talent Hub</title>
   <!-- PWA -->
   <link rel="manifest" href="manifest.json?v=3" />
@@ -6912,6 +6916,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (session) {
         const { data: profile } = await sb().from('profiles').select('*').eq('id', session.user.id).single();
         const user = buildUserObject(session.user, profile);
+        // SECURITY: if cached role differs from DB role, cached is stale — update it
+        if (cached && cached.role !== user.role) {
+          console.info('[ERP] Role mismatch: cached=%s, DB=%s — updating session', cached.role, user.role);
+          saveSession(null); // clear stale cache
+        }
         currentUser = user; saveSession(user);
         if (user.role === 'candidate' && user.profileData) {
           savedProfile = user.profileData;
@@ -6931,6 +6940,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (user.photo) candPhotoBase64 = user.photo;
           }
         }
+        // Re-render nav after Supabase confirms role — fixes stale cache showing wrong menu
+        renderNav();
       } else if (!cached) {
         currentUser = null; saveSession(null);
       }
