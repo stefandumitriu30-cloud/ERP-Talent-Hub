@@ -227,12 +227,14 @@ footer strong{color:rgba(255,255,255,.75)}
   .portal-sidebar{width:100%;max-width:100%;border-right:none;border-bottom:1px solid var(--gray-100);max-height:220px;min-width:unset}
   .portal-main{flex:1;min-height:0}
 
-  /* ADMIN portal on mobile: sidebar takes 50% of viewport height so list is visible */
-  #admin-view .portal-sidebar{max-height:50vh;min-height:260px}
-  #admin-view .portal-sidebar-header{padding:10px 12px 8px;flex-shrink:0}
+  /* ADMIN portal on mobile: remove fixed height so full list is visible with natural scroll */
+  #admin-view{height:auto;overflow:visible}
+  #admin-view .portal-layout{flex-direction:column;height:auto}
+  #admin-view .portal-sidebar{max-height:none;height:auto;min-height:0;overflow:visible}
+  #admin-view .candidate-list{max-height:60vh;overflow-y:auto}
+  #admin-view .portal-sidebar-header{flex-shrink:0}
   #admin-view .portal-title{font-size:13px;margin-bottom:4px}
   #admin-view .portal-tabs{margin-bottom:6px!important}
-  #admin-view .candidate-list{flex:1;overflow-y:auto;min-height:80px}
 
   /* GATE */
   .rec-gate-card{padding:28px 20px}
@@ -281,8 +283,8 @@ footer strong{color:rgba(255,255,255,.75)}
   .cand-name{font-size:12px}
   .cand-meta{font-size:10px}
 
-  /* Admin keeps taller sidebar on small phones */
-  #admin-view .portal-sidebar{max-height:48vh;min-height:240px}
+  /* Admin keeps full-height list on small phones */
+  #admin-view .candidate-list{max-height:55vh}
 
   /* CHAT */
   .chat-topbar-name{font-size:13px}
