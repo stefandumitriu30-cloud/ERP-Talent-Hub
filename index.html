@@ -2617,7 +2617,7 @@ function handleSubmit() {
     if (typeof emailjs !== 'undefined') {
       emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
     }
-    console.log('📧 Sending email to:', email, 'via service:', EMAILJS_SERVICE_ID, 'template:', EMAILJS_TEMPLATE_ID);
+    // Sending email via EmailJS
     emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
       .then((res) => {
         console.log('✅ Email sent successfully:', res.status, res.text);
@@ -3536,17 +3536,17 @@ function renderRecCandidateList(q) {
       div.className = 'cand-card' + (recActiveCandidateId === c.id ? ' active' : '');
       div.onclick = () => openRecChat(c.id);
       div.innerHTML = `
-        <div class="cand-avatar" style="background:${avatarColor(c.name)}">${initials(c.name)}</div>
+        <div class="cand-avatar" style="background:${avatarColor(c.name)}">${escHtml(initials(c.name))}</div>
         <div class="cand-info">
-          <div class="cand-name">${c.name}</div>
-          <div class="cand-meta">${c.role}</div>
-          <div class="cand-meta" style="margin-top:2px">${c.systems.slice(0,2).join(' · ')}${(typeof c.yearsExp === 'number') ? ' · ' + c.yearsExp + (currentLang === 'en' ? 'y exp' : (currentLang === 'it' ? ' anni' : (currentLang === 'es' ? ' años' : (currentLang === 'de' ? ' J.' : (currentLang === 'fr' ? ' ans' : ' anos'))))) : ''}</div>
+          <div class="cand-name">${escHtml(c.name)}</div>
+          <div class="cand-meta">${escHtml(c.role)}</div>
+          <div class="cand-meta" style="margin-top:2px">${escHtml(c.systems.slice(0,2).join(' · '))}${(typeof c.yearsExp === 'number') ? ' · ' + escHtml(String(c.yearsExp)) + (currentLang === 'en' ? 'y exp' : (currentLang === 'it' ? ' anni' : (currentLang === 'es' ? ' años' : (currentLang === 'de' ? ' J.' : (currentLang === 'fr' ? ' ans' : ' anos'))))) : ''}</div>
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
           <div class="cand-badge-dot ${contacted ? '' : 'grey'}" title="${contacted ? 'Contacted' : 'Not contacted'}"></div>
-          ${unread ? `<div class="cand-unread">${unread}</div>` : ''}
+          ${unread ? `<div class="cand-unread">${escHtml(String(unread))}</div>` : ''}
           ${isOverdue ? `<div title="Status overdue" style="font-size:10px;background:#FEF2F2;color:#DC2626;border:1px solid #FECACA;border-radius:10px;padding:1px 6px;font-weight:600;white-space:nowrap">⚠ Overdue</div>` : ''}
-          ${isNearDue ? `<div title="${timer.daysLeft}d left" style="font-size:10px;background:#FFF7ED;color:#F97316;border:1px solid #FED7AA;border-radius:10px;padding:1px 6px;font-weight:600;white-space:nowrap">⏱ ${timer.daysLeft}d</div>` : ''}
+          ${isNearDue ? `<div style="font-size:10px;background:#FFF7ED;color:#F97316;border:1px solid #FED7AA;border-radius:10px;padding:1px 6px;font-weight:600;white-space:nowrap">⏱ ${escHtml(String(timer.daysLeft))}d</div>` : ''}
         </div>`;
       list.appendChild(div);
     });
@@ -3583,10 +3583,10 @@ function renderRecChatWindow(candidateId) {
   area.innerHTML = `
     <div class="chat-window">
       <div class="chat-topbar">
-        <div class="chat-topbar-avatar" style="background:${recPhotoBase64 ? 'transparent' : color}">${recAvatarContent}</div>
+        <div class="chat-topbar-avatar" style="background:${recPhotoBase64 ? 'transparent' : escHtml(color)}">${recAvatarContent}</div>
         <div class="chat-topbar-info">
-          <div class="chat-topbar-name">${cand.name}</div>
-          <div class="chat-topbar-sub">${cand.role} · ${cand.location}</div>
+          <div class="chat-topbar-name">${escHtml(cand.name)}</div>
+          <div class="chat-topbar-sub">${escHtml(cand.role)} · ${escHtml(cand.location)}</div>
         </div>
         <div class="chat-topbar-status">
           <div class="status-dot ${cand.online ? 'online' : 'offline'}"></div>
@@ -3894,7 +3894,8 @@ function validateSummaryOnBlur(textarea, errId) {
 // ─── UTILITIES ───────────────────────────────────────────
 
 function escHtml(str) {
-  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+  if (str === null || str === undefined) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#x27;').replace(/\n/g,'<br>');
 }
 
 function autoResizeTextarea(el) {
@@ -4631,7 +4632,9 @@ async function doLogin(email, password) {
     .from('profiles').select('*').eq('id', data.user.id).single();
 
   if (!profile) {
-    console.warn('Profile missing on login, inserting…');
+    // Profile missing — create a minimal one. Role defaults to 'candidate';
+    // admin role must be set manually in Supabase dashboard.
+    console.warn('Profile missing on login — creating default candidate profile');
     await sb().from('profiles').upsert({
       id: data.user.id, email, name: email.split('@')[0],
       role: 'candidate', photo: null, profile_data: null, recruiter_data: null,
@@ -4656,14 +4659,18 @@ async function doRegister(email, password) {
   const { data, error } = await sb().auth.signUp({ email, password });
   if (error) throw new Error(friendlyAuthError(error.message));
 
-  console.log('signUp response:', JSON.stringify({ id: data.user?.id, email: data.user?.email, confirmed: data.user?.confirmed_at }));
+  // Profile insert successful — no logging of user data in production
+
+  // SECURITY: only 'candidate' and 'recruiter' are valid self-assigned roles.
+  // 'admin' can only be set server-side via Supabase dashboard.
+  const safeRole = (authRole === 'recruiter') ? 'recruiter' : 'candidate';
 
   // 2. Insert profile — use upsert so it's idempotent
   const { error: pe } = await sb().from('profiles').upsert({
     id:   data.user.id,
     email,
     name,
-    role: authRole,
+    role: safeRole,
     photo: null,
     profile_data: null,
     recruiter_data: null,
@@ -4675,7 +4682,6 @@ async function doRegister(email, password) {
     throw new Error('Account created but profile save failed: ' + pe.message + '. Check that you ran the SQL setup from the guide.');
   }
 
-  console.log('Profile inserted successfully for', email);
   document.getElementById('auth-submit-btn').disabled = false;
 
   // 3. Check if email confirmation is required
@@ -4924,7 +4930,12 @@ function friendlyAuthError(msg) {
 }
 
 // ── Debug helper — run window.erpDebug() in browser console to diagnose ──
+// SECURITY: only works when logged in as admin; safe to leave in production.
 window.erpDebug = async function() {
+  if (!adminAuthenticated || !currentUser || currentUser.role !== 'admin') {
+    console.warn('erpDebug: not authorised — admin session required.');
+    return;
+  }
   console.group('🔍 ERP Talent Hub — Supabase Diagnostics');
   console.log('SUPABASE_READY:', SUPABASE_READY);
   console.log('Supabase URL:', SUPABASE_URL);
@@ -4977,7 +4988,14 @@ function loginSuccess(user) {
   const target = pendingNavTarget || defaultViewForRole(user.role);
   pendingNavTarget = null;
   // SECURITY: set adminAuthenticated only after Supabase confirmed role='admin'
-  if (user.role === 'admin') adminAuthenticated = true;
+  if (user.role === 'admin') {
+    adminAuthenticated = true;
+    // Load admin's own candidate profile_data so "View as candidate" works
+    if (user.profileData) {
+      savedProfile = user.profileData;
+      if (user.photo) candPhotoBase64 = user.photo;
+    }
+  }
   showView(target);
 
   if (user.id) initPresence(user.id);
@@ -6277,7 +6295,15 @@ document.addEventListener('DOMContentLoaded', async () => {
           if (user.photo) recPhotoBase64 = user.photo;
         }
         // SECURITY: adminAuthenticated confirmed by live Supabase session
-        if (user.role === 'admin') adminAuthenticated = true;
+        if (user.role === 'admin') {
+          adminAuthenticated = true;
+          // Also restore the admin's own candidate profile_data if present,
+          // so "View as candidate" can show it without a separate fetch
+          if (user.profileData) {
+            savedProfile = user.profileData;
+            if (user.photo) candPhotoBase64 = user.photo;
+          }
+        }
       } else if (!cached) {
         currentUser = null; saveSession(null);
       }
@@ -6943,8 +6969,34 @@ function adminImpersonate(role) {
   }
   if (role === 'candidate') {
     try { localStorage.removeItem('erpth_impersonate'); } catch(e) {}
-    if (savedProfile) { showView('myprofile'); } else { showView('form'); }
-    showToast({ id: Date.now(), icon: '&#128100;', title: 'Viewing as Candidate', desc: 'Previewing the candidate view.', color: '#EFF6FF', iconColor: '#2563EB' });
+
+    // If we already have the profile in memory, go straight there
+    if (savedProfile) {
+      showView('myprofile');
+      showToast({ id: Date.now(), icon: '&#128100;', title: 'Viewing as Candidate', desc: 'Previewing the candidate view.', color: '#EFF6FF', iconColor: '#2563EB' });
+      return;
+    }
+
+    // Otherwise fetch the admin's own profile_data from Supabase
+    if (SUPABASE_READY && sb() && currentUser.id) {
+      sb().from('profiles').select('profile_data, photo').eq('id', currentUser.id).single()
+        .then(function(res) {
+          var profile = res.data;
+          if (profile && profile.profile_data) {
+            savedProfile = profile.profile_data;
+            if (profile.photo) candPhotoBase64 = profile.photo;
+          }
+          showView(savedProfile ? 'myprofile' : 'form');
+          showToast({ id: Date.now(), icon: '&#128100;', title: 'Viewing as Candidate', desc: 'Previewing the candidate view.', color: '#EFF6FF', iconColor: '#2563EB' });
+        })
+        .catch(function() {
+          showView('form');
+          showToast({ id: Date.now(), icon: '&#128100;', title: 'Viewing as Candidate', desc: 'Previewing the candidate view.', color: '#EFF6FF', iconColor: '#2563EB' });
+        });
+    } else {
+      showView('form');
+      showToast({ id: Date.now(), icon: '&#128100;', title: 'Viewing as Candidate', desc: 'Previewing the candidate view.', color: '#EFF6FF', iconColor: '#2563EB' });
+    }
   } else {
     showView('recruiter');
     var handle = 'erp.talent.hub.admin';
