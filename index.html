@@ -1491,7 +1491,17 @@ input[type=file].photo-input{display:none}
         <div class="portal-sidebar-header">
           <div class="portal-logo-row">
             <div class="portal-role-badge recruiter-badge"><i class="fa-solid fa-circle-check"></i> <span id="rec-verified-name">Verified Recruiter</span></div>
-            <button class="btn-ghost btn-sm" onclick="showView('home')" title="Back to home"><i class="fa-solid fa-arrow-left"></i></button>
+            <div style="display:flex;align-items:center;gap:4px">
+              <div class="lang-switcher" style="gap:2px;font-size:11px">
+                <button class="lang-btn" onclick="setLang('en')" id="rec-btn-lang-en" style="padding:2px 5px;font-size:11px">EN</button>
+                <button class="lang-btn" onclick="setLang('it')" id="rec-btn-lang-it" style="padding:2px 5px;font-size:11px">IT</button>
+                <button class="lang-btn" onclick="setLang('es')" id="rec-btn-lang-es" style="padding:2px 5px;font-size:11px">ES</button>
+                <button class="lang-btn" onclick="setLang('de')" id="rec-btn-lang-de" style="padding:2px 5px;font-size:11px">DE</button>
+                <button class="lang-btn" onclick="setLang('fr')" id="rec-btn-lang-fr" style="padding:2px 5px;font-size:11px">FR</button>
+                <button class="lang-btn" onclick="setLang('pt')" id="rec-btn-lang-pt" style="padding:2px 5px;font-size:11px">PT</button>
+              </div>
+              <button class="btn-ghost btn-sm" onclick="showView('home')" title="Back to home"><i class="fa-solid fa-arrow-left"></i></button>
+            </div>
           </div>
           <h2 class="portal-title">ERP Talent Pool</h2>
           <div class="portal-search-wrap">
@@ -3278,18 +3288,40 @@ function filterCandidates(q) {
   renderRecCandidateList(q);
 }
 
+function getRecCandidates() {
+  // Use real Supabase profiles if available, otherwise fallback to sample data
+  if (allCandidateProfiles && allCandidateProfiles.length > 0) {
+    return allCandidateProfiles.map(function(p, idx) {
+      return {
+        id: p.userId || p.id || ('real_' + idx),
+        name: (p.firstName || '') + ' ' + (p.lastName || ''),
+        role: (p.exps && p.exps.length > 0) ? (p.exps[0].jobTitle + (p.exps[0].company ? ' @ ' + p.exps[0].company : '')) : 'ERP Professional',
+        location: [p.city, p.country].filter(Boolean).join(', '),
+        systems: p.erp || [],
+        online: false,
+        _profile: p,
+      };
+    });
+  }
+  return CANDIDATES;
+}
+
 function renderRecCandidateList(q) {
   const search = (q || document.getElementById('rec-search')?.value || '').toLowerCase();
   const list = document.getElementById('rec-candidate-list');
   if (!list) return;
   list.innerHTML = '';
-  CANDIDATES
+  var erp_filter = document.getElementById('filter-erp')?.value || '';
+  var country_filter = document.getElementById('filter-country')?.value || '';
+  getRecCandidates()
     .filter(c => {
-      const matchSearch = !search || c.name.toLowerCase().includes(search) || c.role.toLowerCase().includes(search);
+      const matchSearch = !search || c.name.toLowerCase().includes(search) || c.role.toLowerCase().includes(search) || (c.systems || []).some(s => s.toLowerCase().includes(search));
+      const matchErp = !erp_filter || (c.systems || []).some(s => s === erp_filter);
+      const matchCountry = !country_filter || (c.location || '').toLowerCase().includes(country_filter.toLowerCase());
       const conv = conversations[c.id];
       const contacted = conv && conv.opened;
       const matchTab = recTabFilter === 'all' || (recTabFilter === 'contacted' && contacted) || (recTabFilter === 'new' && !contacted);
-      return matchSearch && matchTab;
+      return matchSearch && matchErp && matchCountry && matchTab;
     })
     .forEach(c => {
       const conv = conversations[c.id];
@@ -3337,7 +3369,7 @@ function openRecChat(candidateId) {
 
 function renderRecChatWindow(candidateId) {
   const area = document.getElementById('rec-chat-area');
-  const cand = CANDIDATES.find(c => c.id === candidateId);
+  const cand = getRecCandidates().find(c => c.id === candidateId) || CANDIDATES.find(c => c.id === candidateId) || {name:'Unknown',role:'',location:'',systems:[],online:false};
   const conv = conversations[candidateId];
   const color = avatarColor(cand.name);
   const ini = initials(cand.name);
@@ -3395,7 +3427,7 @@ function renderRecMessages(candidateId) {
       lastDate = d;
     }
     const isMe = m.from === 'rec';
-    const cand = CANDIDATES.find(c => c.id === candidateId);
+    const cand = getRecCandidates().find(c => c.id === candidateId) || CANDIDATES.find(c => c.id === candidateId) || {name:'Unknown'};
     const bgColor = isMe ? (recPhotoBase64 ? 'transparent' : avatarColor('Recruiter')) : (savedProfile?.photo ? 'transparent' : avatarColor(cand.name));
     const avatarHTML = isMe
       ? (recPhotoBase64 ? `<img src="${recPhotoBase64}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : initials('RE'))
@@ -3516,7 +3548,7 @@ function openCandChat(candidateId) {
 
 function renderCandChatWindow(candidateId) {
   const area = document.getElementById('cand-chat-area');
-  const cand = CANDIDATES.find(c => c.id === candidateId);
+  const cand = getRecCandidates().find(c => c.id === candidateId) || CANDIDATES.find(c => c.id === candidateId);
   const conv = conversations[candidateId];
   const canReply = conv && conv.opened && conv.messages.some(m => m.from === 'rec');
 
