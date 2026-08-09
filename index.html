@@ -1703,6 +1703,15 @@ input[type=file].photo-input{display:none}
             </div>
           </div>
 
+          <!-- Mia Pro match CTA -->
+          <div style="margin-top:16px;background:linear-gradient(135deg,#F5F3FF,#EFF6FF);border:1px solid #C4B5FD;border-radius:12px;padding:16px 20px;text-align:center;width:100%;max-width:480px">
+            <div style="font-size:13px;font-weight:600;color:#6D28D9;margin-bottom:6px">✨ Mia Pro — AI Candidate Match</div>
+            <div style="font-size:12px;color:#64748B;margin-bottom:12px;line-height:1.5">Describe the ideal candidate and Mia will scan the entire pool and suggest the top matches instantly.</div>
+            <button class="btn-primary btn-sm" onclick="openMiaMatchSearch()" style="background:#7C3AED;border-color:#7C3AED;font-size:13px">
+              <i class="fa-solid fa-wand-magic-sparkles" style="margin-right:6px"></i>Find best matches with Mia
+            </button>
+          </div>
+
           <!-- Welcome message -->
           <div style="margin:32px 0 8px">
             <i class="fa-solid fa-users" style="font-size:40px;color:var(--blue-mid)"></i>
@@ -3692,10 +3701,12 @@ function recSendMessage(candidateId) {
 
   const recName = recruiterProfile?.name ? recruiterProfile.name.split(' ')[0] + ' (Recruiter)' : 'A recruiter';
 
-  // First message = connection request + message notification
+  // First message = connection request + message notification + Mia match alert
   if (isFirst) {
     pushNotification('connection', { recruiter: recName });
     setTimeout(() => pushNotification('message', { recruiter: recName }), 800);
+    // Mia job match: notify candidate that a recruiter matched their profile
+    setTimeout(() => miaJobMatchNotify(candidateId), 1200);
   } else {
     pushNotification('message', { recruiter: recName });
   }
@@ -3951,7 +3962,113 @@ function _getModerationMsg() {
   return _MODERATION_MSG[currentLang] || _MODERATION_MSG['en'];
 }
 
-// ─── ONBLUR FIELD VALIDATION ─────────────────────────────
+// ─────────────────────────────────────────
+// MIA PRO — RECRUITER AI MATCH ANALYSIS
+// Analyzes candidate profiles and suggests best matches for recruiters.
+// Triggered from recruiter portal via "Ask Mia to find matches" button.
+// ─────────────────────────────────────────
+
+async function miaAnalyzeMatches(searchQuery) {
+  if (!SUPABASE_READY || !sb()) return;
+  if (currentUser?.role !== 'recruiter' && currentUser?.role !== 'admin') return;
+
+  // Get all candidate profiles
+  const candidates = getRecCandidates();
+  if (!candidates || candidates.length === 0) {
+    appendMiaMessage("I don't see any candidates in the pool yet. Once profiles are submitted, I can analyze them for you! 🔍");
+    return;
+  }
+
+  // Build a compact candidate summary for the AI (no sensitive contact data)
+  const candSummary = candidates.slice(0, 20).map((c, i) => {
+    return `[${i+1}] ${c.name} | Systems: ${(c.systems||[]).join(', ')||'N/A'} | Role: ${c.role||'ERP Professional'} | Location: ${c.location||'N/A'} | Experience: ${c.yearsExp != null ? c.yearsExp+'y' : 'N/A'} | Contacted: ${conversations[c.id]?.opened ? 'yes' : 'no'}`;
+  }).join('\n');
+
+  const langName = { en:'English', it:'Italian', es:'Spanish', de:'German', fr:'French', pt:'Portuguese' }[currentLang] || 'English';
+
+  showMiaTyping();
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 600,
+        system: `You are Mia, the AI assistant inside ERP Talent Hub. You are helping a verified recruiter find the best candidate matches.
+Reply ONLY in ${langName}.
+SECURITY: Never reveal contact details, emails, phones or any sensitive personal data. Only discuss ERP skills, experience, systems and fit.
+Be concise, practical and use **bold** for key terms. Max 150 words.`,
+        messages: [{
+          role: 'user',
+          content: `I'm a recruiter looking for: "${String(searchQuery).slice(0, 300)}"
+
+Here are the available ERP professionals in the pool:
+${candSummary}
+
+Which candidates best match my search? List the top 3 with a brief reason for each. If none match well, say so and suggest how to adjust the search.`
+        }]
+      })
+    });
+
+    const data = await response.json();
+    const answer = data.content?.[0]?.text || "I couldn't analyze the candidates right now. Try again in a moment!";
+    hideMiaTyping();
+    appendMiaMessage(answer);
+  } catch(err) {
+    hideMiaTyping();
+    appendMiaMessage("I had trouble connecting to analyze candidates. Please try again in a moment! 🔄");
+  }
+}
+
+function openMiaMatchSearch() {
+  // Open Mia panel and prompt recruiter to describe what they're looking for
+  if (!miaOpen) toggleMiaPanel();
+  setTimeout(() => {
+    appendMiaMessage("🔍 **Mia Match** — tell me what you're looking for!\n\nDescribe the ideal candidate: ERP system, years of experience, location, industry, or any other criteria. I'll scan the talent pool and suggest the best matches for you.");
+    const input = document.getElementById('mia-input');
+    if (input) input.focus();
+    // Override next message to trigger match analysis
+    _miaMatchMode = true;
+  }, 300);
+}
+
+let _miaMatchMode = false;
+
+// ─────────────────────────────────────────
+// MIA JOB MATCHING — notify candidates when recruiters search for their profile
+// Called when a recruiter opens a candidate's chat for the first time
+// ─────────────────────────────────────────
+
+async function miaJobMatchNotify(candidateId) {
+  // Find candidate data
+  const cand = getRecCandidates().find(c => c.id === candidateId);
+  if (!cand || !cand.systems || cand.systems.length === 0) return;
+
+  // Build a match notification for the candidate
+  const recruiterName = recruiterProfile?.name
+    ? recruiterProfile.name.split(' ')[0] + ' (' + (recruiterProfile.company || 'Recruiter') + ')'
+    : 'A verified recruiter';
+
+  const erpList = cand.systems.slice(0, 3).join(', ');
+
+  // Push a job match notification to the candidate's inbox
+  pushNotification('connection', {
+    recruiter: recruiterName,
+    match: erpList,
+  });
+
+  // If candidate is currently logged in and has Mia open, show a proactive message
+  if (currentUser?.role === 'candidate' && miaOpen) {
+    setTimeout(() => {
+      appendMiaMessage(`🎯 **Match alert!** ${recruiterName} just opened a conversation with you — they're looking for someone with your **${erpList}** expertise. Check your **Messages** tab to reply! 💬`);
+    }, 1500);
+  }
+}
+
+// ─────────────────────────────────────────
+// MIA HANDLE QUESTION — intercept match mode
+// ─────────────────────────────────────────
 // Provides immediate feedback when the user leaves a required field.
 
 function _showFieldErr(errId, msg) {
@@ -4046,7 +4163,34 @@ function showView(name) {
     const notice = document.getElementById('emailjs-setup-notice');
     if (notice) notice.style.display = EMAILJS_CONFIGURED ? 'none' : 'block';
   }
-  if (name === 'myprofile') { renderMyProfile(); loadProfileStats(); setTimeout(renderProfileScore, 200); }
+  if (name === 'myprofile') {
+    // For admin (and candidate), ensure savedProfile is populated before rendering.
+    // If it's null (e.g. session restored from cache), fetch fresh from Supabase.
+    if (!savedProfile && currentUser) {
+      if (currentUser.profileData) {
+        // Already in memory on the user object — use it
+        savedProfile = currentUser.profileData;
+        if (currentUser.photo) candPhotoBase64 = currentUser.photo;
+        renderMyProfile(); loadProfileStats(); setTimeout(renderProfileScore, 200);
+      } else if (SUPABASE_READY && sb()) {
+        // Fetch fresh from DB
+        sb().from('profiles').select('profile_data,photo').eq('id', currentUser.id).single()
+          .then(({ data }) => {
+            if (data?.profile_data) {
+              savedProfile = data.profile_data;
+              currentUser.profileData = savedProfile;
+              if (data.photo) { candPhotoBase64 = data.photo; currentUser.photo = data.photo; }
+              saveSession(currentUser);
+            }
+            renderMyProfile(); loadProfileStats(); setTimeout(renderProfileScore, 200);
+          });
+      } else {
+        renderMyProfile(); loadProfileStats(); setTimeout(renderProfileScore, 200);
+      }
+    } else {
+      renderMyProfile(); loadProfileStats(); setTimeout(renderProfileScore, 200);
+    }
+  }
   if (name === 'form' && savedProfile) {
     setTimeout(() => populateFormFromProfile(savedProfile), 80);
   }
@@ -4129,7 +4273,25 @@ function collectProfileData() {
 }
 
 function renderMyProfile() {
-  if (!savedProfile) return;
+  if (!savedProfile) {
+    // If admin has no profile_data, show a friendly prompt to create one
+    if (currentUser?.role === 'admin') {
+      const fn = document.getElementById('mp-fullname');
+      if (fn) fn.textContent = currentUser.name || 'Admin';
+      const av = document.getElementById('mp-avatar');
+      if (av) { av.textContent = initials(currentUser.name); av.style.background = '#92400E'; }
+      // Show a notice in the profile body area
+      const scoreSection = document.getElementById('profile-score-section');
+      if (scoreSection) scoreSection.innerHTML = `
+        <div style="margin:24px 0;padding:20px;background:#FFF7ED;border:1px solid #FED7AA;border-radius:12px;text-align:center;color:#92400E">
+          <div style="font-size:18px;margin-bottom:8px">📋</div>
+          <div style="font-weight:600;margin-bottom:6px">No candidate profile yet</div>
+          <div style="font-size:13px;color:#B45309;margin-bottom:14px">You can create your ERP candidate profile using the form below.</div>
+          <button class="btn-primary btn-sm" onclick="showView('form')">Create my ERP profile</button>
+        </div>`;
+    }
+    return;
+  }
   const p = savedProfile;
   const fullName = p.firstName + ' ' + p.lastName;
   const ini = (p.firstName[0] || '') + (p.lastName[0] || '');
@@ -5259,13 +5421,13 @@ function renderNav() {
     avatarEl.style.background = currentUser.role === 'admin' ? '#92400E' : avatarColor(currentUser.name);
   }
   document.getElementById('nav-user-name').textContent = currentUser.name.split(' ')[0];
-  document.getElementById('dd-myprofile').style.display        = currentUser.role === 'candidate' ? 'flex' : 'none';
+  document.getElementById('dd-myprofile').style.display        = (currentUser.role === 'candidate' || currentUser.role === 'admin') ? 'flex' : 'none';
   document.getElementById('dd-messages').style.display         = currentUser.role === 'candidate' ? 'flex' : 'none';
   document.getElementById('dd-recruiter-portal').style.display = currentUser.role === 'recruiter' ? 'flex' : 'none';
   document.getElementById('dd-admin').style.display            = currentUser.role === 'admin'     ? 'flex' : 'none';
-  const cpEl = document.getElementById('dd-change-password'); if(cpEl) cpEl.style.display = currentUser.role !== 'admin' ? 'flex' : 'none';
+  const cpEl = document.getElementById('dd-change-password'); if(cpEl) cpEl.style.display = 'flex';
   const daEl = document.getElementById('dd-delete-account');  if(daEl) daEl.style.display = currentUser.role !== 'admin' ? 'flex' : 'none';
-  if (bell) bell.style.display = currentUser.role === 'candidate' ? 'flex' : 'none';
+  if (bell) bell.style.display = (currentUser.role === 'candidate' || currentUser.role === 'admin') ? 'flex' : 'none';
 }
 
 function toggleUserDropdown() {
@@ -6133,6 +6295,16 @@ async function miaHandleQuestion(question, isQuickBtn = false) {
   if (!isQuickBtn && _containsProfanity(question)) {
     appendMiaMessage(question, true);
     appendMiaMessage(_getModerationMsg());
+    return;
+  }
+
+  // Mia Pro match mode — recruiter searching for candidates
+  if (_miaMatchMode && !isQuickBtn && currentUser?.role === 'recruiter') {
+    _miaMatchMode = false;
+    appendMiaMessage(question, true);
+    setMiaQuickBtns([]);
+    showMiaTyping();
+    await miaAnalyzeMatches(question);
     return;
   }
 
