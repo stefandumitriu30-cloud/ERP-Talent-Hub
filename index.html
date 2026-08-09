@@ -5186,11 +5186,14 @@ async function submitForgotPassword() {
 }
 
 function buildUserObject(authUser, profile) {
+  // If profile is null (e.g. RLS blocked the select), fall back to JWT app_metadata
+  // Supabase stores the role in app_metadata when set via the dashboard
+  const jwtRole = authUser.app_metadata?.role || authUser.user_metadata?.role || null;
   return {
     id:            authUser.id,
     email:         authUser.email,
-    name:          profile?.name  || authUser.email,
-    role:          profile?.role  || 'candidate',
+    name:          profile?.name  || authUser.user_metadata?.full_name || authUser.email,
+    role:          profile?.role  || jwtRole || 'candidate',
     photo:         profile?.photo || null,
     profileData:   profile?.profile_data   || null,
     recruiterData: profile?.recruiter_data || null,
@@ -6912,9 +6915,31 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (SUPABASE_READY && sb()) {
     try {
       const { data: { session } } = await sb().auth.getSession();
+      console.log('[ERP] Supabase session:', session ? `✅ ${session.user.email}` : '❌ none');
       if (session) {
-        const { data: profile } = await sb().from('profiles').select('*').eq('id', session.user.id).single();
+        console.log('[ERP] JWT app_metadata:', session.user.app_metadata);
+
+        // Try to fetch profile via Supabase client (may fail if RLS is misconfigured)
+        let { data: profile, error: pe } = await sb().from('profiles').select('*').eq('id', session.user.id).single();
+
+        // If RLS blocked the select, fall back to direct REST API with the user's own JWT
+        // The user's JWT always allows reading their own row (RLS: auth.uid() = id)
+        if (!profile && session.access_token) {
+          console.warn('[ERP] Client fetch failed, trying REST fallback:', pe?.message);
+          try {
+            const res = await fetch(
+              `${SUPABASE_URL}/rest/v1/profiles?id=eq.${session.user.id}&select=*&limit=1`,
+              { headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${session.access_token}` } }
+            );
+            const rows = await res.json();
+            if (Array.isArray(rows) && rows.length > 0) profile = rows[0];
+            console.log('[ERP] REST fallback result:', profile ? `role=${profile.role}` : 'empty');
+          } catch(fe) { console.warn('[ERP] REST fallback error:', fe); }
+        }
+
+        console.log('[ERP] Profile from DB:', profile ? `role=${profile.role}` : `null — RLS error: ${pe?.message}`);
         const user = buildUserObject(session.user, profile);
+        console.log('[ERP] Final user role:', user.role);
 
         // Always clear any stale cache and write fresh data
         currentUser = user;
