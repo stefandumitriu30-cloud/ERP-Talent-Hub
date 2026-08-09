@@ -5744,22 +5744,34 @@ async function _applyReferral(userId) {
 }
 
 function getMyReferralLink() {
-  if (!currentUser || !SUPABASE_READY) return null;
-  // Fetch ref_code from DB
-  return sb().from('profiles').select('ref_code').eq('id', currentUser.id).single()
-    .then(({ data }) => {
-      if (!data?.ref_code) return null;
-      return `${SITE_URL}/?ref=${data.ref_code}`;
+  if (!currentUser || !SUPABASE_READY) return Promise.resolve(null);
+  return sb().from('profiles').select('ref_code,name').eq('id', currentUser.id).single()
+    .then(async ({ data }) => {
+      let refCode = data?.ref_code;
+      // Generate and save ref_code if missing
+      if (!refCode) {
+        const firstName = (data?.name || currentUser.name || 'user').split(' ')[0].toUpperCase().slice(0,4);
+        refCode = 'REF-' + firstName + '-' + Math.random().toString(36).slice(2,6).toUpperCase();
+        await sb().from('profiles').update({ ref_code: refCode }).eq('id', currentUser.id);
+      }
+      return `${SITE_URL}/?ref=${refCode}`;
     });
 }
 
 function showReferralLink() {
   getMyReferralLink().then(link => {
-    if (!link) { showToast({ id:Date.now(), icon:'🔗', title:'Referral not ready', desc:'Save your profile first to get your referral link.', color:'#FFF7ED', iconColor:'#F97316' }); return; }
+    if (!link) {
+      const msg = { en:'Save your profile first to get your referral link.', it:'Salva prima il tuo profilo per ottenere il link referral.', es:'Guarda tu perfil primero para obtener tu enlace de referido.', de:'Speichere zuerst dein Profil, um deinen Empfehlungslink zu erhalten.', fr:'Enregistrez d\'abord votre profil pour obtenir votre lien de parrainage.', pt:'Guarde o seu perfil primeiro para obter o seu link de indicação.' };
+      const title = { en:'Referral not ready', it:'Referral non pronto', es:'Referido no listo', de:'Empfehlung nicht bereit', fr:'Parrainage non prêt', pt:'Indicação não pronta' };
+      showToast({ id:Date.now(), icon:'🔗', title: title[currentLang]||title.en, desc: msg[currentLang]||msg.en, color:'#FFF7ED', iconColor:'#F97316' });
+      return;
+    }
     navigator.clipboard?.writeText(link).then(() => {
-      showToast({ id:Date.now(), icon:'🔗', title:'Referral link copied!', desc:'Share it with ERP colleagues. When they register, you earn visibility boost.', color:'#F0FDF4', iconColor:'#16A34A' });
+      const title = { en:'Referral link copied!', it:'Link referral copiato!', es:'¡Enlace copiado!', de:'Empfehlungslink kopiert!', fr:'Lien copié!', pt:'Link copiado!' };
+      const desc  = { en:'Share it with ERP colleagues. When they register, you earn visibility boost.', it:'Condividilo con colleghi ERP. Quando si registrano, guadagni visibilità.', es:'Compártelo con colegas ERP. Cuando se registren, ganarás visibilidad.', de:'Teile es mit ERP-Kollegen. Bei deren Registrierung erhältst du mehr Sichtbarkeit.', fr:'Partagez-le avec vos collègues ERP. Leur inscription vous apporte plus de visibilité.', pt:'Partilhe com colegas ERP. Quando se registrarem, ganha visibilidade.' };
+      showToast({ id:Date.now(), icon:'🔗', title: title[currentLang]||title.en, desc: desc[currentLang]||desc.en, color:'#F0FDF4', iconColor:'#16A34A' });
     }).catch(() => {
-      showToast({ id:Date.now(), icon:'🔗', title:'Your referral link', desc:link, color:'#EFF6FF', iconColor:'#2563EB' });
+      showToast({ id:Date.now(), icon:'🔗', title:'Referral link', desc: link, color:'#EFF6FF', iconColor:'#2563EB' });
     });
   });
 }
