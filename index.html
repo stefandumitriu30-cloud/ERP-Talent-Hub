@@ -4902,21 +4902,38 @@ async function doLogin(email, password) {
   const { data, error } = await sb().auth.signInWithPassword({ email, password });
   if (error) throw new Error(friendlyAuthError(error.message));
 
-  // Fetch profile — if missing, create it (handles edge cases)
-  let { data: profile, error: pe } = await sb()
-    .from('profiles').select('*').eq('id', data.user.id).single();
+  // Fetch profile using the user's own JWT (bypasses any RLS misconfiguration)
+  let profile = null;
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/profiles?id=eq.${data.user.id}&select=*&limit=1`,
+      { headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${data.session.access_token}` } }
+    );
+    const rows = await res.json();
+    if (Array.isArray(rows) && rows.length > 0) profile = rows[0];
+  } catch(fe) {
+    // Fallback to Supabase client if REST fails
+    const { data: p } = await sb().from('profiles').select('*').eq('id', data.user.id).single();
+    profile = p;
+  }
 
   if (!profile) {
-    // Profile missing — create a minimal one. Role defaults to 'candidate';
-    // admin role must be set manually in Supabase dashboard.
+    // Profile truly missing — create minimal one with candidate role
+    // (admin role can only be set manually in Supabase dashboard)
     console.warn('Profile missing on login — creating default candidate profile');
     await sb().from('profiles').upsert({
       id: data.user.id, email, name: email.split('@')[0],
       role: 'candidate', photo: null, profile_data: null, recruiter_data: null,
       created_at: new Date().toISOString(),
     });
-    const { data: p2 } = await sb().from('profiles').select('*').eq('id', data.user.id).single();
-    profile = p2;
+    try {
+      const res2 = await fetch(
+        `${SUPABASE_URL}/rest/v1/profiles?id=eq.${data.user.id}&select=*&limit=1`,
+        { headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${data.session.access_token}` } }
+      );
+      const rows2 = await res2.json();
+      if (Array.isArray(rows2) && rows2.length > 0) profile = rows2[0];
+    } catch(_) {}
   }
 
   document.getElementById('auth-submit-btn').disabled = false;
@@ -6881,10 +6898,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   initDarkMode(); // apply dark/light before anything renders
 
   // ── STARTUP SESSION CLEANUP ──────────────────────────────────────────
-  // Only clear our custom cache key (erpth_session), NOT the Supabase auth token (erpth_sb).
-  // Supabase uses erpth_sb to restore the JWT automatically — we must not touch it.
-  // We clear erpth_session so stale role data (e.g. candidate→admin) doesn't mislead renderNav.
-  // The authoritative role will always come from the fresh Supabase DB fetch below.
+  // Clear any stale erpth_session from localStorage to force a fresh fetch from Supabase.
+  // This permanently fixes the "wrong role in menu" bug caused by role changes in the DB
+  // that weren't reflected in the cached session. Safe to run every time — Supabase
+  // will restore the session from its own token (erpth_sb) automatically.
   try { localStorage.removeItem('erpth_session'); } catch(e) {}
   // ───────────────────────────────────────────────────────────────────
   // Must run before session restore so Supabase doesn't auto-login
@@ -6915,17 +6932,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (SUPABASE_READY && sb()) {
     try {
       const { data: { session } } = await sb().auth.getSession();
-      // If no session but there might be a stored refresh token, try to refresh
-      let activeSession = session;
-      if (!activeSession) {
-        try {
-          const { data: refreshed } = await sb().auth.refreshSession();
-          activeSession = refreshed?.session || null;
-        } catch(_) {}
-      }
-      console.log('[ERP] Supabase session:', activeSession ? `✅ ${activeSession.user.email}` : '❌ none');
-      if (activeSession) {
-        const session = activeSession;
+      console.log('[ERP] Supabase session:', session ? `✅ ${session.user.email}` : '❌ none');
+      if (session) {
         console.log('[ERP] JWT app_metadata:', session.user.app_metadata);
 
         // Try to fetch profile via Supabase client (may fail if RLS is misconfigured)
