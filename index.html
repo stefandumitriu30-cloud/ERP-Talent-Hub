@@ -4517,11 +4517,8 @@ async function initAdminPortal() {
       // Use Supabase client with authenticated session — SECURITY DEFINER function bypasses RLS
       const { data, error } = await sb().rpc('get_all_profiles_for_admin');
       if (error) throw new Error(error.message);
-      // Function may return SETOF (array) or json (single value)
-      if (Array.isArray(data)) profiles = data;
-      else if (data && typeof data === 'object') profiles = Object.values(data);
-      else if (typeof data === 'string') { try { profiles = JSON.parse(data); } catch(_){} }
-      console.log(`[ERP Admin] Profiles loaded via RPC: ${profiles.length}`);
+      profiles = Array.isArray(data) ? data : (data ? [data] : []);
+      console.log(`[ERP Admin] Profiles loaded: ${profiles.length}, first role: ${profiles[0]?.role}`);
       // Show count visually for mobile debugging
       const dbg = document.getElementById('admin-list');
       if (dbg) dbg.innerHTML = `<div style="padding:8px 16px;font-size:11px;color:#6B7280;background:#F9FAFB;border-bottom:1px solid #E5E7EB">📊 ${profiles.length} profiles from DB</div>`;
