@@ -6587,21 +6587,24 @@ function adminImpersonate(role) {
     if (savedProfile) { showView('myprofile'); } else { showView('form'); }
     showToast({ id: Date.now(), icon: '&#128100;', title: 'Viewing as Candidate', desc: 'Previewing the candidate view.', color: '#EFF6FF', iconColor: '#2563EB' });
   } else {
-    document.querySelectorAll('.view').forEach(function(v){ v.style.display='none'; });
-    var gate = document.getElementById('rec-gate');
-    if (gate) gate.style.display = 'none';
-    var portal = document.getElementById('rec-portal');
-    if (portal) {
-      portal.style.display = 'flex';
-      var badge = document.getElementById('rec-verified-name');
-      if (badge) badge.textContent = 'Admin · Verified';
-    }
+    // First show the recruiter-view, then open the portal inside it
+    showView('recruiter');
     var handle = 'erp.talent.hub.admin';
     if (!verifiedRecruiters.find(function(r){ return r.handle === handle; })) {
       verifiedRecruiters.push({ name: 'Admin', company: 'ERP Talent Hub', linkedin: '', handle: handle, verifiedAt: new Date().toISOString(), photo: null });
     }
-    try { localStorage.setItem('erpth_impersonate', 'recruiter'); } catch(e) {}
-    if (typeof renderRecCandidateList === 'function') renderRecCandidateList();
+    setTimeout(function() {
+      var gate = document.getElementById('rec-gate');
+      if (gate) gate.style.display = 'none';
+      var portal = document.getElementById('rec-portal');
+      if (portal) {
+        portal.style.display = 'flex';
+        var badge = document.getElementById('rec-verified-name');
+        if (badge) badge.textContent = 'Admin · Verified';
+      }
+      try { localStorage.setItem('erpth_impersonate', 'recruiter'); } catch(e) {}
+      if (typeof renderRecCandidateList === 'function') renderRecCandidateList();
+    }, 50);
     showToast({ id: Date.now(), icon: '&#127970;', title: 'Viewing as Recruiter', desc: 'Previewing the recruiter portal.', color: '#F0FDF4', iconColor: '#16A34A' });
   }
 }
