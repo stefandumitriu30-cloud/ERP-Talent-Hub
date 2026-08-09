@@ -6894,9 +6894,65 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  // ── Normal session restore ────────────────────────────────────────
+  // ── Session restore — authoritative source is always Supabase DB ────
+  // We do NOT pre-apply the localStorage cache to currentUser anymore.
+  // This prevents stale role bugs (e.g. role changed in DB but cache still says 'candidate').
+  // The localStorage cache is only used as fallback when Supabase is not configured.
   const cached = getSession();
-  if (cached) {
+
+  // If Supabase is configured, ALWAYS fetch fresh from DB — ignore cache for role/profile
+  if (SUPABASE_READY && sb()) {
+    try {
+      const { data: { session } } = await sb().auth.getSession();
+      if (session) {
+        const { data: profile } = await sb().from('profiles').select('*').eq('id', session.user.id).single();
+        const user = buildUserObject(session.user, profile);
+
+        // Always clear any stale cache and write fresh data
+        currentUser = user;
+        saveSession(user);
+
+        if (user.role === 'candidate' && user.profileData) {
+          savedProfile = user.profileData;
+          if (user.photo) candPhotoBase64 = user.photo;
+        }
+        if (user.role === 'recruiter' && user.recruiterData) {
+          recruiterProfile = user.recruiterData;
+          recruiterVerified = true;
+          if (user.photo) recPhotoBase64 = user.photo;
+        }
+        // SECURITY: adminAuthenticated confirmed by live Supabase session only
+        if (user.role === 'admin') {
+          adminAuthenticated = true;
+          if (user.profileData) {
+            savedProfile = user.profileData;
+            if (user.photo) candPhotoBase64 = user.photo;
+          }
+        }
+      } else {
+        // No active Supabase session — user is not logged in
+        currentUser = null;
+        saveSession(null);
+      }
+    } catch(e) {
+      console.warn('Supabase session check failed — falling back to cache:', e);
+      // Fallback: use cache only if Supabase is unavailable
+      if (cached) {
+        currentUser = cached;
+        if (cached.role === 'candidate' && cached.profileData) {
+          savedProfile = cached.profileData;
+          if (cached.photo) candPhotoBase64 = cached.photo;
+        }
+        if (cached.role === 'recruiter' && cached.recruiterData) {
+          recruiterProfile = cached.recruiterData;
+          recruiterVerified = true;
+          if (cached.photo) recPhotoBase64 = cached.photo;
+        }
+        if (cached.role === 'admin') adminAuthenticated = true;
+      }
+    }
+  } else if (cached) {
+    // Supabase not configured — use cache as-is (offline/demo mode)
     currentUser = cached;
     if (cached.role === 'candidate' && cached.profileData) {
       savedProfile = cached.profileData;
@@ -6907,45 +6963,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       recruiterVerified = true;
       if (cached.photo) recPhotoBase64 = cached.photo;
     }
-  }
-
-  // If Supabase is configured, verify session and refresh profile from DB
-  if (SUPABASE_READY && sb()) {
-    try {
-      const { data: { session } } = await sb().auth.getSession();
-      if (session) {
-        const { data: profile } = await sb().from('profiles').select('*').eq('id', session.user.id).single();
-        const user = buildUserObject(session.user, profile);
-        // SECURITY: if cached role differs from DB role, cached is stale — update it
-        if (cached && cached.role !== user.role) {
-          console.info('[ERP] Role mismatch: cached=%s, DB=%s — updating session', cached.role, user.role);
-          saveSession(null); // clear stale cache
-        }
-        currentUser = user; saveSession(user);
-        if (user.role === 'candidate' && user.profileData) {
-          savedProfile = user.profileData;
-          if (user.photo) candPhotoBase64 = user.photo;
-        }
-        if (user.role === 'recruiter' && user.recruiterData) {
-          recruiterProfile = user.recruiterData; recruiterVerified = true;
-          if (user.photo) recPhotoBase64 = user.photo;
-        }
-        // SECURITY: adminAuthenticated confirmed by live Supabase session
-        if (user.role === 'admin') {
-          adminAuthenticated = true;
-          // Also restore the admin's own candidate profile_data if present,
-          // so "View as candidate" can show it without a separate fetch
-          if (user.profileData) {
-            savedProfile = user.profileData;
-            if (user.photo) candPhotoBase64 = user.photo;
-          }
-        }
-        // Re-render nav after Supabase confirms role — fixes stale cache showing wrong menu
-        renderNav();
-      } else if (!cached) {
-        currentUser = null; saveSession(null);
-      }
-    } catch(e) { console.warn('Supabase session check failed:', e); }
+    if (cached.role === 'admin') adminAuthenticated = true;
   }
 
   renderNav();
