@@ -227,6 +227,13 @@ footer strong{color:rgba(255,255,255,.75)}
   .portal-sidebar{width:100%;max-width:100%;border-right:none;border-bottom:1px solid var(--gray-100);max-height:220px;min-width:unset}
   .portal-main{flex:1;min-height:0}
 
+  /* ADMIN portal on mobile: sidebar takes 50% of viewport height so list is visible */
+  #admin-view .portal-sidebar{max-height:50vh;min-height:260px}
+  #admin-view .portal-sidebar-header{padding:10px 12px 8px;flex-shrink:0}
+  #admin-view .portal-title{font-size:13px;margin-bottom:4px}
+  #admin-view .portal-tabs{margin-bottom:6px!important}
+  #admin-view .candidate-list{flex:1;overflow-y:auto;min-height:80px}
+
   /* GATE */
   .rec-gate-card{padding:28px 20px}
 
@@ -273,6 +280,9 @@ footer strong{color:rgba(255,255,255,.75)}
   .cand-avatar{width:32px;height:32px;font-size:12px}
   .cand-name{font-size:12px}
   .cand-meta{font-size:10px}
+
+  /* Admin keeps taller sidebar on small phones */
+  #admin-view .portal-sidebar{max-height:48vh;min-height:240px}
 
   /* CHAT */
   .chat-topbar-name{font-size:13px}
@@ -1795,12 +1805,12 @@ input[type=file].photo-input{display:none}
           <button class="ptab active" id="admin-tab-cand" role="tab" aria-selected="true"  onclick="setAdminTab('candidates',this)">Candidates</button>
           <button class="ptab" id="admin-tab-rec"         role="tab" aria-selected="false" onclick="setAdminTab('recruiters',this)">Recruiters</button>
         </div>
-        <div style="display:flex;gap:8px;margin-bottom:10px">
-          <button onclick="adminImpersonate('candidate')" style="flex:1;background:#EFF6FF;color:#2563EB;border:1px solid #BFDBFE;border-radius:8px;padding:7px 4px;font-size:12px;font-weight:600;cursor:pointer;">
-            <i class="fa-solid fa-user" style="margin-right:4px"></i>View as Candidate
+        <div style="display:flex;gap:6px;margin-bottom:8px">
+          <button onclick="adminImpersonate('candidate')" style="flex:1;background:#EFF6FF;color:#2563EB;border:1px solid #BFDBFE;border-radius:8px;padding:6px 4px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap">
+            <i class="fa-solid fa-user" style="margin-right:3px"></i>View as Candidate
           </button>
-          <button onclick="adminImpersonate('recruiter')" style="flex:1;background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0;border-radius:8px;padding:7px 4px;font-size:12px;font-weight:600;cursor:pointer;">
-            <i class="fa-solid fa-briefcase" style="margin-right:4px"></i>View as Recruiter
+          <button onclick="adminImpersonate('recruiter')" style="flex:1;background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0;border-radius:8px;padding:6px 4px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap">
+            <i class="fa-solid fa-briefcase" style="margin-right:3px"></i>View as Recruiter
           </button>
         </div>
         <div class="portal-search-wrap">
