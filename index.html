@@ -6881,10 +6881,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   initDarkMode(); // apply dark/light before anything renders
 
   // ── STARTUP SESSION CLEANUP ──────────────────────────────────────────
-  // Clear any stale erpth_session from localStorage to force a fresh fetch from Supabase.
-  // This permanently fixes the "wrong role in menu" bug caused by role changes in the DB
-  // that weren't reflected in the cached session. Safe to run every time — Supabase
-  // will restore the session from its own token (erpth_sb) automatically.
+  // Only clear our custom cache key (erpth_session), NOT the Supabase auth token (erpth_sb).
+  // Supabase uses erpth_sb to restore the JWT automatically — we must not touch it.
+  // We clear erpth_session so stale role data (e.g. candidate→admin) doesn't mislead renderNav.
+  // The authoritative role will always come from the fresh Supabase DB fetch below.
   try { localStorage.removeItem('erpth_session'); } catch(e) {}
   // ───────────────────────────────────────────────────────────────────
   // Must run before session restore so Supabase doesn't auto-login
@@ -6915,8 +6915,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (SUPABASE_READY && sb()) {
     try {
       const { data: { session } } = await sb().auth.getSession();
-      console.log('[ERP] Supabase session:', session ? `✅ ${session.user.email}` : '❌ none');
-      if (session) {
+      // If no session but there might be a stored refresh token, try to refresh
+      let activeSession = session;
+      if (!activeSession) {
+        try {
+          const { data: refreshed } = await sb().auth.refreshSession();
+          activeSession = refreshed?.session || null;
+        } catch(_) {}
+      }
+      console.log('[ERP] Supabase session:', activeSession ? `✅ ${activeSession.user.email}` : '❌ none');
+      if (activeSession) {
+        const session = activeSession;
         console.log('[ERP] JWT app_metadata:', session.user.app_metadata);
 
         // Try to fetch profile via Supabase client (may fail if RLS is misconfigured)
