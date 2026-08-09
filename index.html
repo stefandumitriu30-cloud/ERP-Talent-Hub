@@ -3795,7 +3795,10 @@ function showView(name) {
     openAuthModal('login', guards[name] === 'admin' ? null : guards[name]);
     return;
   }
-  if (name === 'admin' && currentUser?.role !== 'admin') { showView('home'); return; }
+  // SECURITY: require both a valid currentUser with role 'admin' AND the
+  // server-confirmed adminAuthenticated flag. Role alone could be spoofed
+  // via localStorage session manipulation.
+  if (name === 'admin' && (currentUser?.role !== 'admin' || !adminAuthenticated)) { showView('home'); return; }
   if (name === 'recruiter' && currentUser && currentUser.role !== 'recruiter' && currentUser.role !== 'admin') { showView('home'); return; }
   if ((name === 'form' || name === 'myprofile' || name === 'candidate') && currentUser && currentUser.role !== 'candidate' && currentUser.role !== 'admin') { showView('home'); return; }
 
@@ -4071,7 +4074,7 @@ function formatDate(ym) {
 // ADMIN PORTAL
 // ─────────────────────────────────────────
 
-const ADMIN_PASSWORD = 'ETH!Admin2026';
+// SECURITY: Password removed. Admin auth is verified server-side via Supabase role.
 let adminAuthenticated = false;
 let adminTab = 'candidates'; // 'candidates' | 'recruiters'
 
@@ -4355,8 +4358,9 @@ function sb() {
 // AUTH SYSTEM (Supabase + session cache)
 // ─────────────────────────────────────────
 
-const ADMIN_EMAIL  = 'erptalenthub@gmail.com';
-const ADMIN_PASS   = 'ETH!Admin2026';
+// ⚠️  SECURITY: Admin credentials must NEVER be hardcoded here.
+// Authentication is handled exclusively via Supabase Auth on the server side.
+// The client-side admin shortcut has been removed — login via normal Supabase flow.
 const SESSION_KEY  = 'erpth_session';
 
 let currentUser      = null;
@@ -4364,8 +4368,22 @@ let authModalMode    = 'login';
 let authRole         = 'candidate';
 let pendingNavTarget = null;
 
+// SECURITY NOTE: localStorage sessions are client-side and cannot be trusted
+// for authorisation decisions. They are used here only for UI state (e.g. showing
+// the user's name). All privileged operations are re-validated against the live
+// Supabase session before execution. Do NOT use getSession() to grant access.
 function getSession() {
-  try { return JSON.parse(localStorage.getItem(SESSION_KEY) || 'null'); } catch { return null; }
+  try {
+    var raw = localStorage.getItem(SESSION_KEY);
+    if (!raw) return null;
+    var parsed = JSON.parse(raw);
+    // Reject obviously malformed payloads (must have id, email and role)
+    if (!parsed || typeof parsed !== 'object' || !parsed.id || !parsed.email || !parsed.role) {
+      localStorage.removeItem(SESSION_KEY);
+      return null;
+    }
+    return parsed;
+  } catch { return null; }
 }
 function saveSession(user) {
   if (user) localStorage.setItem(SESSION_KEY, JSON.stringify(user));
@@ -4459,11 +4477,8 @@ async function submitAuth() {
   if (!email || !password) return showAuthError('Please fill in all fields.');
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showAuthError('Please enter a valid email address.');
 
-  // Admin shortcut
-  if (email === ADMIN_EMAIL.toLowerCase() && password === ADMIN_PASS) {
-    return loginSuccess({ id: 'admin', email: ADMIN_EMAIL, name: 'Admin', role: 'admin', photo: null });
-  }
-
+  // NOTE: Admin login goes through the same Supabase Auth flow as any other user.
+  // Role elevation to 'admin' is granted exclusively by the server-side profile record.
   const btn = document.getElementById('auth-submit-btn');
   btn.disabled = true; btn.textContent = 'Please wait…';
 
@@ -6746,6 +6761,11 @@ function renderPrivacyPolicy(lang) {
 
 // ── ADMIN IMPERSONATE ─────────────────────────────────────────
 function _openRecruiterPortal(name) {
+  // SECURITY: only callable by a verified admin session.
+  if (!adminAuthenticated || !currentUser || currentUser.role !== 'admin') {
+    console.warn('Unauthorized _openRecruiterPortal attempt blocked.');
+    return;
+  }
   var handle = 'erp.talent.hub.admin';
   if (!verifiedRecruiters.find(function(r){ return r.handle === handle; })) {
     verifiedRecruiters.push({ name: name, company: 'ERP Talent Hub', linkedin: 'https://linkedin.com/in/erptalenthub', handle: handle, verifiedAt: new Date().toISOString(), photo: null });
@@ -6762,12 +6782,16 @@ function _openRecruiterPortal(name) {
 }
 
 function adminImpersonate(role) {
+  // SECURITY: impersonation is only available to authenticated admin users.
+  if (!adminAuthenticated || !currentUser || currentUser.role !== 'admin') {
+    console.warn('Unauthorized adminImpersonate attempt blocked.');
+    return;
+  }
   if (role === 'candidate') {
     try { localStorage.removeItem('erpth_impersonate'); } catch(e) {}
     if (savedProfile) { showView('myprofile'); } else { showView('form'); }
     showToast({ id: Date.now(), icon: '&#128100;', title: 'Viewing as Candidate', desc: 'Previewing the candidate view.', color: '#EFF6FF', iconColor: '#2563EB' });
   } else {
-    // First show the recruiter-view, then open the portal inside it
     showView('recruiter');
     var handle = 'erp.talent.hub.admin';
     if (!verifiedRecruiters.find(function(r){ return r.handle === handle; })) {
@@ -6789,17 +6813,43 @@ function adminImpersonate(role) {
   }
 }
 
+// SECURITY: activateTestRecruiter() is a development-only helper.
+// It is intentionally disabled in production. Remove this comment and the
+// function body below only when running a local dev build.
 function activateTestRecruiter() {
-  _openRecruiterPortal('Test Recruiter');
+  if (typeof __DEV__ !== 'undefined' && __DEV__ === true) {
+    _openRecruiterPortal('Test Recruiter');
+  } else {
+    console.warn('activateTestRecruiter() is disabled in production.');
+  }
 }
 
-function restoreImpersonation() {
+async function restoreImpersonation() {
+  // SECURITY: verify the Supabase session is still live before restoring
+  // impersonation state — prevents localStorage tampering from granting access.
   try {
     var imp = localStorage.getItem('erpth_impersonate');
-    if (imp === 'recruiter' && adminAuthenticated) {
-      _openRecruiterPortal('Admin (Test Recruiter)');
+    if (imp !== 'recruiter') return;
+
+    // Re-validate current Supabase session
+    if (!SUPABASE_READY || !sb()) return;
+    var sessionResult = await sb().auth.getSession();
+    var session = sessionResult && sessionResult.data && sessionResult.data.session;
+    if (!session) {
+      // Session expired — clear forged impersonation flag
+      localStorage.removeItem('erpth_impersonate');
+      return;
     }
-  } catch(e) {}
+
+    if (adminAuthenticated && currentUser && currentUser.role === 'admin') {
+      _openRecruiterPortal('Admin (Test Recruiter)');
+    } else {
+      // Not an admin — clear the flag regardless
+      localStorage.removeItem('erpth_impersonate');
+    }
+  } catch(e) {
+    try { localStorage.removeItem('erpth_impersonate'); } catch(_) {}
+  }
 }
 </script>
 </body>
