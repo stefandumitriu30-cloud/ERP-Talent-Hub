@@ -2784,7 +2784,7 @@ let recruiterProfile = {};
 
 // Simulate profiles that PASS (have LinkedIn Recruiter) vs FAIL
 // In a real app this would call LinkedIn's OAuth + API
-const VERIFIED_RECRUITER_HANDLES = ['sarah.johnson.rec','michael.smith.rec','anna.recruiter','john.doe.lir','talent.scout','hr.erp','korn.ferry.rec','heidrick.rec'];
+const VERIFIED_RECRUITER_HANDLES = ['sarah.johnson.rec','michael.smith.rec','anna.recruiter','john.doe.lir','talent.scout','hr.erp','korn.ferry.rec','heidrick.rec','erp.talent.hub.test'];
 
 function gotoStep(n) {
   document.querySelectorAll('.gate-step').forEach(s => s.classList.remove('active'));
@@ -5944,6 +5944,28 @@ document.addEventListener('DOMContentLoaded', async () => {
   initMia();
   initCookieBanner();
   updateCookieBannerLang(currentLang);
+  // Test recruiter auto-login via ?recruiter=test
+  if (new URLSearchParams(window.location.search).get('recruiter') === 'test') {
+    var _testRec = {
+      name: 'Test Recruiter',
+      company: 'ERP Talent Hub (Test)',
+      linkedin: 'https://linkedin.com/in/erp-talent-hub-test',
+      handle: 'erp.talent.hub.test',
+      verifiedAt: new Date().toISOString(),
+      photo: null,
+    };
+    verifiedRecruiters.push(_testRec);
+    setTimeout(function() {
+      document.getElementById('rec-gate').style.display = 'none';
+      var portal = document.getElementById('rec-portal');
+      if (portal) {
+        portal.style.display = 'flex';
+        var badgeEl = document.getElementById('rec-verified-name');
+        if (badgeEl) badgeEl.textContent = 'Test · Verified';
+        renderRecCandidateList();
+      }
+    }, 400);
+  }
 });
 
 // ─────────────────────────────────────────
