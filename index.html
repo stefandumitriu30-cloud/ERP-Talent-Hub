@@ -4925,6 +4925,8 @@ function loginSuccess(user) {
   }
   const target = pendingNavTarget || defaultViewForRole(user.role);
   pendingNavTarget = null;
+  // SECURITY: set adminAuthenticated only after Supabase confirmed role='admin'
+  if (user.role === 'admin') adminAuthenticated = true;
   showView(target);
 
   if (user.id) initPresence(user.id);
@@ -6213,6 +6215,8 @@ document.addEventListener('DOMContentLoaded', async () => {
           recruiterProfile = user.recruiterData; recruiterVerified = true;
           if (user.photo) recPhotoBase64 = user.photo;
         }
+        // SECURITY: adminAuthenticated confirmed by live Supabase session
+        if (user.role === 'admin') adminAuthenticated = true;
       } else if (!cached) {
         currentUser = null; saveSession(null);
       }
