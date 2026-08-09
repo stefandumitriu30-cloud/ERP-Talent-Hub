@@ -4518,11 +4518,17 @@ async function initAdminPortal() {
       const { data: { session } } = await sb().auth.getSession();
       const authToken = session?.access_token || SUPABASE_ANON;
       const res = await fetch(
-        `${SUPABASE_URL}/rest/v1/profiles?select=*&order=created_at.desc`,
-        { headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${authToken}` } }
+        `${SUPABASE_URL}/rest/v1/profiles?select=*&order=created_at.desc&limit=1000`,
+        { headers: {
+          'apikey': SUPABASE_ANON,
+          'Authorization': `Bearer ${authToken}`,
+          'Prefer': 'count=none',
+          'Range': '0-999',
+        }}
       );
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       profiles = await res.json();
+      console.log(`[ERP Admin] Profiles loaded: ${profiles.length}`);
     } catch(err) {
       console.error('Admin load error:', err.message);
       if (list) list.innerHTML = `<div style="padding:24px;text-align:center;color:#DC2626;font-size:13px">Could not load profiles: ${err.message}</div>`;
