@@ -4504,9 +4504,12 @@ async function initAdminPortal() {
 
     let profiles = [];
     try {
+      // Use the user's own JWT (not the anon key) so RLS allows admin to read all profiles
+      const { data: { session } } = await sb().auth.getSession();
+      const authToken = session?.access_token || SUPABASE_ANON;
       const res = await fetch(
         `${SUPABASE_URL}/rest/v1/profiles?select=*&order=created_at.desc`,
-        { headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` } }
+        { headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${authToken}` } }
       );
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       profiles = await res.json();
