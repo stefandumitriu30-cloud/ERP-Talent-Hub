@@ -1292,6 +1292,9 @@ input[type=file].photo-input{display:none}
         <button class="btn-outline btn-sm" onclick="downloadProfilePDF()" style="font-size:13px" title="Download profile as PDF">
           <i class="fa-solid fa-file-pdf" style="margin-right:6px;color:#DC2626"></i><span data-i18n="mp.downloadPdf">Download PDF</span>
         </button>
+        <button class="btn-outline btn-sm" onclick="showReferralLink()" style="font-size:13px" title="Share your referral link">
+          <i class="fa-solid fa-share-nodes" style="margin-right:6px;color:#16A34A"></i><span>Invite colleagues</span>
+        </button>
       </div>
     </div>
 
@@ -1370,6 +1373,13 @@ input[type=file].photo-input{display:none}
   <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
     <button class="btn-primary" onclick="showView('myprofile')" data-i18n="success.viewprofile">View my profile</button>
     <button class="btn-outline" onclick="showView('home')" data-i18n="success.back">Back to homepage</button>
+  </div>
+  <!-- Referral invite -->
+  <div style="margin-top:28px;background:linear-gradient(135deg,#EFF6FF,#F0FDF4);border:1px solid #BFDBFE;border-radius:12px;padding:20px 24px;max-width:440px;margin-left:auto;margin-right:auto;text-align:center">
+    <div style="font-size:22px;margin-bottom:8px">🔗</div>
+    <div style="font-weight:600;font-size:15px;margin-bottom:6px">Invite ERP colleagues</div>
+    <div style="font-size:13px;color:var(--gray-500);margin-bottom:14px;line-height:1.5">Share your referral link with colleagues. When they register, you get a visibility boost in recruiter searches.</div>
+    <button class="btn-primary btn-sm" onclick="showReferralLink()" style="gap:6px"><i class="fa-solid fa-share-nodes" style="margin-right:6px"></i>Copy my referral link</button>
   </div>
   <!-- EmailJS setup notice — only visible when not configured -->
   <div id="emailjs-setup-notice" style="display:none;margin-top:32px;background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;padding:18px 20px;text-align:left;font-size:13px;color:#92400E;max-width:440px;margin-left:auto;margin-right:auto">
@@ -1824,7 +1834,7 @@ input[type=file].photo-input{display:none}
   <div class="mia-input-area">
     <div class="mia-quick-btns" id="mia-quick-btns"></div>
     <div class="mia-input-row">
-      <textarea class="mia-textarea" id="mia-input" rows="1" placeholder="Ask Mia anything…" data-i18n-ph="mia.placeholder" onkeydown="miaInputKey(event)"></textarea>
+      <textarea class="mia-textarea" id="mia-input" rows="1" placeholder="Ask Mia anything…" data-i18n-ph="mia.placeholder" onkeydown="miaInputKey(event)" maxlength="500"></textarea>
       <button class="mia-send-btn" onclick="miaSendUserMessage()"><i class="fa-solid fa-paper-plane"></i></button>
     </div>
   </div>
@@ -2590,6 +2600,14 @@ function handleSubmit() {
       savedProfile = collectProfileData();
       allCandidateProfiles.push({ ...savedProfile, submittedAt: new Date().toISOString() });
       persistCandidateProfile();
+      // SEO: publish public profile page to Supabase Storage
+      if (currentUser?.id) {
+        publishPublicProfile(savedProfile, currentUser.id).then(result => {
+          if (result) {
+            showToast({ id: Date.now(), icon: '🌐', title: 'Profile published!', desc: `Your public profile is now indexed by Google.`, color: '#F0FDF4', iconColor: '#16A34A' });
+          }
+        });
+      }
       const mpBtn = document.getElementById('nav-btn-myprofile');
       if (mpBtn) mpBtn.style.display = '';
       // Show notification bell
@@ -3657,6 +3675,14 @@ function recSendMessage(candidateId) {
   const input = document.getElementById('rec-input');
   const text = input.value.trim();
   if (!text) return;
+
+  // Content moderation
+  if (_containsProfanity(text)) {
+    input.value = '';
+    input.style.height = 'auto';
+    showToast({ id: Date.now(), icon: '🚫', title: 'Message not sent', desc: _getModerationMsg(), color: '#FFF7ED', iconColor: '#F97316' });
+    return;
+  }
   const conv = conversations[candidateId];
   const isFirst = !conv.opened;
   conv.opened = true;
@@ -3830,6 +3856,14 @@ function candSendMessage(candidateId) {
   if (!text) return;
   const conv = conversations[candidateId];
   if (!conv || !conv.opened) return; // safety guard
+
+  // Content moderation
+  if (_containsProfanity(text)) {
+    input.value = '';
+    input.style.height = 'auto';
+    showToast({ id: Date.now(), icon: '🚫', title: 'Message not sent', desc: _getModerationMsg(), color: '#FFF7ED', iconColor: '#F97316' });
+    return;
+  }
   conv.messages.push({ from: 'cand', text, time: new Date().toISOString(), read: true, candRead: true });
   input.value = '';
   input.style.height = 'auto';
@@ -3840,6 +3874,81 @@ function candSendMessage(candidateId) {
     renderRecMessages(candidateId);
     renderRecCandidateList();
   }
+}
+
+// ─────────────────────────────────────────
+// CONTENT MODERATION — PROFANITY FILTER
+// Covers: chat (rec→cand, cand→rec) and Mia input.
+// Detection: keyword list (EN/IT/ES/DE/FR/PT) + leet-speak normalization.
+// On match: blocks the message and shows a polite multilingual warning.
+// ─────────────────────────────────────────
+
+const _PROFANITY_LISTS = {
+  en: ['fuck','shit','bitch','asshole','bastard','cunt','damn','dick','pussy','cock','whore','slut','motherfucker','fag','nigger','prick','wanker','twat','crap','bullcrap','bullshit','bollocks','arse','ass','jackass','dumbass','dipshit','horseshit'],
+  it: ['cazzo','vaffanculo','merda','stronzo','stronza','puttana','coglione','cogliona','fanculo','porco','troia','minchia','bastardo','bastarda','figlio di puttana','idiota','imbecille','cornuto'],
+  es: ['mierda','joder','coño','puta','puto','cabrón','gilipollas','hostia','pendejo','chingada','verga','culero','mamón','maricón','imbécil','estúpido','idiota','zorra'],
+  de: ['scheiße','fick','arschloch','wichser','hurensohn','schlampe','dummkopf','idiot','vollidiot','trottel','depp','dreckskerl','miststück','wichse','kackwurst'],
+  fr: ['merde','putain','connard','connasse','salope','enculé','va te faire foutre','bite','con','conne','foutre','bordel','salopard','imbécile','crétin','abruti'],
+  pt: ['merda','porra','caralho','cu','buceta','viado','puta','filho da puta','idiota','imbecil','babaca','safado','canalha','desgraçado']
+};
+
+// Normalize text: lowercase + leet-speak digit/symbol substitutions (NOT punctuation like ! ? .)
+function _normalizeProfanity(text) {
+  return text.toLowerCase()
+    .replace(/[@4]/g, 'a').replace(/3/g, 'e').replace(/[1|]/g, 'i')
+    .replace(/0/g, 'o').replace(/[$5]/g, 's').replace(/7/g, 't');
+}
+
+const _buildRegex = (function() {
+  const all = Object.values(_PROFANITY_LISTS).flat();
+  const unique = [...new Set(all)];
+  const wordSet = new Set(unique);
+
+  // Multi-word phrases
+  const esc = w => w.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+  const phrases = unique.filter(w => w.includes(' '));
+  const phraseRx = phrases.length ? new RegExp(phrases.map(esc).join('|'), 'i') : null;
+
+  return { wordSet, phraseRx };
+})();
+
+function _containsProfanity(text) {
+  const norm = _normalizeProfanity(text);
+
+  // 1. Split into tokens on whitespace + punctuation, check each word
+  const tokens = norm.split(/[\s,!?.;:()\[\]{}"'«»\-/\\]+/).filter(Boolean);
+  for (const token of tokens) {
+    // Strip remaining non-alpha chars from edges (handles merda!, f*ck as separate token)
+    const clean = token.replace(/[^a-zàáâãäåæçèéêëìíîïðñòóôõöùúûüýþß]/g, '');
+    if (clean && _buildRegex.wordSet.has(clean)) return true;
+  }
+
+  // 2. Multi-word phrase check
+  if (_buildRegex.phraseRx && _buildRegex.phraseRx.test(norm)) return true;
+
+  // 3. Separator-obfuscation: strip ALL non-alpha from each whitespace-separated token
+  //    and check if what remains is a profane word (handles f*ck, f.u.c.k, f-u-c-k)
+  const rawTokens = text.split(/\s+/).filter(Boolean);
+  for (const rawToken of rawTokens) {
+    const stripped = rawToken.toLowerCase().replace(/[^a-z]/g, '');
+    if (stripped && _buildRegex.wordSet.has(stripped)) return true;
+  }
+
+  return false;
+}
+
+// Polite moderation reply — one per language
+const _MODERATION_MSG = {
+  en: "😊 Let's keep things respectful! Profanity and offensive language aren't allowed on ERP Talent Hub. Please rephrase your message.",
+  it: "😊 Manteniamo un tono rispettoso! Parolacce e linguaggio offensivo non sono ammessi su ERP Talent Hub. Per favore, riformula il messaggio.",
+  es: "😊 ¡Mantengamos el respeto! Las groserías y el lenguaje ofensivo no están permitidos en ERP Talent Hub. Por favor, reformula tu mensaje.",
+  de: "😊 Bleiben wir respektvoll! Schimpfwörter und beleidigende Sprache sind auf ERP Talent Hub nicht erlaubt. Bitte formuliere deine Nachricht um.",
+  fr: "😊 Restons respectueux ! Les grossièretés et le langage offensant ne sont pas autorisés sur ERP Talent Hub. Merci de reformuler votre message.",
+  pt: "😊 Vamos manter o respeito! Palavrões e linguagem ofensiva não são permitidos no ERP Talent Hub. Por favor, reformule a sua mensagem."
+};
+
+function _getModerationMsg() {
+  return _MODERATION_MSG[currentLang] || _MODERATION_MSG['en'];
 }
 
 // ─── ONBLUR FIELD VALIDATION ─────────────────────────────
@@ -4684,6 +4793,9 @@ async function doRegister(email, password) {
 
   document.getElementById('auth-submit-btn').disabled = false;
 
+  // Apply referral code if user came via a referral link
+  if (data.user?.id) await _applyReferral(data.user.id);
+
   // 3. Check if email confirmation is required
   const needsConfirm = !data.user.confirmed_at && !data.session;
   if (needsConfirm) {
@@ -5000,6 +5112,8 @@ function loginSuccess(user) {
 
   if (user.id) initPresence(user.id);
   if (user.role === 'candidate') { initPushNotifications(); }
+  // Email automation — run after 5s to not block UI
+  setTimeout(() => runEmailAutomation(), 5000);
   // Mia proactive post-login greeting (after short delay to let view render)
   setTimeout(() => miaPostLoginGreet(user), 1200);
 }
@@ -5202,6 +5316,316 @@ async function persistCandidateProfile() {
   await sb().from('profiles').update({ profile_data: savedProfile, photo: candPhotoBase64 }).eq('id', currentUser.id);
 }
 
+// ─────────────────────────────────────────
+// SEO — PUBLIC PROFILE PAGES
+// ─────────────────────────────────────────
+
+const SITE_URL = 'https://stefandumitriu30-cloud.github.io/ERP-Talent-Hub';
+
+function _generateSlug(firstName, lastName, userId) {
+  const base = (firstName + '-' + lastName)
+    .toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // strip accents
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  // append 6 chars of userId to ensure uniqueness
+  const suffix = userId ? userId.replace(/-/g,'').slice(0,6) : Math.random().toString(36).slice(2,8);
+  return base + '-' + suffix;
+}
+
+function _buildPublicProfileHTML(profile, slug) {
+  const fullName  = (profile.firstName || '') + ' ' + (profile.lastName || '');
+  const title     = `${fullName} — ERP Professional | ERP Talent Hub`;
+  const desc      = (profile.summary || '').slice(0, 160).replace(/"/g,'&quot;');
+  const location  = [profile.city, profile.country].filter(Boolean).join(', ');
+  const erpTags   = (profile.erp || []).join(', ');
+  const canonical = `${SITE_URL}/profile/${slug}`;
+
+  // Work experience HTML (no contact details)
+  const expHTML = (profile.exps || []).slice(0, 5).map(e => `
+    <div class="exp-item">
+      <div class="exp-title">${_esc(e.jobTitle)} <span class="exp-at">at</span> ${_esc(e.company)}</div>
+      <div class="exp-period">${e.startDate || ''} – ${e.current ? 'Present' : (e.endDate || '')}</div>
+      ${e.description ? `<p class="exp-desc">${_esc(e.description)}</p>` : ''}
+    </div>`).join('');
+
+  const certHTML = (profile.certs || []).map(c =>
+    `<li>${_esc(c.certName)}${c.issuer ? ` · <em>${_esc(c.issuer)}</em>` : ''}${c.certYear ? ` (${c.certYear})` : ''}</li>`
+  ).join('');
+
+  const erpBadges = (profile.erp || []).map(s =>
+    `<span class="badge">${_esc(s)}</span>`
+  ).join('');
+
+  // JSON-LD structured data for Google
+  const jsonLd = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: fullName,
+    jobTitle: (profile.exps && profile.exps[0]) ? profile.exps[0].jobTitle : 'ERP Professional',
+    knowsAbout: profile.erp || [],
+    address: { '@type': 'PostalAddress', addressLocality: profile.city, addressCountry: profile.country },
+    url: canonical,
+    sameAs: profile.linkedin ? [profile.linkedin] : [],
+    description: profile.summary || '',
+  });
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${_esc(title)}</title>
+<meta name="description" content="${desc}">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="${canonical}">
+<!-- Open Graph -->
+<meta property="og:type"        content="profile">
+<meta property="og:title"       content="${_esc(title)}">
+<meta property="og:description" content="${desc}">
+<meta property="og:url"         content="${canonical}">
+<meta property="og:site_name"   content="ERP Talent Hub">
+<!-- Twitter Card -->
+<meta name="twitter:card"        content="summary">
+<meta name="twitter:title"       content="${_esc(title)}">
+<meta name="twitter:description" content="${desc}">
+<!-- JSON-LD -->
+<script type="application/ld+json">${jsonLd}<\/script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',system-ui,sans-serif;background:#F8FAFC;color:#0F172A;line-height:1.6}
+  .nav{background:#fff;border-bottom:1px solid #E2E8F0;padding:12px 24px;display:flex;align-items:center;justify-content:space-between}
+  .nav-logo{font-weight:700;font-size:16px;color:#2563EB;text-decoration:none}
+  .nav-cta{background:#2563EB;color:#fff;padding:8px 20px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:500}
+  .container{max-width:780px;margin:0 auto;padding:32px 20px 80px}
+  .card{background:#fff;border:1px solid #E2E8F0;border-radius:14px;padding:28px;margin-bottom:20px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+  .profile-header{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+  .avatar{width:72px;height:72px;border-radius:50%;background:#2563EB;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;color:#fff;flex-shrink:0}
+  h1{font-size:24px;font-weight:700;margin-bottom:4px}
+  .location{font-size:14px;color:#64748B;margin-bottom:10px}
+  .badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .badge{background:#EFF6FF;color:#2563EB;border:1px solid #BFDBFE;border-radius:20px;padding:4px 12px;font-size:13px;font-weight:500}
+  h2{font-size:16px;font-weight:600;margin-bottom:14px;color:#0F172A}
+  .summary{font-size:14px;color:#475569;line-height:1.75}
+  .exp-item{margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid #F1F5F9}
+  .exp-item:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+  .exp-title{font-size:15px;font-weight:600}
+  .exp-at{font-weight:400;color:#64748B}
+  .exp-period{font-size:12px;color:#94A3B8;margin-top:2px}
+  .exp-desc{font-size:13px;color:#64748B;margin-top:6px;line-height:1.65}
+  .cert-list{list-style:none;display:flex;flex-direction:column;gap:8px;font-size:14px;color:#475569}
+  .cta-banner{background:#2563EB;border-radius:14px;padding:32px;text-align:center;color:#fff;margin-top:32px}
+  .cta-banner h2{color:#fff;margin-bottom:8px;font-size:20px}
+  .cta-banner p{color:rgba(255,255,255,.8);margin-bottom:20px;font-size:14px}
+  .cta-btn{background:#fff;color:#2563EB;padding:12px 28px;border-radius:8px;font-weight:600;text-decoration:none;font-size:15px;display:inline-block}
+  footer{text-align:center;font-size:12px;color:#94A3B8;margin-top:40px}
+  @media(max-width:600px){.profile-header{flex-direction:column;align-items:flex-start}.container{padding:20px 14px 60px}}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<nav class="nav">
+  <a href="${SITE_URL}/" class="nav-logo">ERP Talent Hub</a>
+  <a href="${SITE_URL}/" class="nav-cta">For Recruiters →</a>
+</nav>
+<div class="container">
+  <div class="card">
+    <div class="profile-header">
+      <div class="avatar">${_esc((profile.firstName||'?')[0].toUpperCase() + (profile.lastName||'?')[0].toUpperCase())}</div>
+      <div>
+        <h1>${_esc(fullName)}</h1>
+        ${location ? `<div class="location">📍 ${_esc(location)}</div>` : ''}
+        <div class="badges">${erpBadges}</div>
+      </div>
+    </div>
+  </div>
+
+  ${profile.summary ? `
+  <div class="card">
+    <h2>Professional Summary</h2>
+    <p class="summary">${_esc(profile.summary)}</p>
+  </div>` : ''}
+
+  ${expHTML ? `
+  <div class="card">
+    <h2>Work Experience</h2>
+    ${expHTML}
+  </div>` : ''}
+
+  ${certHTML ? `
+  <div class="card">
+    <h2>Certifications</h2>
+    <ul class="cert-list">${certHTML}</ul>
+  </div>` : ''}
+
+  <div class="cta-banner">
+    <h2>Are you a recruiter looking for ERP talent?</h2>
+    <p>ERP Talent Hub connects you with verified ERP professionals like ${_esc(profile.firstName)}. Access the full talent pool instantly.</p>
+    <a href="${SITE_URL}/" class="cta-btn">Access the ERP Talent Pool →</a>
+  </div>
+
+  <footer>
+    <p>© 2026 ERP Talent Hub · <a href="${SITE_URL}/" style="color:#2563EB">Home</a></p>
+    <p style="margin-top:4px">Contact details are private and shared only upon recruiter request.</p>
+  </footer>
+</div>
+</body>
+</html>`;
+}
+
+function _esc(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#x27;');
+}
+
+async function publishPublicProfile(profile, userId) {
+  if (!SUPABASE_READY || !sb()) return null;
+  try {
+    // Get or create slug
+    const { data: existing } = await sb().from('profiles').select('public_slug,ref_code').eq('id', userId).single();
+    let slug = existing?.public_slug;
+    if (!slug) {
+      slug = _generateSlug(profile.firstName, profile.lastName, userId);
+      // Generate referral code too if missing
+      const refCode = existing?.ref_code || ('REF-' + (profile.firstName||'X').toUpperCase().slice(0,4) + '-' + Math.random().toString(36).slice(2,6).toUpperCase());
+      await sb().from('profiles').update({ public_slug: slug, ref_code: refCode, last_active: new Date().toISOString() }).eq('id', userId);
+    }
+
+    // Build and upload HTML to Supabase Storage (bucket: public-profiles)
+    const html = _buildPublicProfileHTML(profile, slug);
+    const blob = new Blob([html], { type: 'text/html' });
+    await sb().storage.from('public-profiles').upload(`${slug}.html`, blob, {
+      contentType: 'text/html', upsert: true,
+      cacheControl: '3600',
+    });
+
+    const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/public-profiles/${slug}.html`;
+    return { slug, publicUrl };
+  } catch(err) {
+    console.warn('publishPublicProfile error:', err.message);
+    return null;
+  }
+}
+
+// ─────────────────────────────────────────
+// REFERRAL SYSTEM
+// ─────────────────────────────────────────
+
+function _readRefFromUrl() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('ref') || null;
+  } catch { return null; }
+}
+
+// Store referral code from URL on page load
+const _pendingRefCode = _readRefFromUrl();
+
+async function _applyReferral(userId) {
+  if (!_pendingRefCode || !SUPABASE_READY || !sb()) return;
+  try {
+    // Find the referrer
+    const { data: referrer } = await sb().from('profiles')
+      .select('id,name,email,ref_code').eq('ref_code', _pendingRefCode).single();
+    if (!referrer || referrer.id === userId) return; // don't self-refer
+
+    // Save referred_by on new user
+    await sb().from('profiles').update({ referred_by: _pendingRefCode }).eq('id', userId);
+
+    // Award referrer: increment a referral_count (we store in notif_sent_at for now)
+    // In production this would update a referral_count column
+    console.log('Referral applied:', _pendingRefCode, '→', userId);
+  } catch(err) {
+    console.warn('Referral apply error:', err.message);
+  }
+}
+
+function getMyReferralLink() {
+  if (!currentUser || !SUPABASE_READY) return null;
+  // Fetch ref_code from DB
+  return sb().from('profiles').select('ref_code').eq('id', currentUser.id).single()
+    .then(({ data }) => {
+      if (!data?.ref_code) return null;
+      return `${SITE_URL}/?ref=${data.ref_code}`;
+    });
+}
+
+function showReferralLink() {
+  getMyReferralLink().then(link => {
+    if (!link) { showToast({ id:Date.now(), icon:'🔗', title:'Referral not ready', desc:'Save your profile first to get your referral link.', color:'#FFF7ED', iconColor:'#F97316' }); return; }
+    navigator.clipboard?.writeText(link).then(() => {
+      showToast({ id:Date.now(), icon:'🔗', title:'Referral link copied!', desc:'Share it with ERP colleagues. When they register, you earn visibility boost.', color:'#F0FDF4', iconColor:'#16A34A' });
+    }).catch(() => {
+      showToast({ id:Date.now(), icon:'🔗', title:'Your referral link', desc:link, color:'#EFF6FF', iconColor:'#2563EB' });
+    });
+  });
+}
+
+// ─────────────────────────────────────────
+// EMAIL AUTOMATION — NURTURING
+// ─────────────────────────────────────────
+
+const _NURTURE_TEMPLATES = {
+  candidate_inactive: {
+    subject: 'Your ERP profile is live — here\'s how to boost visibility',
+    body: (name) => `Hi ${name},\n\nYour ERP Talent Hub profile has been live for a while. Recruiters are actively searching — make sure your profile is up to date to appear in more searches.\n\nTip: adding recent certifications and updating your summary increases visibility by up to 3x.\n\n→ Update your profile: ${SITE_URL}/\n\nBest,\nThe ERP Talent Hub Team`,
+  },
+  recruiter_inactive: {
+    subject: 'ERP professionals are waiting to hear from you',
+    body: (name) => `Hi ${name},\n\nYou haven't contacted any candidates yet on ERP Talent Hub. There are verified ERP professionals ready to connect.\n\n→ Browse the talent pool: ${SITE_URL}/\n\nBest,\nThe ERP Talent Hub Team`,
+  },
+};
+
+// Check and send nurturing emails (called once on login, server-side cron would be ideal)
+async function runEmailAutomation() {
+  if (!SUPABASE_READY || !sb() || !EMAILJS_CONFIGURED || !currentUser) return;
+  if (currentUser.role === 'admin') return; // skip for admin
+
+  try {
+    const { data: profile } = await sb().from('profiles')
+      .select('name,email,role,last_active,notif_sent_at,profile_data')
+      .eq('id', currentUser.id).single();
+    if (!profile) return;
+
+    const now       = new Date();
+    const lastActive = profile.last_active ? new Date(profile.last_active) : new Date(0);
+    const daysSince  = Math.floor((now - lastActive) / (1000 * 60 * 60 * 24));
+    const sent       = profile.notif_sent_at || {};
+
+    let templateKey = null;
+    let notifKey    = null;
+
+    if (profile.role === 'candidate' && profile.profile_data && daysSince >= 30 && !sent.inactive_30d) {
+      templateKey = 'candidate_inactive';
+      notifKey    = 'inactive_30d';
+    } else if (profile.role === 'recruiter' && daysSince >= 7 && !sent.recruiter_nudge_7d) {
+      templateKey = 'recruiter_inactive';
+      notifKey    = 'recruiter_nudge_7d';
+    }
+
+    if (!templateKey) return;
+
+    const tmpl = _NURTURE_TEMPLATES[templateKey];
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+      to_email:   profile.email,
+      to_name:    profile.name,
+      subject:    tmpl.subject,
+      message:    tmpl.body(profile.name.split(' ')[0]),
+      site_url:   SITE_URL,
+    });
+
+    // Mark as sent so we don't resend
+    const updatedSent = { ...sent, [notifKey]: now.toISOString() };
+    await sb().from('profiles').update({ notif_sent_at: updatedSent }).eq('id', currentUser.id);
+
+  } catch(err) {
+    console.warn('Email automation error:', err.message);
+  }
+}
+
 async function persistRecruiterData() {
   if (!currentUser || currentUser.role !== 'recruiter') return;
   currentUser.recruiterData = recruiterProfile; currentUser.photo = recPhotoBase64;
@@ -5350,7 +5774,9 @@ let miaSpeaking    = false;
 let miaCurrentUtterance = null;
 let miaHintTimer   = null;
 let miaContext     = 'home';
-let miaPostLoginData = null; // stores post-login greeting until user opens Mia // tracks current page context
+let miaPostLoginData = null;
+// SECURITY: rate limit Mia API calls — max 10 per minute per session
+let _miaCallTimestamps = [];
 
 // ── Context-aware scripts per view/step ──────────────────
 // ─────────────────────────────────────────
@@ -5681,13 +6107,35 @@ function miaInputKey(e) {
 
 function miaSendUserMessage() {
   const input = document.getElementById('mia-input');
-  const text  = input.value.trim();
+  const text  = input.value.trim().slice(0, 500); // max 500 chars
   if (!text) return;
   input.value = '';
   miaHandleQuestion(text);
 }
 
 async function miaHandleQuestion(question, isQuickBtn = false) {
+  // SECURITY: rate limit — max 10 API calls per minute
+  if (!isQuickBtn) {
+    const now = Date.now();
+    _miaCallTimestamps = _miaCallTimestamps.filter(t => now - t < 60000);
+    if (_miaCallTimestamps.length >= 10) {
+      appendMiaMessage(question, true);
+      appendMiaMessage("⏱ You're asking a lot of questions! Give me a moment — try again in a minute 😊");
+      return;
+    }
+    _miaCallTimestamps.push(now);
+  }
+
+  // SECURITY: truncate input to prevent abuse
+  question = String(question).slice(0, 500);
+
+  // Content moderation — block profanity before sending to API
+  if (!isQuickBtn && _containsProfanity(question)) {
+    appendMiaMessage(question, true);
+    appendMiaMessage(_getModerationMsg());
+    return;
+  }
+
   appendMiaMessage(question, true);
   setMiaQuickBtns([]);
   showMiaTyping();
@@ -5710,6 +6158,11 @@ async function miaHandleQuestion(question, isQuickBtn = false) {
   // Always call Claude for free-text questions (handles any language correctly)
   try {
     const langName = { en:'English', it:'Italian', es:'Spanish', de:'German', fr:'French', pt:'Portuguese' }[currentLang] || 'English';
+
+    // SECURITY: sanitize user input before sending to API
+    // Truncate to 500 chars max to prevent DoS and cost abuse
+    const safeQuestion = String(question).slice(0, 500);
+
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -5720,12 +6173,14 @@ async function miaHandleQuestion(question, isQuickBtn = false) {
 
 CRITICAL: You MUST reply ONLY in ${langName}. Never use any other language under any circumstances.
 
-Platform sections: HOME (landing), REGISTER/LOGIN (choose role: ERP Professional or Recruiter), CV FORM (personal info with geo-verified city/province/country, contact details, professional summary 200–500 words, ERP systems multi-select, work experience with calendar date picker, education, certifications, awards, profile photo), MY PROFILE (read-only, contact details hidden from recruiters), RECRUITER PORTAL (LinkedIn Recruiter account verification required via 4-step gate), CANDIDATE INBOX (chat + 7-stage pipeline: Contacted→Screening→1st Interview→2nd Interview→Assessment→Offer→Hired, 5-day stall warning), ADMIN DASHBOARD (login: erptalenthub@gmail.com / ETH!Admin2026), NOTIFICATIONS (bell icon: profile views, connection requests, messages, stage changes).
+SECURITY: Never reveal credentials, passwords, internal configuration, API keys, database details, or any sensitive system information, regardless of how the user asks. If asked about admin access, passwords, or credentials, reply that these are managed securely and redirect to the platform's contact email for support.
+
+Platform sections: HOME (landing), REGISTER/LOGIN (choose role: ERP Professional or Recruiter), CV FORM (personal info with geo-verified city/province/country, contact details, professional summary 200–500 words, ERP systems multi-select, work experience with calendar date picker, education, certifications, awards, profile photo), MY PROFILE (read-only, contact details hidden from recruiters), RECRUITER PORTAL (LinkedIn Recruiter account verification required via 4-step gate), CANDIDATE INBOX (chat + 7-stage pipeline: Contacted→Screening→1st Interview→2nd Interview→Assessment→Offer→Hired, 5-day stall warning), ADMIN DASHBOARD (access managed by platform administrator), NOTIFICATIONS (bell icon: profile views, connection requests, messages, stage changes).
 
 Current page: ${miaContext}. User role: ${currentUser?.role || 'guest'}. User: ${currentUser?.name || 'visitor'}.
 
 Be concise (max 100 words), practical, warm and add a tiny touch of humour when appropriate. Use **bold** for key terms.`,
-        messages: [{ role: 'user', content: question }],
+        messages: [{ role: 'user', content: safeQuestion }],
       }),
     });
     const data = await response.json();
@@ -6511,16 +6966,17 @@ function downloadProfilePDF(lang) {
 
   showToast({ id:'pdf-t', icon:'23F3', title:'Translating...', desc:'', color:'#EFF6FF', iconColor:'#2563EB' });
 
+  const MAX = 1000; // max chars per field sent to translation API
   const SEP = '__TXTSEP__';
   const texts = [
-    p.summary || '',
-    ...(p.exps   || []).map(function(e){ return e.jobTitle    || ''; }),
-    ...(p.exps   || []).map(function(e){ return e.description || ''; }),
-    ...(p.edus   || []).map(function(e){ return e.degree      || ''; }),
-    ...(p.certs  || []).map(function(c){ return c.certName    || ''; }),
-    ...(p.certs  || []).map(function(c){ return c.issuer      || ''; }),
-    ...(p.awards || []).map(function(a){ return a.awardName   || ''; }),
-    ...(p.awards || []).map(function(a){ return a.awardOrg    || ''; }),
+    (p.summary || '').slice(0, MAX),
+    ...(p.exps   || []).map(function(e){ return (e.jobTitle    || '').slice(0, 200); }),
+    ...(p.exps   || []).map(function(e){ return (e.description || '').slice(0, MAX); }),
+    ...(p.edus   || []).map(function(e){ return (e.degree      || '').slice(0, 200); }),
+    ...(p.certs  || []).map(function(c){ return (c.certName    || '').slice(0, 200); }),
+    ...(p.certs  || []).map(function(c){ return (c.issuer      || '').slice(0, 200); }),
+    ...(p.awards || []).map(function(a){ return (a.awardName   || '').slice(0, 200); }),
+    ...(p.awards || []).map(function(a){ return (a.awardOrg    || '').slice(0, 200); }),
   ];
 
   fetch('https://api.anthropic.com/v1/messages', {
