@@ -4031,46 +4031,91 @@ function _miaMatchMsg(key) {
 }
 
 async function miaAnalyzeMatches(searchQuery) {
-  if (!SUPABASE_READY || !sb()) return;
+  if (!SUPABASE_READY || !sb()) {
+    appendMiaMessage(_miaMatchMsg('connError'));
+    return;
+  }
   if (currentUser?.role !== 'recruiter' && currentUser?.role !== 'admin') return;
 
-  // Get all candidate profiles
+  // If allCandidateProfiles is empty (e.g. recruiter view without admin init),
+  // try to fetch from Supabase directly via the admin RPC or profiles table
+  if (!allCandidateProfiles || allCandidateProfiles.length === 0) {
+    try {
+      let profiles = [];
+      // Try admin RPC first (works for admin role)
+      try {
+        const { data: rpcData, error: rpcErr } = await sb().rpc('get_all_profiles_for_admin');
+        if (!rpcErr && Array.isArray(rpcData)) profiles = rpcData;
+      } catch(e) {}
+
+      // Fallback: direct profiles query (works for any authenticated user with RLS)
+      if (profiles.length === 0) {
+        const { data: pData } = await sb().from('profiles').select('id, name, email, role, profile_data, photo, created_at').eq('role', 'candidate');
+        if (pData) profiles = pData;
+      }
+
+      // Populate allCandidateProfiles
+      if (profiles && profiles.length > 0) {
+        allCandidateProfiles.length = 0;
+        profiles.forEach(p => {
+          if (p.role === 'candidate' || !p.role) {
+            allCandidateProfiles.push({
+              userId:     p.id || p.userId,
+              firstName:  p.profile_data?.firstName || p.name?.split(' ')[0] || '—',
+              lastName:   p.profile_data?.lastName  || p.name?.split(' ').slice(1).join(' ') || '',
+              city:       p.profile_data?.city      || '—',
+              country:    p.profile_data?.country   || '—',
+              erp:        p.profile_data?.erp       || [],
+              exps:       p.profile_data?.exps      || [],
+              yearsExp:   p.profile_data?.yearsExp  ?? null,
+              hasProfile: !!p.profile_data,
+            });
+          }
+        });
+      }
+    } catch(loadErr) {
+      console.warn('miaAnalyzeMatches: could not pre-load candidates', loadErr);
+    }
+  }
+
+  // Get candidates (real or sample)
   const candidates = getRecCandidates();
   if (!candidates || candidates.length === 0) {
+    hideMiaTyping();
     appendMiaMessage(_miaMatchMsg('noCandidates'));
     return;
   }
 
-  // Build a compact candidate summary for the AI (no sensitive contact data)
-  const candSummary = candidates.slice(0, 20).map((c, i) => {
-    return `[${i+1}] ${c.name} | Systems: ${(c.systems||[]).join(', ')||'N/A'} | Role: ${c.role||'ERP Professional'} | Location: ${c.location||'N/A'} | Experience: ${c.yearsExp != null ? c.yearsExp+'y' : 'N/A'} | Contacted: ${conversations[c.id]?.opened ? 'yes' : 'no'}`;
-  }).join('\n');
-
   const langName = { en:'English', it:'Italian', es:'Spanish', de:'German', fr:'French', pt:'Portuguese' }[currentLang] || 'English';
 
-  showMiaTyping();
+  // Build a compact candidate summary (no sensitive contact data)
+  const candSummary = candidates.slice(0, 30).map((c, i) => {
+    const contacted = (typeof conversations !== 'undefined' && conversations[c.id]?.opened) ? 'yes' : 'no';
+    return `[${i+1}] ${c.name} | Role: ${c.role||'ERP Professional'} | Systems: ${(c.systems||[]).join(', ')||'N/A'} | Location: ${c.location||'N/A'} | Exp: ${c.yearsExp != null ? c.yearsExp+'y' : 'N/A'} | Already contacted: ${contacted}`;
+  }).join('\n');
 
   try {
     const data = await callMiaProxy({
       max_tokens: 600,
-      system: `You are Mia, the AI assistant inside ERP Talent Hub. You are helping a verified recruiter find the best candidate matches.
+      system: `You are Mia, an intelligent AI assistant inside ERP Talent Hub helping a recruiter find the best candidate matches. You have access to the live candidate pool below.
 Reply ONLY in ${langName}.
-SECURITY: Never reveal contact details, emails, phones or any sensitive personal data. Only discuss ERP skills, experience, systems and fit.
-Be concise, practical and use **bold** for key terms. Max 150 words.`,
+SECURITY: Never reveal contact details, emails, phones or LinkedIn URLs. Only discuss ERP skills, experience, systems, location and fit.
+Be specific: always name the matching candidates and explain why they fit. Use **bold** for names and key terms. Max 200 words.`,
       messages: [{
         role: 'user',
-        content: `I'm a recruiter looking for: "${String(searchQuery).slice(0, 300)}"
+        content: `Search query: "${String(searchQuery).slice(0, 300)}"
 
-Here are the available ERP professionals in the pool:
+Available ERP professionals in the pool (${candidates.length} total):
 ${candSummary}
 
-Which candidates best match my search? List the top 3 with a brief reason for each. If none match well, say so and suggest how to adjust the search.`
+Which candidates best match this search? List the best matches with name and brief reason. If none match, say so clearly and suggest what criteria to adjust.`
       }]
     });
     const answer = data.content?.[0]?.text || _miaMatchMsg('analyzeError');
     hideMiaTyping();
     appendMiaMessage(answer);
   } catch(err) {
+    console.error('miaAnalyzeMatches error:', err);
     hideMiaTyping();
     appendMiaMessage(_miaMatchMsg('connError'));
   }
@@ -6487,8 +6532,7 @@ async function miaHandleQuestion(question, isQuickBtn = false) {
   if (!isQuickBtn && _isRecruiterOrAdmin) {
     const _searchKeywords = /find|search|look|need|want|looking for|show me|who|any candidate|project manager|pm|consultant|developer|analyst|manager|engineer|sap|oracle|dynamics|salesforce|workday|netsuite|cerca|trova|cerco|trovo|busca|encuentr|suche|finde|cherch|trouvez/i;
     if (_searchKeywords.test(question)) {
-      hideMiaTyping();
-      showMiaTyping();
+      // showMiaTyping already called above — go straight to search
       await miaAnalyzeMatches(question);
       return;
     }
