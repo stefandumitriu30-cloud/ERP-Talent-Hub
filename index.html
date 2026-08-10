@@ -1061,24 +1061,6 @@ input[type=file].photo-input{display:none}
 </div>
 
 
-<!-- ═══════════════════ ONBOARDING TOUR ═══════════════════ -->
-<div id="onboarding-overlay" class="onboarding-overlay" style="display:none">
-  <div class="onboarding-card">
-    <div class="onboarding-icon" id="ob-icon">👋</div>
-    <div class="onboarding-step" id="ob-step">Step 1 of 4</div>
-    <div class="onboarding-title" id="ob-title">Welcome to ERP Talent Hub!</div>
-    <div class="onboarding-desc" id="ob-desc">The dedicated platform connecting ERP professionals with verified recruiters.</div>
-    <div class="onboarding-dots" id="ob-dots">
-      <div class="onboarding-dot active"></div><div class="onboarding-dot"></div>
-      <div class="onboarding-dot"></div><div class="onboarding-dot"></div>
-    </div>
-    <div class="onboarding-actions">
-      <button class="onboarding-skip" onclick="skipOnboarding()" data-i18n="ob.skip">Skip</button>
-      <button class="onboarding-next" id="ob-btn" onclick="nextOnboardingStep()">Next →</button>
-    </div>
-  </div>
-</div>
-
 <!-- ═══════════════════ PDF LANGUAGE PICKER ═══════════════════ -->
 <div id="pdf-lang-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9000;align-items:center;justify-content:center" onclick="if(event.target===this)closePdfLangPicker()">
   <div style="background:var(--white);border-radius:var(--radius-lg);padding:28px 28px 24px;max-width:340px;width:90%;box-shadow:var(--shadow-md);text-align:center">
@@ -3703,7 +3685,7 @@ function renderRecMessages(candidateId) {
     const bgColor = isMe ? (recPhotoBase64 ? 'transparent' : avatarColor('Recruiter')) : (savedProfile?.photo ? 'transparent' : avatarColor(cand.name));
     const avatarHTML = isMe
       ? (recPhotoBase64 ? `<img src="${recPhotoBase64}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : initials('RE'))
-      : (savedProfile?.photo ? `<img src="${savedProfile.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : initials(cand.name));
+      : (safePhotoSrc(savedProfile?.photo) ? `<img src="${safePhotoSrc(savedProfile.photo)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : initials(cand.name));
     const timeStr = m.time ? new Date(m.time).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}) : '';
     const row = document.createElement('div');
     row.className = 'msg-row' + (isMe ? ' mine' : '');
@@ -3884,7 +3866,7 @@ function renderCandMessages(candidateId) {
       ? (savedProfile?.photo ? 'transparent' : avatarColor('cand self'))
       : (recPhotoBase64 ? 'transparent' : avatarColor('Recruiter REC'));
     const avatarHTML = isMe
-      ? (savedProfile?.photo ? `<img src="${savedProfile.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : initials('ME'))
+      ? (safePhotoSrc(savedProfile?.photo) ? `<img src="${safePhotoSrc(savedProfile.photo)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : initials('ME'))
       : (recPhotoBase64 ? `<img src="${recPhotoBase64}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : 'HR');
     const timeStr = m.time ? new Date(m.time).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}) : '';
     const row = document.createElement('div');
@@ -4063,29 +4045,22 @@ async function miaAnalyzeMatches(searchQuery) {
   showMiaTyping();
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 600,
-        system: `You are Mia, the AI assistant inside ERP Talent Hub. You are helping a verified recruiter find the best candidate matches.
+    const data = await callMiaProxy({
+      max_tokens: 600,
+      system: `You are Mia, the AI assistant inside ERP Talent Hub. You are helping a verified recruiter find the best candidate matches.
 Reply ONLY in ${langName}.
 SECURITY: Never reveal contact details, emails, phones or any sensitive personal data. Only discuss ERP skills, experience, systems and fit.
 Be concise, practical and use **bold** for key terms. Max 150 words.`,
-        messages: [{
-          role: 'user',
-          content: `I'm a recruiter looking for: "${String(searchQuery).slice(0, 300)}"
+      messages: [{
+        role: 'user',
+        content: `I'm a recruiter looking for: "${String(searchQuery).slice(0, 300)}"
 
 Here are the available ERP professionals in the pool:
 ${candSummary}
 
 Which candidates best match my search? List the top 3 with a brief reason for each. If none match well, say so and suggest how to adjust the search.`
-        }]
-      })
+      }]
     });
-
-    const data = await response.json();
     const answer = data.content?.[0]?.text || _miaMatchMsg('analyzeError');
     hideMiaTyping();
     appendMiaMessage(answer);
@@ -4211,6 +4186,17 @@ function validateSummaryOnBlur(textarea, errId) {
 function escHtml(str) {
   if (str === null || str === undefined) return '';
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#x27;').replace(/\n/g,'<br>');
+}
+
+// Valida e sanifica un valore 'photo' prima di usarlo come attributo src.
+// Accetta solo data-URI immagine in base64 o URL https; blocca qualsiasi
+// altro valore (previene XSS stored tramite il campo foto profilo).
+function safePhotoSrc(photo) {
+  if (!photo || typeof photo !== 'string') return null;
+  const isDataImage = /^data:image\/(png|jpe?g|gif|webp);base64,[A-Za-z0-9+/=]+$/.test(photo);
+  const isHttpsUrl = /^https:\/\/[^\s"'<>]+$/.test(photo);
+  if (!isDataImage && !isHttpsUrl) return null;
+  return escHtml(photo);
 }
 
 function autoResizeTextarea(el) {
@@ -4667,7 +4653,7 @@ function renderAdminList() {
       div.className = 'cand-card';
       div.onclick = () => showAdminCandidateDetail(p);
       div.innerHTML = `
-        <div style="${p.photo ? `width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0` : `width:38px;height:38px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0`}">${p.photo ? `<img src="${p.photo}" style="width:100%;height:100%;object-fit:cover">` : initials(fullName)}</div>
+        <div style="${safePhotoSrc(p.photo) ? `width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0` : `width:38px;height:38px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0`}">${safePhotoSrc(p.photo) ? `<img src="${safePhotoSrc(p.photo)}" style="width:100%;height:100%;object-fit:cover">` : initials(fullName)}</div>
         <div class="cand-info">
           <div class="cand-name">${escHtml(fullName)}</div>
           <div class="cand-meta">${escHtml(p.email)}</div>
@@ -4694,7 +4680,7 @@ function renderAdminList() {
       div.className = 'cand-card';
       div.onclick = () => showAdminRecruiterDetail(r);
       div.innerHTML = `
-        <div style="${r.photo ? `width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0` : `width:38px;height:38px;border-radius:50%;background:${avatarColor(r.name)};display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0`}">${r.photo ? `<img src="${r.photo}" style="width:100%;height:100%;object-fit:cover">` : initials(r.name)}</div>
+        <div style="${safePhotoSrc(r.photo) ? `width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0` : `width:38px;height:38px;border-radius:50%;background:${avatarColor(r.name)};display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0`}">${safePhotoSrc(r.photo) ? `<img src="${safePhotoSrc(r.photo)}" style="width:100%;height:100%;object-fit:cover">` : initials(r.name)}</div>
         <div class="cand-info">
           <div class="cand-name">${escHtml(r.name)}</div>
           <div class="cand-meta">${escHtml(r.company)}</div>
@@ -4733,7 +4719,7 @@ function showAdminCandidateDetail(p) {
     <div style="padding:28px;overflow-y:auto;height:100%">
       <!-- Header -->
       <div style="display:flex;align-items:center;gap:14px;margin-bottom:24px;flex-wrap:wrap">
-        <div style="${p.photo ? `width:52px;height:52px;border-radius:50%;overflow:hidden;flex-shrink:0` : `width:52px;height:52px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;flex-shrink:0`}">${p.photo ? `<img src="${p.photo}" style="width:100%;height:100%;object-fit:cover">` : initials(fullName)}</div>
+        <div style="${safePhotoSrc(p.photo) ? `width:52px;height:52px;border-radius:50%;overflow:hidden;flex-shrink:0` : `width:52px;height:52px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;flex-shrink:0`}">${safePhotoSrc(p.photo) ? `<img src="${safePhotoSrc(p.photo)}" style="width:100%;height:100%;object-fit:cover">` : initials(fullName)}</div>
         <div>
           <div style="font-size:18px;font-weight:600">${escHtml(fullName)}</div>
           <div style="font-size:13px;color:var(--gray-500)"><i class="fa-solid fa-location-dot" style="color:var(--blue);margin-right:4px"></i>${[p.city, p.province, p.country].filter(Boolean).join(', ')}</div>
@@ -4786,7 +4772,7 @@ function showAdminRecruiterDetail(r) {
   detail.innerHTML = `
     <div style="padding:28px;overflow-y:auto;height:100%">
       <div style="display:flex;align-items:center;gap:14px;margin-bottom:24px;flex-wrap:wrap">
-        <div style="${r.photo ? `width:52px;height:52px;border-radius:50%;overflow:hidden;flex-shrink:0` : `width:52px;height:52px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;flex-shrink:0`}">${r.photo ? `<img src="${r.photo}" style="width:100%;height:100%;object-fit:cover">` : initials(r.name)}</div>
+        <div style="${safePhotoSrc(r.photo) ? `width:52px;height:52px;border-radius:50%;overflow:hidden;flex-shrink:0` : `width:52px;height:52px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;flex-shrink:0`}">${safePhotoSrc(r.photo) ? `<img src="${safePhotoSrc(r.photo)}" style="width:100%;height:100%;object-fit:cover">` : initials(r.name)}</div>
         <div>
           <div style="font-size:18px;font-weight:600">${escHtml(r.name)}</div>
           <div style="font-size:13px;color:var(--gray-500)">${escHtml(r.company)}</div>
@@ -4833,6 +4819,31 @@ function sb() {
     });
   }
   return _sb;
+}
+
+// ─────────────────────────────────────────
+// AI PROXY (Mia) — calls the Supabase Edge Function 'ai-proxy' instead of
+// hitting api.anthropic.com directly from the browser. The Anthropic API key
+// lives only server-side (edge function secret), never in client code.
+// Requires a valid, logged-in Supabase session: the edge function verifies
+// the bearer token before forwarding the request and applies its own limits.
+// ─────────────────────────────────────────
+async function callMiaProxy({ model = 'claude-sonnet-4-6', max_tokens = 400, system, messages }) {
+  if (!SUPABASE_READY || !sb()) throw new Error('AI proxy unavailable: Supabase not configured');
+  const { data: { session } } = await sb().auth.getSession();
+  if (!session?.access_token) throw new Error('AI proxy requires an authenticated session');
+
+  const resp = await fetch(`${SUPABASE_URL}/functions/v1/ai-proxy`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': SUPABASE_ANON,
+      'Authorization': `Bearer ${session.access_token}`,
+    },
+    body: JSON.stringify({ model, max_tokens, system, messages }),
+  });
+  if (!resp.ok) throw new Error(`AI proxy error: ${resp.status}`);
+  return resp.json();
 }
 
 // ─────────────────────────────────────────
@@ -5509,8 +5520,9 @@ function renderNav() {
   }
   authBtns.style.display = 'none'; userWrap.style.display = 'flex';
   const avatarEl = document.getElementById('nav-user-avatar');
-  if (currentUser.photo) {
-    avatarEl.innerHTML = '<img src="' + currentUser.photo + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
+  const navSafePhoto = safePhotoSrc(currentUser.photo);
+  if (navSafePhoto) {
+    avatarEl.innerHTML = '<img src="' + navSafePhoto + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
     avatarEl.style.background = 'transparent';
   } else {
     avatarEl.textContent = initials(currentUser.name);
@@ -6287,9 +6299,9 @@ function miaGreet(ctx) {
       const script  = scripts[ctx] || scripts['home'];
       appendMiaMessage(script.greeting);
       setMiaQuickBtns(script.quick || []);
-      // Show PDF tip after greeting — use same captured lang. Not relevant for recruiters,
-      // who never create a profile or download a CV as PDF, so skip it entirely for recruiters.
-      var _recruiterContexts = ['recruiter_portal', 'recruiter_chat'];
+      // Show PDF tip after greeting — not relevant for recruiters (they never create a PDF CV).
+      // Block on: all recruiter-specific contexts, AND any logged-in recruiter user.
+      var _recruiterContexts = ['recruiter', 'recruiter_portal', 'recruiter_chat', 'gate1', 'gate2'];
       var _isRecruiter = currentUser && currentUser.role === 'recruiter';
       if (!_recruiterContexts.includes(ctx) && !_isRecruiter) {
         var _pdfTips = {
@@ -6470,13 +6482,9 @@ async function miaHandleQuestion(question, isQuickBtn = false) {
     // Truncate to 500 chars max to prevent DoS and cost abuse
     const safeQuestion = String(question).slice(0, 500);
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 400,
-        system: `You are Mia, a warm, sweet, and slightly funny AI assistant inside ERP Talent Hub — a platform connecting ERP professionals with verified recruiters.
+    const data = await callMiaProxy({
+      max_tokens: 400,
+      system: `You are Mia, a warm, sweet, and slightly funny AI assistant inside ERP Talent Hub — a platform connecting ERP professionals with verified recruiters.
 
 CRITICAL: You MUST reply ONLY in ${langName}. Never use any other language under any circumstances.
 
@@ -6487,10 +6495,8 @@ Platform sections: HOME (landing), REGISTER/LOGIN (choose role: ERP Professional
 Current page: ${miaContext}. User role: ${currentUser?.role || 'guest'}. User: ${currentUser?.name || 'visitor'}.
 
 Be concise (max 100 words), practical, warm and add a tiny touch of humour when appropriate. Use **bold** for key terms.`,
-        messages: [{ role: 'user', content: safeQuestion }],
-      }),
+      messages: [{ role: 'user', content: safeQuestion }],
     });
-    const data = await response.json();
     const answer = data.content?.[0]?.text || MIA_FALLBACKS['default'];
     hideMiaTyping();
     appendMiaMessage(answer);
@@ -6541,7 +6547,36 @@ function getPrebuiltAnswer(label) {
 
     // ── EN ──
     "I\'m a candidate":          "As an **ERP Professional**, you register, build your profile, and get discovered by verified recruiters. Your contact details stay private until a recruiter requests access. Click **Register** to get started! 🚀",
+    "I'm a candidate":          "As an **ERP Professional**, you register, build your profile, and get discovered by verified recruiters. Your contact details stay private until a recruiter requests access. Click **Register** to get started! 🚀",
     "I'm a recruiter":          "As a **Recruiter**, you verify your LinkedIn Recruiter account, then browse ERP professionals by system, module and seniority. You always contact candidates first. Click **For recruiters** to begin! 💼",
+
+    // ── EN login quick buttons ──
+    "I forgot my password":      "No problem! Click the **'Forgot password?'** link below the password field on the login screen. Enter your email and we'll send you a reset link right away 📧",
+    "I can't find my account":   "Make sure you're using the **same email** you registered with. Check for typos! If the problem persists, contact us at **erptalenthub@gmail.com** 😊",
+    "What is my role?":          "Your role was chosen at registration:\n• **ERP Professional** — you create a profile and get found by recruiters\n• **Recruiter** — you verify LinkedIn Recruiter and contact candidates\n\nTo change your role, contact **erptalenthub@gmail.com**.",
+
+    // ── IT login quick buttons ──
+    "Ho dimenticato la password": "Nessun problema! Clicca il link **'Password dimenticata?'** sotto il campo password nella schermata di login. Inserisci la tua email e ti invieremo subito un link di reset 📧",
+    "Non trovo il mio account":   "Assicurati di usare la **stessa email** con cui ti sei registrato. Controlla eventuali errori di battitura! Se il problema persiste, contattaci a **erptalenthub@gmail.com** 😊",
+
+    // ── ES login quick buttons ──
+    "Olvidé mi contraseña":       "¡Sin problema! Haz clic en el enlace **'¿Olvidaste tu contraseña?'** bajo el campo de contraseña en la pantalla de login. Introduce tu email y te enviaremos un enlace de restablecimiento 📧",
+    "No encuentro mi cuenta":     "Asegúrate de usar el **mismo email** con el que te registraste. ¡Comprueba si hay errores tipográficos! Si el problema persiste, contáctanos en **erptalenthub@gmail.com** 😊",
+    "¿Cuál es mi rol?":           "Tu rol fue elegido al registrarte:\n• **Profesional ERP** — creas un perfil y los recruiters te encuentran\n• **Recruiter** — verificas LinkedIn Recruiter y contactas candidatos\n\nPara cambiar de rol, contacta **erptalenthub@gmail.com**.",
+
+    // ── DE login quick buttons ──
+    "Ich habe mein Passwort vergessen": "Kein Problem! Klicken Sie auf den Link **'Passwort vergessen?'** unter dem Passwortfeld im Login-Bildschirm. Geben Sie Ihre E-Mail ein und wir senden Ihnen sofort einen Reset-Link 📧",
+    "Ich finde mein Konto nicht":       "Stellen Sie sicher, dass Sie die **gleiche E-Mail** verwenden, mit der Sie sich registriert haben. Überprüfen Sie auf Tippfehler! Bei anhaltenden Problemen kontaktieren Sie uns unter **erptalenthub@gmail.com** 😊",
+    "Was ist meine Rolle?":             "Ihre Rolle wurde bei der Registrierung gewählt:\n• **ERP-Fachmann** — Sie erstellen ein Profil und werden von Recruitern gefunden\n• **Recruiter** — Sie verifizieren LinkedIn Recruiter und kontaktieren Kandidaten\n\nZum Rollenwechsel wenden Sie sich an **erptalenthub@gmail.com**.",
+
+    // ── FR login quick buttons ──
+    "J'ai oublié mon mot de passe": "Pas de problème ! Cliquez sur le lien **'Mot de passe oublié ?'** sous le champ mot de passe sur l'écran de connexion. Entrez votre email et nous vous enverrons immédiatement un lien de réinitialisation 📧",
+    "Je ne trouve pas mon compte":  "Assurez-vous d'utiliser le **même email** avec lequel vous vous êtes inscrit. Vérifiez les fautes de frappe ! Si le problème persiste, contactez-nous à **erptalenthub@gmail.com** 😊",
+    "Quel est mon rôle ?":          "Votre rôle a été choisi lors de l'inscription :\n• **Professionnel ERP** — vous créez un profil et les recruteurs vous trouvent\n• **Recruteur** — vous vérifiez LinkedIn Recruiter et contactez les candidats\n\nPour changer de rôle, contactez **erptalenthub@gmail.com**.",
+
+    // ── PT login quick buttons ──
+    "Esqueci minha senha":          "Sem problema! Clique no link **'Esqueceu a senha?'** abaixo do campo de senha na tela de login. Insira o seu email e enviaremos um link de redefinição imediatamente 📧",
+    "Não encontro minha conta":     "Certifique-se de usar o **mesmo email** com que se registrou. Verifique possíveis erros de digitação! Se o problema persistir, contacte-nos em **erptalenthub@gmail.com** 😊",
     "How does it work?":        "ERP Talent Hub in 3 steps:\n1. **Candidates** register and build their profile\n2. **Verified recruiters** browse and contact candidates\n3. **Candidates reply** once a recruiter writes first\n\nSimple, private, and ERP-focused! 🎯",
     "Tell me about privacy":    "Your **email, phone and LinkedIn** are never shown publicly 🔒\n\nThey're only shared with a specific recruiter after they request access and you accept. Only verified LinkedIn Recruiter accounts can reach you.",
     "What's the difference between roles?": "**ERP Professional** = you're looking for opportunities and want recruiters to find you.\n\n**Recruiter** = you're hiring and need to verify your LinkedIn Recruiter account first.",
@@ -6564,6 +6599,36 @@ function getPrebuiltAnswer(label) {
     "What can I do after verification?": "After verification you can:\n• Browse all ERP professional profiles\n• Filter by system, module, seniority\n• Open conversations with candidates\n• Manage their selection pipeline stages\n\nThe full talent pool is yours! 🎉",
     "Where do I find my profile URL?": "Go to **LinkedIn** → click your profile picture → **View profile** → copy the URL from your browser. It looks like: `linkedin.com/in/your-name`",
     "What if verification fails?": "If verification fails, make sure you're using your **LinkedIn Recruiter** profile URL (not a standard LinkedIn profile). Try again with the correct URL or contact the admin 📧",
+
+    // ── EN gate1 quick buttons ──
+    "What is a LinkedIn Recruiter account?": "**LinkedIn Recruiter** is a paid LinkedIn plan for talent acquisition professionals. It gives access to advanced candidate search, filters and InMail. ERP Talent Hub requires this licence to protect candidates from unverified contacts. If your company subscribes to LinkedIn Talent Solutions, you likely already have access 🔍",
+    "Where do I find my profile URL?": "Go to **LinkedIn** → click your profile picture → **View profile** → copy the URL from your browser address bar. It looks like: `linkedin.com/in/your-name`. Make sure it's your **Recruiter** profile, not a standard one!",
+    "What if I don't have LinkedIn Recruiter?": "Unfortunately, **LinkedIn Recruiter access is required** to use the ERP Talent Hub recruiter portal. This is how we protect candidates from unverified contacts and spam 🛡️\n\nLinkedIn Recruiter is available as part of LinkedIn Talent Solutions — many HR teams and agencies already have access. If your company subscribes, ask your admin.\n\nIf you believe you should have access, contact us at **erptalenthub@gmail.com** and we'll do our best to help! 😊",
+
+    // ── IT gate1 quick buttons ──
+    "Cos'è un account LinkedIn Recruiter?": "**LinkedIn Recruiter** è un piano LinkedIn a pagamento per i professionisti dell'acquisizione di talenti. Offre ricerca avanzata di candidati, filtri e InMail. ERP Talent Hub richiede questa licenza per proteggere i candidati da contatti non verificati. Se la tua azienda è abbonata a LinkedIn Talent Solutions, probabilmente hai già accesso 🔍",
+    "Dove trovo il mio URL?": "Vai su **LinkedIn** → clicca sulla tua foto profilo → **Visualizza profilo** → copia l'URL dalla barra degli indirizzi del browser. Sarà simile a: `linkedin.com/in/il-tuo-nome`. Assicurati che sia il profilo **Recruiter**, non quello standard!",
+    "E se non ho LinkedIn Recruiter?": "Purtroppo, **l'accesso a LinkedIn Recruiter è necessario** per utilizzare il portale recruiter di ERP Talent Hub. È il modo in cui proteggiamo i candidati da contatti non verificati e spam 🛡️\n\nLinkedIn Recruiter fa parte di LinkedIn Talent Solutions — molti team HR e agenzie ne hanno già accesso. Se la tua azienda è abbonata, chiedi al tuo admin.\n\nSe ritieni di dover avere accesso, contattaci a **erptalenthub@gmail.com** e faremo del nostro meglio per aiutarti! 😊",
+
+    // ── ES gate1 quick buttons ──
+    "¿Qué es una cuenta LinkedIn Recruiter?": "**LinkedIn Recruiter** es un plan de LinkedIn de pago para profesionales de adquisición de talento. Ofrece búsqueda avanzada de candidatos, filtros e InMail. ERP Talent Hub requiere esta licencia para proteger a los candidatos de contactos no verificados. Si tu empresa está suscrita a LinkedIn Talent Solutions, probablemente ya tengas acceso 🔍",
+    "¿Dónde encuentro mi URL?": "Ve a **LinkedIn** → haz clic en tu foto de perfil → **Ver perfil** → copia la URL de la barra de direcciones del navegador. Tendrá este aspecto: `linkedin.com/in/tu-nombre`. ¡Asegúrate de que sea tu perfil **Recruiter**, no el estándar!",
+    "¿Y si no tengo LinkedIn Recruiter?": "Desafortunadamente, **el acceso a LinkedIn Recruiter es necesario** para usar el portal de reclutadores de ERP Talent Hub. Así protegemos a los candidatos de contactos no verificados y spam 🛡️\n\nLinkedIn Recruiter está disponible como parte de LinkedIn Talent Solutions — muchos equipos de RRHH y agencias ya tienen acceso. Si tu empresa está suscrita, consulta con tu administrador.\n\nSi crees que deberías tener acceso, contáctanos en **erptalenthub@gmail.com** ¡y haremos todo lo posible para ayudarte! 😊",
+
+    // ── DE gate1 quick buttons ──
+    "Was ist ein LinkedIn Recruiter-Konto?": "**LinkedIn Recruiter** ist ein kostenpflichtiges LinkedIn-Abonnement für Talentakquise-Profis. Es bietet erweiterte Kandidatensuche, Filter und InMail. ERP Talent Hub erfordert diese Lizenz, um Kandidaten vor nicht verifizierten Kontakten zu schützen. Wenn Ihr Unternehmen LinkedIn Talent Solutions abonniert hat, haben Sie wahrscheinlich bereits Zugang 🔍",
+    "Wo finde ich meine URL?": "Gehen Sie zu **LinkedIn** → klicken Sie auf Ihr Profilbild → **Profil anzeigen** → kopieren Sie die URL aus der Adressleiste. Sie sieht so aus: `linkedin.com/in/ihr-name`. Stellen Sie sicher, dass es Ihr **Recruiter**-Profil ist, nicht das Standardprofil!",
+    "Was wenn ich kein LinkedIn Recruiter habe?": "Leider ist **LinkedIn Recruiter erforderlich**, um das ERP Talent Hub Recruiter-Portal zu nutzen. So schützen wir Kandidaten vor nicht verifizierten Kontakten und Spam 🛡️\n\nLinkedIn Recruiter ist Teil von LinkedIn Talent Solutions — viele HR-Teams und Agenturen haben bereits Zugang. Wenn Ihr Unternehmen abonniert ist, fragen Sie Ihren Administrator.\n\nWenn Sie glauben, Zugang haben zu sollen, kontaktieren Sie uns unter **erptalenthub@gmail.com** — wir helfen gerne! 😊",
+
+    // ── FR gate1 quick buttons ──
+    "Qu'est-ce qu'un compte LinkedIn Recruiter ?": "**LinkedIn Recruiter** est un abonnement LinkedIn payant pour les professionnels de l'acquisition de talents. Il offre une recherche avancée de candidats, des filtres et InMail. ERP Talent Hub exige cette licence pour protéger les candidats des contacts non vérifiés. Si votre entreprise est abonnée à LinkedIn Talent Solutions, vous avez probablement déjà accès 🔍",
+    "Où trouver mon URL ?": "Allez sur **LinkedIn** → cliquez sur votre photo de profil → **Voir le profil** → copiez l'URL dans la barre d'adresse du navigateur. Elle ressemble à : `linkedin.com/in/votre-nom`. Assurez-vous que c'est votre profil **Recruiter**, pas le profil standard !",
+    "Et si je n'ai pas LinkedIn Recruiter ?": "Malheureusement, **l'accès à LinkedIn Recruiter est requis** pour utiliser le portail recruteur d'ERP Talent Hub. C'est ainsi que nous protégeons les candidats des contacts non vérifiés et du spam 🛡️\n\nLinkedIn Recruiter est disponible dans le cadre de LinkedIn Talent Solutions — de nombreuses équipes RH et agences y ont déjà accès. Si votre entreprise est abonnée, demandez à votre administrateur.\n\nSi vous pensez devoir avoir accès, contactez-nous à **erptalenthub@gmail.com** et nous ferons de notre mieux pour vous aider ! 😊",
+
+    // ── PT gate1 quick buttons ──
+    "O que é uma conta LinkedIn Recruiter?": "**LinkedIn Recruiter** é um plano LinkedIn pago para profissionais de aquisição de talentos. Oferece pesquisa avançada de candidatos, filtros e InMail. O ERP Talent Hub requer esta licença para proteger os candidatos de contactos não verificados. Se a sua empresa tem uma subscrição de LinkedIn Talent Solutions, provavelmente já tem acesso 🔍",
+    "Onde encontro meu URL?": "Vá ao **LinkedIn** → clique na sua foto de perfil → **Ver perfil** → copie o URL da barra de endereços do browser. Tem este aspecto: `linkedin.com/in/o-seu-nome`. Certifique-se de que é o seu perfil **Recruiter**, não o padrão!",
+    "E se eu não tiver LinkedIn Recruiter?": "Infelizmente, **o acesso ao LinkedIn Recruiter é necessário** para usar o portal de recrutadores do ERP Talent Hub. É assim que protegemos os candidatos de contactos não verificados e spam 🛡️\n\nO LinkedIn Recruiter está disponível como parte do LinkedIn Talent Solutions — muitas equipas de RH e agências já têm acesso. Se a sua empresa estiver subscrita, consulte o seu administrador.\n\nSe acredita que deveria ter acesso, contacte-nos em **erptalenthub@gmail.com** e faremos o possível para ajudar! 😊",
 
     // ── IT ──
     "Sono un candidato":        "Come **Professionista ERP**, ti registri, costruisci il profilo e vieni trovato dai recruiter verificati. I tuoi recapiti restano privati finché un recruiter non ne fa richiesta. Clicca **Registrati** per iniziare! 🚀",
@@ -7215,19 +7280,13 @@ function downloadProfilePDF(lang) {
     ...(p.awards || []).map(function(a){ return (a.awardOrg    || '').slice(0, 200); }),
   ];
 
-  fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 3000,
-      messages: [{
-        role: 'user',
-        content: 'Translate into ' + langName + ' for a professional CV. Segments separated by __TXTSEP__. Return ONLY the translated segments separated by __TXTSEP__. Keep unchanged: company names, SAP/Oracle/Dynamics/NetSuite/Workday/Infor/IFS/Sage, institution names, dates, numbers, emails, URLs. Translate empty segments as empty.\n\n' + texts.join(SEP)
-      }]
-    })
+  callMiaProxy({
+    max_tokens: 3000,
+    messages: [{
+      role: 'user',
+      content: 'Translate into ' + langName + ' for a professional CV. Segments separated by __TXTSEP__. Return ONLY the translated segments separated by __TXTSEP__. Keep unchanged: company names, SAP/Oracle/Dynamics/NetSuite/Workday/Infor/IFS/Sage, institution names, dates, numbers, emails, URLs. Translate empty segments as empty.\n\n' + texts.join(SEP)
+    }]
   })
-  .then(function(r) { return r.json(); })
   .then(function(data) {
     var raw = (data.content && data.content[0] && data.content[0].text) || '';
     var out = raw.split(SEP);
