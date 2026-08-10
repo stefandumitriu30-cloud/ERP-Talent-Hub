@@ -3935,39 +3935,45 @@ function _normalizeProfanity(text) {
     .replace(/0/g, 'o').replace(/[$5]/g, 's').replace(/7/g, 't');
 }
 
-const _buildRegex = (function() {
-  const all = Object.values(_PROFANITY_LISTS).flat();
-  const unique = [...new Set(all)];
-  const wordSet = new Set(unique);
-
-  // Multi-word phrases
+// Build a language-aware word set/regex cache. We only check the message
+// against the profanity list of the CURRENT UI language plus English
+// (English insults are common regardless of interface language). Checking
+// against ALL languages at once caused false positives: short common words
+// in one language can collide with profanity in another (e.g. Italian "con"
+// = French slur "con"). Cached per language since lists are static.
+const _profanityCache = {};
+function _getProfanitySet(lang) {
+  if (_profanityCache[lang]) return _profanityCache[lang];
+  const words = [...new Set([...(_PROFANITY_LISTS[lang] || []), ...(_PROFANITY_LISTS.en || [])])];
+  const wordSet = new Set(words);
   const esc = w => w.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
-  const phrases = unique.filter(w => w.includes(' '));
+  const phrases = words.filter(w => w.includes(' '));
   const phraseRx = phrases.length ? new RegExp(phrases.map(esc).join('|'), 'i') : null;
-
-  return { wordSet, phraseRx };
-})();
+  _profanityCache[lang] = { wordSet, phraseRx };
+  return _profanityCache[lang];
+}
 
 function _containsProfanity(text) {
   const norm = _normalizeProfanity(text);
+  const { wordSet, phraseRx } = _getProfanitySet(currentLang || 'en');
 
   // 1. Split into tokens on whitespace + punctuation, check each word
   const tokens = norm.split(/[\s,!?.;:()\[\]{}"'«»\-/\\]+/).filter(Boolean);
   for (const token of tokens) {
     // Strip remaining non-alpha chars from edges (handles merda!, f*ck as separate token)
     const clean = token.replace(/[^a-zàáâãäåæçèéêëìíîïðñòóôõöùúûüýþß]/g, '');
-    if (clean && _buildRegex.wordSet.has(clean)) return true;
+    if (clean && wordSet.has(clean)) return true;
   }
 
   // 2. Multi-word phrase check
-  if (_buildRegex.phraseRx && _buildRegex.phraseRx.test(norm)) return true;
+  if (phraseRx && phraseRx.test(norm)) return true;
 
   // 3. Separator-obfuscation: strip ALL non-alpha from each whitespace-separated token
   //    and check if what remains is a profane word (handles f*ck, f.u.c.k, f-u-c-k)
   const rawTokens = text.split(/\s+/).filter(Boolean);
   for (const rawToken of rawTokens) {
     const stripped = rawToken.toLowerCase().replace(/[^a-z]/g, '');
-    if (stripped && _buildRegex.wordSet.has(stripped)) return true;
+    if (stripped && wordSet.has(stripped)) return true;
   }
 
   return false;
