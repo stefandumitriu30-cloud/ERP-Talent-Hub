@@ -222,14 +222,41 @@ footer strong{color:rgba(255,255,255,.75)}
   #form-view{padding:24px 16px 60px}
   .form-card{padding:20px 16px}
 
-  /* PORTAL */
+  /* PORTAL — mobile: sidebar on top, main below, full page scroll */
   .portal-layout{flex-direction:column}
-  .portal-sidebar{width:100%;max-width:100%;border-right:none;border-bottom:1px solid var(--gray-100);max-height:220px;min-width:unset}
-  .portal-main{flex:1;min-height:0}
-  .rec-welcome-panel{padding:16px 16px;gap:0}
+  .portal-main{flex:1;min-height:300px}
+
+  /* Recruiter portal sidebar: fixed height with internal scroll for candidate list */
+  #recruiter-view .portal-sidebar{
+    width:100%;max-width:100%;border-right:none;
+    border-bottom:1px solid var(--gray-100);
+    min-width:unset;height:auto;max-height:none;overflow:visible;
+    display:flex;flex-direction:column;
+  }
+  #recruiter-view .portal-sidebar-header{flex-shrink:0}
+  #recruiter-view .candidate-list{
+    height:240px;max-height:240px;overflow-y:auto;flex-shrink:0;
+  }
+  #recruiter-view .portal-main{overflow-y:auto;min-height:0}
+
+  /* Candidate inbox sidebar */
+  #candidate-view .portal-sidebar{
+    width:100%;max-width:100%;border-right:none;
+    border-bottom:1px solid var(--gray-100);max-height:220px;min-width:unset;
+  }
+
+  /* Welcome panel on mobile */
+  .rec-welcome-panel{padding:12px 14px;gap:0;overflow-y:auto}
   .rec-stats-row{padding:10px 6px}
   .rec-stat-num{font-size:18px}
   .rec-stat-lbl{font-size:9px;letter-spacing:0}
+
+  /* Make portal-view scrollable on mobile for recruiter */
+  #recruiter-view{height:auto;min-height:100vh;overflow:visible;display:flex;flex-direction:column}
+  #recruiter-view .portal-layout{height:auto;overflow:visible;flex:1}
+
+  /* Admin portal on mobile */
+  #admin-view{height:auto;overflow:visible}
   #admin-view .portal-layout{flex-direction:column;height:auto}
   #admin-view .portal-sidebar{max-height:none;height:auto;min-height:0;overflow:visible}
   #admin-view .candidate-list{max-height:60vh;overflow-y:auto}
@@ -272,7 +299,7 @@ footer strong{color:rgba(255,255,255,.75)}
   .phone-wrapper{flex-direction:row}/* keep inline on phone */
   .phone-prefix-select{min-width:90px;font-size:12px}
 
-  /* PORTAL sidebar collapses to horizontal scroll list */
+  /* PORTAL sidebar collapses to scrollable list on small phones */
   .portal-sidebar{max-height:180px}
   .portal-sidebar-header{padding:12px 12px 8px}
   .portal-title{font-size:14px;margin-bottom:6px}
@@ -283,6 +310,10 @@ footer strong{color:rgba(255,255,255,.75)}
   .cand-avatar{width:32px;height:32px;font-size:12px}
   .cand-name{font-size:12px}
   .cand-meta{font-size:10px}
+
+  /* Recruiter portal on small phones — override max-height to give candidate list room */
+  #recruiter-view .portal-sidebar{max-height:none}
+  #recruiter-view .candidate-list{height:200px;max-height:200px}
 
   /* Admin keeps full-height list on small phones */
   #admin-view .candidate-list{max-height:55vh}
@@ -353,7 +384,7 @@ footer strong{color:rgba(255,255,255,.75)}
 
 /* ─── RECRUITER WELCOME PANEL ─── */
 /* ─── RECRUITER PORTAL WELCOME PANEL ─── */
-.rec-welcome-panel{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;padding:32px 40px;overflow-y:auto;gap:0}
+.rec-welcome-panel{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;padding:24px 32px;overflow-y:auto;gap:0}
 .rec-stats-row{display:flex;gap:8px;justify-content:center;flex-wrap:nowrap;width:100%;background:var(--white);border:1px solid var(--gray-100);border-radius:var(--radius-lg);padding:12px 8px;box-shadow:var(--shadow-sm)}
 .rec-stat-chip{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;min-width:0}
 .rec-stat-num{font-size:22px;font-weight:700;color:var(--blue);line-height:1}
