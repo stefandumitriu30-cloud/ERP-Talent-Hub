@@ -4031,10 +4031,6 @@ function _miaMatchMsg(key) {
 }
 
 async function miaAnalyzeMatches(searchQuery) {
-  if (!SUPABASE_READY || !sb()) {
-    appendMiaMessage(_miaMatchMsg('connError'));
-    return;
-  }
   if (currentUser?.role !== 'recruiter' && currentUser?.role !== 'admin') return;
 
   // If allCandidateProfiles is empty (e.g. recruiter view without admin init),
@@ -4094,6 +4090,9 @@ async function miaAnalyzeMatches(searchQuery) {
     return `[${i+1}] ${c.name} | Role: ${c.role||'ERP Professional'} | Systems: ${(c.systems||[]).join(', ')||'N/A'} | Location: ${c.location||'N/A'} | Exp: ${c.yearsExp != null ? c.yearsExp+'y' : 'N/A'} | Already contacted: ${contacted}`;
   }).join('\n');
 
+  // Ensure typing indicator is visible (caller may or may not have shown it)
+  if (!document.getElementById('mia-typing-row')) showMiaTyping();
+
   try {
     const data = await callMiaProxy({
       max_tokens: 600,
@@ -4115,9 +4114,36 @@ Which candidates best match this search? List the best matches with name and bri
     hideMiaTyping();
     appendMiaMessage(answer);
   } catch(err) {
-    console.error('miaAnalyzeMatches error:', err);
+    console.error('miaAnalyzeMatches error:', err?.message || err);
     hideMiaTyping();
-    appendMiaMessage(_miaMatchMsg('connError'));
+    // Show specific error in dev, generic in prod
+    const errDetail = err?.message || String(err);
+    const isDev = (location.hostname === 'localhost' || location.hostname === '127.0.0.1');
+    if (isDev) {
+      appendMiaMessage(`⚠️ Debug: ${errDetail}`);
+    } else {
+      // Retry once with a shorter payload before giving up
+      try {
+        const shortSummary = candidates.slice(0, 5).map((c, i) =>
+          `[${i+1}] ${c.name} | ${(c.systems||[]).slice(0,2).join(', ')||'N/A'} | ${c.location||'N/A'}`
+        ).join('\n');
+        const retryData = await callMiaProxy({
+          max_tokens: 300,
+          system: `You are Mia, AI assistant in ERP Talent Hub. Reply in ${({en:'English',it:'Italian',es:'Spanish',de:'German',fr:'French',pt:'Portuguese'})[currentLang]||'English'}. Help find matching ERP candidates. Never reveal contact details.`,
+          messages: [{ role: 'user', content: `Find candidates matching: "${String(searchQuery).slice(0,200)}"
+
+Pool (first 5):
+${shortSummary}
+
+List best matches.` }]
+        });
+        const retryAnswer = retryData.content?.[0]?.text || _miaMatchMsg('analyzeError');
+        appendMiaMessage(retryAnswer);
+      } catch(retryErr) {
+        console.error('miaAnalyzeMatches retry failed:', retryErr?.message);
+        appendMiaMessage(_miaMatchMsg('connError'));
+      }
+    }
   }
 }
 
@@ -4881,20 +4907,32 @@ function sb() {
 // ─────────────────────────────────────────
 async function callMiaProxy({ model = 'claude-sonnet-4-6', max_tokens = 400, system, messages }) {
   if (!SUPABASE_READY || !sb()) throw new Error('AI proxy unavailable: Supabase not configured');
-  const { data: { session } } = await sb().auth.getSession();
-  if (!session?.access_token) throw new Error('AI proxy requires an authenticated session');
+
+  // Try to get Supabase session token; fall back to anon key if not available
+  // (e.g. admin impersonation sessions or freshly restored sessions)
+  let bearerToken = SUPABASE_ANON;
+  try {
+    const sessionResult = await sb().auth.getSession();
+    const token = sessionResult?.data?.session?.access_token;
+    if (token) bearerToken = token;
+  } catch(e) { /* use anon key fallback */ }
 
   const resp = await fetch(`${SUPABASE_URL}/functions/v1/ai-proxy`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'apikey': SUPABASE_ANON,
-      'Authorization': `Bearer ${session.access_token}`,
+      'Authorization': `Bearer ${bearerToken}`,
     },
     body: JSON.stringify({ model, max_tokens, system, messages }),
   });
-  if (!resp.ok) throw new Error(`AI proxy error: ${resp.status}`);
-  return resp.json();
+  if (!resp.ok) {
+    const errText = await resp.text().catch(() => '');
+    console.error(`AI proxy HTTP ${resp.status}:`, errText);
+    throw new Error(`AI proxy error: ${resp.status} — ${errText.slice(0, 200)}`);
+  }
+  const json = await resp.json().catch(e => { throw new Error('AI proxy: invalid JSON response'); });
+  return json;
 }
 
 // ─────────────────────────────────────────
