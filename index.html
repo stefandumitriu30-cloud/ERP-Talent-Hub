@@ -757,7 +757,7 @@ input[type=file].photo-input{display:none}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <!-- iOS Keychain credential association hint -->
-  <link rel="canonical" href="https://stefandumitriu30-cloud.github.io/ERP-Talent-Hub/" />
+  <link rel="canonical" href="https://erptalenthub.com/" />
 </head>
 <body>
 <!-- GDPR Cookie Consent Banner -->
@@ -2631,7 +2631,7 @@ function handleSubmit() {
     footer:         _et.footer,
     privacy:        _et.privacy,
     owned:          _et.owned,
-    site_url:       'https://stefandumitriu30-cloud.github.io/ERP-Talent-Hub/',
+    site_url:       'https://erptalenthub.com/',
   };
 
   const finish = (success, errMsg) => {
@@ -5635,7 +5635,7 @@ async function persistCandidateProfile() {
 // SEO — PUBLIC PROFILE PAGES
 // ─────────────────────────────────────────
 
-const SITE_URL = 'https://stefandumitriu30-cloud.github.io/ERP-Talent-Hub';
+const SITE_URL = 'https://erptalenthub.com';
 
 function _generateSlug(firstName, lastName, userId) {
   const base = (firstName + '-' + lastName)
@@ -7018,6 +7018,16 @@ function populateFormFromProfile(p) {
 // INIT
 // ─────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
+  // ── PASSWORD RECOVERY via onAuthStateChange (mobile/PKCE fix) ──────
+  if (SUPABASE_READY && sb()) {
+    sb().auth.onAuthStateChange((event, session) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        window.history.replaceState({}, document.title, window.location.pathname);
+        showResetPasswordModal();
+      }
+    });
+  }
+  // ───────────────────────────────────────────────────────────────────
   initDarkMode(); // apply dark/light before anything renders
 
   // ── STARTUP SESSION CLEANUP ──────────────────────────────────────────
@@ -7426,7 +7436,7 @@ function _pdfRender(p, lb) {
     + sec(lb.cert, ceH)
     + sec(lb.awards, awH)
     + (lgH ? sec(lb.langs, '<table><tr><th>'+lb.langCol+'</th><th>'+lb.spoken+'</th><th>'+lb.written+'</th></tr>'+lgH+'</table>') : '')
-    + '<div class="foot">' + lb.footer + ' &middot; stefandumitriu30-cloud.github.io/ERP-Talent-Hub</div>'
+    + '<div class="foot">' + lb.footer + ' &middot; erptalenthub.com</div>'
     + '</body></html>';
 
   var win = window.open('', '_blank');
