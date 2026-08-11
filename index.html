@@ -5350,24 +5350,7 @@ async function submitForgotPassword() {
   btn.disabled = true;
   btn.textContent = t('auth.sending') || 'Sending…';
 
-  try {
-    // Check via REST (anon key) — avoids RLS issues
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/profiles?email=eq.${encodeURIComponent(email)}&select=email`,
-      { headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` } }
-    );
-    const found = await res.json();
-    if (!found || found.length === 0) {
-      btn.disabled = false;
-      btn.textContent = t('auth.sendReset') || 'Send reset link';
-      errEl.textContent = t('auth.emailNotFound') || 'No account found with this email address. Please check and try again.';
-      errEl.classList.add('show');
-      return;
-    }
-  } catch(e) {
-    // If check fails, proceed anyway (don't block the user)
-    console.warn('Email existence check failed:', e);
-  }
+  // Email existence check removed — Supabase handles this securely internally
 
   // ── 4. Send reset email ─────────────────────────────────────────────
   try {
