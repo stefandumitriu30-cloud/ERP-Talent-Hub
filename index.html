@@ -5070,11 +5070,13 @@ async function requestUpgrade(plan, btn) {
 
   try {
     const EDGE_URL = SUPABASE_URL + '/functions/v1/send-upgrade-email';
+    const { data: { session } } = await sb().auth.getSession();
+    const token = session?.access_token || SUPABASE_ANON;
     const res = await fetch(EDGE_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${SUPABASE_ANON}`,
+        'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify({
         recruiterName:    currentUser.name    || 'N/A',
