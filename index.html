@@ -6542,8 +6542,22 @@ async function miaHandleQuestion(question, isQuickBtn = false) {
       try {
         const _cands = typeof getRecCandidates === 'function' ? getRecCandidates() : [];
         if (_cands && _cands.length > 0) {
+          // Sanitize candidate data to prevent prompt injection attacks
+          const _sanitize = (str, maxLen = 60) => {
+            if (!str) return 'N/A';
+            // Remove any instruction-like patterns and special characters
+            return String(str)
+              .slice(0, maxLen)
+              .replace(/[`\\]/g, '')
+              .replace(/ignore|system|instruction|prompt|assistant|jailbreak|dan|act as|pretend|forget|override/gi, '***')
+              .trim();
+          };
+          const _sanitizeSystems = (arr) => {
+            if (!Array.isArray(arr)) return 'N/A';
+            return arr.map(s => _sanitize(s, 20)).join(', ') || 'N/A';
+          };
           const _summary = _cands.slice(0, 30).map((c, i) =>
-            `[${i+1}] ${c.name} | Role: ${c.role || 'ERP Professional'} | Systems: ${(c.systems||[]).join(', ')||'N/A'} | Location: ${c.location||'N/A'} | Exp: ${c.yearsExp != null ? c.yearsExp+'y' : 'N/A'} | Contacted: ${(typeof conversations !== 'undefined' && conversations[c.id]?.opened) ? 'yes' : 'no'}`
+            `[${i+1}] ${_sanitize(c.name)} | Role: ${_sanitize(c.role || 'ERP Professional')} | Systems: ${_sanitizeSystems(c.systems)} | Location: ${_sanitize(c.location)} | Exp: ${c.yearsExp != null ? Number(c.yearsExp)+'y' : 'N/A'} | Contacted: ${(typeof conversations !== 'undefined' && conversations[c.id]?.opened) ? 'yes' : 'no'}`
           ).join('\n');
           candidateContext = `\n\nCANDIDATE POOL (${_cands.length} registered, showing up to 30):\n${_summary}\n\nYou have direct access to this live candidate data. When the user asks about candidates, roles, or searches — use this data to give precise, specific answers listing matching candidates by name with their details. Never say you cannot search or find candidates.`;
         }
