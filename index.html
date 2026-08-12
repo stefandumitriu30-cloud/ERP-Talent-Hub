@@ -5045,10 +5045,10 @@ function showUpgradeModal(reason) {
       <p style="color:#64748B;margin-bottom:20px;font-size:14px">Scegli il piano e riceverai subito via email le istruzioni di pagamento.</p>
 
       <div style="display:flex;gap:10px;margin-bottom:16px">
-        <button onclick="requestUpgrade('pro', this)" style="flex:1;background:#2563EB;color:#fff;border:none;padding:14px 8px;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer">
+        <button id="upgrade-btn-pro" style="flex:1;background:#2563EB;color:#fff;border:none;padding:14px 8px;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer">
           Pro<br><span style="font-size:12px;font-weight:400">€49/mese</span>
         </button>
-        <button onclick="requestUpgrade('agency', this)" style="flex:1;background:#7C3AED;color:#fff;border:none;padding:14px 8px;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer">
+        <button id="upgrade-btn-agency" style="flex:1;background:#7C3AED;color:#fff;border:none;padding:14px 8px;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer">
           Agency<br><span style="font-size:12px;font-weight:400">€149/mese</span>
         </button>
       </div>
@@ -5060,6 +5060,8 @@ function showUpgradeModal(reason) {
     </div>`;
   document.body.appendChild(modal);
   modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+  document.getElementById('upgrade-btn-pro')?.addEventListener('click', function() { requestUpgrade('pro', this); });
+  document.getElementById('upgrade-btn-agency')?.addEventListener('click', function() { requestUpgrade('agency', this); });
 }
 
 async function requestUpgrade(plan, btn) {
