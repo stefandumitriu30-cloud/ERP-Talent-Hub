@@ -13,8 +13,9 @@
   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com;
   img-src 'self' data: https:;
   font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;
-  connect-src 'self' https://qqcuipttgjhtbizplwtp.supabase.co https://api.anthropic.com https://nominatim.openstreetmap.org https://resend.com;
-  frame-ancestors 'none';
+  connect-src 'self' https://qqcuipttgjhtbizplwtp.supabase.co https://api.anthropic.com https://nominatim.openstreetmap.org https://resend.com https://api.stripe.com;
+  frame-src 'none' https://js.stripe.com https://hooks.stripe.com;
+  script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://fonts.googleapis.com https://js.stripe.com;
   base-uri 'self';
   form-action 'self';
 " />
@@ -826,6 +827,7 @@ input[type=file].photo-input{display:none}
 
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://js.stripe.com/v3/"></script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <!-- iOS Keychain credential association hint -->
   <link rel="canonical" href="https://erptalenthub.com/" />
@@ -5403,7 +5405,7 @@ function showUpgradeModal(reason) {
       <div style="font-size:48px;margin-bottom:16px">🚀</div>
       <h2 style="font-size:22px;font-weight:700;color:#1E293B;margin-bottom:12px">Passa al piano Pro</h2>
       <p style="color:#64748B;margin-bottom:8px">${reasons[reason] || 'Funzionalità disponibile dal piano Pro.'}</p>
-      <p style="color:#64748B;margin-bottom:20px;font-size:14px">Scegli il piano e riceverai subito via email le istruzioni di pagamento.</p>
+      <p style="color:#64748B;margin-bottom:20px;font-size:14px">Scegli il piano — verrai reindirizzato al checkout sicuro Stripe. Nessuna carta salvata senza consenso.</p>
 
       <div style="display:flex;gap:10px;margin-bottom:16px">
         <button id="upgrade-btn-pro" style="flex:1;background:#2563EB;color:#fff;border:none;padding:14px 8px;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer">
@@ -5425,6 +5427,13 @@ function showUpgradeModal(reason) {
   document.getElementById('upgrade-btn-agency')?.addEventListener('click', function() { requestUpgrade('agency', this); });
 }
 
+// ── STRIPE CONFIG ─────────────────────────────────────────────────────────────
+const STRIPE_PK = 'pk_live_51U42oy3IOXaUYUGZ6C5uWkY4Ih0F047NCKvBh4ceEZU58RKhXpT4pbY2zNySnmzcB0Wzby6AQ5gBXPpyHgwKInus00RMjv9CiT';
+const STRIPE_PRICES = {
+  pro:    'price_1U43Yg3IOXaUYUGZPlMyf7qV',
+  agency: 'price_1U43bp3IOXaUYUGZHRAKTCAV',
+};
+
 async function requestUpgrade(plan, btn) {
   if (!currentUser) return;
   const originalText = btn.innerHTML;
@@ -5432,42 +5441,81 @@ async function requestUpgrade(plan, btn) {
   btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>';
 
   try {
-    const EDGE_URL = SUPABASE_URL + '/functions/v1/send-upgrade-email';
-    const { data: { session } } = await sb().auth.getSession();
-    const token = session?.access_token || SUPABASE_ANON;
-    const res = await fetch(EDGE_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        recruiterName:    currentUser.name    || 'N/A',
-        recruiterEmail:   currentUser.email   || 'N/A',
-        recruiterCompany: recruiterProfile?.company || 'N/A',
-        plan,
-      }),
+    const stripe = Stripe(STRIPE_PK);
+    const priceId = STRIPE_PRICES[plan];
+    if (!priceId) throw new Error('Unknown plan');
+
+    const { error } = await stripe.redirectToCheckout({
+      lineItems: [{ price: priceId, quantity: 1 }],
+      mode: 'subscription',
+      successUrl: window.location.origin + '/?stripe=success&plan=' + plan,
+      cancelUrl:  window.location.origin + '/?stripe=cancel',
+      customerEmail: currentUser.email || undefined,
+      clientReferenceId: currentUser.id || undefined,
     });
 
-    if (res.ok) {
-      document.getElementById('upgrade-modal-overlay').remove();
-      const toast = document.createElement('div');
-      toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#22C55E;color:#fff;padding:14px 24px;border-radius:12px;font-weight:700;font-size:15px;z-index:99999;box-shadow:0 4px 20px rgba(0,0,0,0.2);white-space:nowrap';
-      toast.textContent = '✅ Email inviata! Controlla la tua casella.';
-      document.body.appendChild(toast);
-      setTimeout(() => toast.remove(), 5000);
-    } else {
-      throw new Error('Server error');
-    }
-  } catch(e) {
+    if (error) throw error;
+
+  } catch(err) {
+    console.error('Stripe error:', err);
     btn.disabled = false;
     btn.innerHTML = originalText;
-    // Fallback: open mailto
-    window.location.href = `mailto:erptalenthub@gmail.com?subject=Upgrade%20Piano%20${plan.toUpperCase()}%20-%20ERP%20Talent%20Hub&body=Ciao%2C%20vorrei%20passare%20al%20piano%20${plan}.%0A%0ANome%3A%20${encodeURIComponent(currentUser.name||'')}%0AEmail%3A%20${encodeURIComponent(currentUser.email||'')}`;
+    const toast = document.createElement('div');
+    toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#DC2626;color:#fff;padding:14px 24px;border-radius:12px;font-weight:700;font-size:15px;z-index:99999;box-shadow:0 4px 20px rgba(0,0,0,0.2)';
+    toast.textContent = '⚠️ Payment error. Please try again.';
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 4000);
   }
 }
 
-const SUPABASE_READY = SUPABASE_URL !== 'YOUR_SUPABASE_URL' && SUPABASE_ANON !== 'YOUR_SUPABASE_ANON_KEY';
+// ── STRIPE SUCCESS / CANCEL HANDLER ─────────────────────────────────────────
+(function handleStripeReturn() {
+  const params = new URLSearchParams(window.location.search);
+  const stripeResult = params.get('stripe');
+  const plan = params.get('plan');
+  if (!stripeResult) return;
+
+  // Clean URL
+  window.history.replaceState({}, document.title, window.location.pathname);
+
+  if (stripeResult === 'success' && plan) {
+    // Show success toast
+    const toast = document.createElement('div');
+    toast.style.cssText = 'position:fixed;top:24px;left:50%;transform:translateX(-50%);background:#22C55E;color:#fff;padding:16px 28px;border-radius:14px;font-weight:700;font-size:15px;z-index:99999;box-shadow:0 4px 24px rgba(0,0,0,0.2);text-align:center;max-width:90vw';
+    toast.innerHTML = `🎉 Payment successful! Your <strong>${plan === 'agency' ? 'Agency' : 'Pro'}</strong> plan is being activated.<br><span style="font-size:13px;font-weight:400;opacity:.85">You'll receive a confirmation email shortly.</span>`;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 8000);
+
+    // Also notify admin via edge function
+    setTimeout(async () => {
+      try {
+        const anonKey = typeof SUPABASE_ANON !== 'undefined' ? SUPABASE_ANON : '';
+        await fetch(SUPABASE_URL + '/functions/v1/send-upgrade-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + anonKey },
+          body: JSON.stringify({
+            verificationPath: 'upgrade',
+            recruiterName:  'Stripe Checkout Customer',
+            recruiterEmail: 'erptalenthub@gmail.com',
+            recruiterCompany: 'Stripe',
+            plan,
+            stripeSuccess: true,
+          }),
+        });
+      } catch(e) { /* non-critical */ }
+    }, 2000);
+  }
+
+  if (stripeResult === 'cancel') {
+    const toast = document.createElement('div');
+    toast.style.cssText = 'position:fixed;top:24px;left:50%;transform:translateX(-50%);background:#F97316;color:#fff;padding:14px 24px;border-radius:12px;font-weight:700;font-size:14px;z-index:99999;box-shadow:0 4px 20px rgba(0,0,0,0.2)';
+    toast.textContent = 'Payment cancelled — no charge was made.';
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 5000);
+  }
+})();
+
+// ── END STRIPE HANDLER ────────────────────────────────────────────────────────
 
 let _sb = null;
 function sb() {
