@@ -5424,38 +5424,23 @@ const STRIPE_PRICES = {
   agency: 'price_1U43bp3IOXaUYUGZHRAKTCAV',
 };
 
+// ── STRIPE PAYMENT LINKS ─────────────────────────────────────────────────────
+const STRIPE_PAYMENT_LINKS = {
+  pro:    'https://buy.stripe.com/fZufZab1z8YkexbeVV6Zy01',
+  agency: 'https://buy.stripe.com/cNiaEQfhPfmI1KpeVV6Zy00',
+};
+
 async function requestUpgrade(plan, btn) {
   if (!currentUser) return;
-  const originalText = btn.innerHTML;
-  btn.disabled = true;
-  btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>';
+  const link = STRIPE_PAYMENT_LINKS[plan];
+  if (!link) return;
 
-  try {
-    const stripe = Stripe(STRIPE_PK);
-    const priceId = STRIPE_PRICES[plan];
-    if (!priceId) throw new Error('Unknown plan');
+  const url = new URL(link);
+  if (currentUser.email) url.searchParams.set('prefilled_email', currentUser.email);
+  if (currentUser.id) url.searchParams.set('client_reference_id', currentUser.id);
 
-    const { error } = await stripe.redirectToCheckout({
-      lineItems: [{ price: priceId, quantity: 1 }],
-      mode: 'subscription',
-      successUrl: window.location.origin + '/?stripe=success&plan=' + plan,
-      cancelUrl:  window.location.origin + '/?stripe=cancel',
-      customerEmail: currentUser.email || undefined,
-      clientReferenceId: currentUser.id || undefined,
-    });
-
-    if (error) throw error;
-
-  } catch(err) {
-    console.error('Stripe error:', err);
-    btn.disabled = false;
-    btn.innerHTML = originalText;
-    const toast = document.createElement('div');
-    toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#DC2626;color:#fff;padding:14px 24px;border-radius:12px;font-weight:700;font-size:15px;z-index:99999;box-shadow:0 4px 20px rgba(0,0,0,0.2)';
-    toast.textContent = '⚠️ Payment error. Please try again.';
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 4000);
-  }
+  document.getElementById('upgrade-modal-overlay')?.remove();
+  window.location.href = url.toString();
 }
 
 // ── STRIPE SUCCESS / CANCEL HANDLER ─────────────────────────────────────────
