@@ -724,6 +724,17 @@ input[type=file].photo-input{display:none}
 .gate-reject-info i{color:#F97316;font-size:16px;flex-shrink:0;margin-top:1px}
 .gate-approved-card{display:flex;align-items:center;gap:14px;background:var(--gray-50);border:1px solid var(--gray-100);border-radius:var(--radius-lg);padding:14px 16px;text-align:left;margin-top:12px}
 .gate-approved-avatar{width:44px;height:44px;border-radius:50%;background:var(--blue);color:#fff;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+/* Gate path cards */
+.gate-path-card{display:flex;align-items:flex-start;gap:12px;width:100%;background:var(--white);border:1.5px solid var(--gray-200);border-radius:var(--radius-lg);padding:14px 14px;text-align:left;cursor:pointer;transition:all .15s;position:relative}
+.gate-path-card:hover{border-color:var(--blue);background:var(--blue-light);box-shadow:0 2px 8px rgba(37,99,235,.1)}
+.gate-path-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.gate-path-body{flex:1;min-width:0}
+.gate-path-title{font-size:14px;font-weight:600;color:var(--gray-900);margin-bottom:3px}
+.gate-path-sub{font-size:12px;color:var(--gray-500);line-height:1.5}
+.gate-path-badge{font-size:11px;font-weight:600;border-radius:10px;padding:2px 8px;white-space:nowrap;flex-shrink:0;align-self:flex-start}
+.gate-path-badge-free{background:#ECFDF5;color:#15803D;border:1px solid #BBF7D0}
+.gate-path-badge-pro{background:#EFF6FF;color:#1E40AF;border:1px solid #BFDBFE}
+.gate-path-badge-agency{background:#FAF5FF;color:#6D28D9;border:1px solid #DDD6FE}
 
 /* ── DARK MODE ─────────────────────────────────────────── */
 [data-theme="dark"] {
@@ -1480,28 +1491,53 @@ input[type=file].photo-input{display:none}
   <div id="rec-gate" class="rec-gate-wrap">
     <div class="rec-gate-card">
 
-      <!-- Step 1: Landing -->
+      <!-- Step 1: Landing — path choice -->
       <div id="gate-step-1" class="gate-step active">
         <div class="gate-icon-wrap">
           <div class="gate-icon"><i class="fa-solid fa-user-tie"></i></div>
         </div>
         <h2 class="gate-title">Recruiter Access</h2>
-        <p class="gate-sub" data-i18n="gate.sub1">ERP Talent Hub is exclusively open to <strong>verified LinkedIn Recruiter</strong> account holders.</p>
-        <div class="gate-steps-list">
-          <div class="gate-step-item"><div class="gate-step-num">1</div><div><strong data-i18n="gate.step1t">Connect LinkedIn</strong><br><span data-i18n="gate.step1d">Enter your LinkedIn Recruiter profile URL</span></div></div>
-          <div class="gate-step-item"><div class="gate-step-num">2</div><div><strong data-i18n="gate.step2t">Verify account type</strong><br><span data-i18n="gate.step2d">We check your account holds a LinkedIn Recruiter licence</span></div></div>
-          <div class="gate-step-item"><div class="gate-step-num">3</div><div><strong>Access the pool</strong><br><span>Browse and contact ERP professionals instantly</span></div></div>
+        <p class="gate-sub">Open to <strong>verified recruiting professionals</strong>. Choose how you'd like to verify your identity.</p>
+        <!-- Path cards -->
+        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;text-align:left">
+          <!-- Path A: LinkedIn Recruiter -->
+          <button class="gate-path-card" onclick="selectGatePath('linkedin')">
+            <div class="gate-path-icon" style="background:#E8F0FE;color:#0A66C2"><i class="fa-brands fa-linkedin"></i></div>
+            <div class="gate-path-body">
+              <div class="gate-path-title">I have LinkedIn Recruiter</div>
+              <div class="gate-path-sub">Verify instantly with your LinkedIn Recruiter account — no extra cost, your licence is your credential.</div>
+            </div>
+            <div class="gate-path-badge gate-path-badge-free">Free access</div>
+          </button>
+          <!-- Path B: Business verification -->
+          <button class="gate-path-card" onclick="selectGatePath('business')">
+            <div class="gate-path-icon" style="background:#F0FDF4;color:#16A34A"><i class="fa-solid fa-building"></i></div>
+            <div class="gate-path-body">
+              <div class="gate-path-title">Verify with business email</div>
+              <div class="gate-path-sub">No LinkedIn Recruiter licence? Verify via your company email and VAT number. Approved within 24 h.</div>
+            </div>
+            <div class="gate-path-badge gate-path-badge-pro">Pro plan</div>
+          </button>
+          <!-- Path C: Agency -->
+          <button class="gate-path-card" onclick="selectGatePath('agency')">
+            <div class="gate-path-icon" style="background:#FAF5FF;color:#7C3AED"><i class="fa-solid fa-sitemap"></i></div>
+            <div class="gate-path-body">
+              <div class="gate-path-title">I represent a recruiting agency</div>
+              <div class="gate-path-sub">Verify once for your whole team. All your colleagues access the pool under one agency plan.</div>
+            </div>
+            <div class="gate-path-badge gate-path-badge-agency">Agency plan</div>
+          </button>
         </div>
-        <button class="btn-primary gate-btn" onclick="gotoStep(2)"><i class="fa-brands fa-linkedin" style="margin-right:8px"></i><span data-i18n="gate.connectBtn">Connect with LinkedIn Recruiter</span></button>
-        <button class="btn-ghost" style="margin-top:8px;width:100%;font-size:13px" onclick="showView('home')">← Back to homepage</button>
+        <button class="btn-ghost" style="margin-top:4px;width:100%;font-size:13px" onclick="showView('home')">← Back to homepage</button>
       </div>
 
-      <!-- Step 2: LinkedIn URL input -->
+      <!-- Step 2: LinkedIn Recruiter URL input (Path A) -->
       <div id="gate-step-2" class="gate-step">
         <button class="gate-back-btn" onclick="gotoStep(1)"><i class="fa-solid fa-arrow-left"></i> Back</button>
         <div class="gate-icon-wrap">
           <div class="gate-icon li-icon"><i class="fa-brands fa-linkedin"></i></div>
         </div>
+        <div style="display:inline-flex;align-items:center;gap:6px;background:#ECFDF5;border:1px solid #BBF7D0;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;color:#15803D;margin-bottom:14px"><i class="fa-solid fa-circle-check"></i> Free access — your Recruiter licence is your credential</div>
         <h2 class="gate-title" data-i18n="gate.title2">Enter your LinkedIn Recruiter URL</h2>
         <p class="gate-sub" data-i18n="gate.sub2">Paste the URL of your LinkedIn Recruiter profile.</p>
         <div class="field" style="text-align:left;margin-bottom:8px">
@@ -1577,7 +1613,9 @@ input[type=file].photo-input{display:none}
           </div>
         </div>
         <button class="btn-primary gate-btn" onclick="gotoStep(2)" style="margin-top:20px"><i class="fa-solid fa-rotate-left" style="margin-right:8px"></i>Try a different profile</button>
-        <button class="btn-ghost" style="margin-top:8px;width:100%;font-size:13px" onclick="showView('home')">← Back to homepage</button>
+        <div style="position:relative;margin:16px 0 8px"><hr style="border:none;border-top:1px solid var(--gray-200)"><span style="position:absolute;top:-9px;left:50%;transform:translateX(-50%);background:#fff;padding:0 10px;font-size:12px;color:var(--gray-400)">or</span></div>
+        <button class="btn-outline gate-btn" onclick="gotoStep(6)" style="margin-bottom:4px"><i class="fa-solid fa-building" style="margin-right:8px;color:#16A34A"></i>Verify with business email instead</button>
+        <button class="btn-ghost" style="margin-top:4px;width:100%;font-size:13px" onclick="showView('home')">← Back to homepage</button>
       </div>
 
       <!-- Step 5: Approved -->
@@ -1600,6 +1638,121 @@ input[type=file].photo-input{display:none}
           </div>
         </div>
         <button class="btn-primary gate-btn" onclick="enterRecruiterPortal()" style="margin-top:24px"><i class="fa-solid fa-arrow-right" style="margin-right:8px"></i>Enter the Talent Pool</button>
+      </div>
+
+      <!-- Step 6: Business email verification (Path B) -->
+      <div id="gate-step-6" class="gate-step">
+        <button class="gate-back-btn" onclick="gotoStep(1)"><i class="fa-solid fa-arrow-left"></i> Back</button>
+        <div class="gate-icon-wrap">
+          <div class="gate-icon" style="background:#F0FDF4;color:#16A34A;border-color:#BBF7D0"><i class="fa-solid fa-building"></i></div>
+        </div>
+        <div style="display:inline-flex;align-items:center;gap:6px;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;color:#1E40AF;margin-bottom:14px"><i class="fa-solid fa-clock"></i> Pro plan · Approved within 24 h</div>
+        <h2 class="gate-title">Business verification</h2>
+        <p class="gate-sub">Enter your details. We'll verify your recruiting role within 24 hours and send you access by email.</p>
+        <div class="field" style="text-align:left;margin-bottom:12px">
+          <label style="font-size:13px;font-weight:500;color:#334155;display:block;margin-bottom:5px">Full name <span style="color:#DC2626">*</span></label>
+          <input type="text" id="biz-name" placeholder="e.g. Marco Rossi" />
+        </div>
+        <div class="field" style="text-align:left;margin-bottom:12px">
+          <label style="font-size:13px;font-weight:500;color:#334155;display:block;margin-bottom:5px">Business email <span style="color:#DC2626">*</span></label>
+          <input type="email" id="biz-email" placeholder="marco@yourcompany.com" />
+          <div id="biz-email-error" style="display:none;font-size:12px;color:#DC2626;margin-top:4px"><i class="fa-solid fa-triangle-exclamation"></i> Please enter a valid business email (no Gmail/Yahoo/Hotmail).</div>
+        </div>
+        <div class="field" style="text-align:left;margin-bottom:12px">
+          <label style="font-size:13px;font-weight:500;color:#334155;display:block;margin-bottom:5px">Company / Agency <span style="color:#DC2626">*</span></label>
+          <input type="text" id="biz-company" placeholder="e.g. Korn Ferry" />
+        </div>
+        <div class="field" style="text-align:left;margin-bottom:12px">
+          <label style="font-size:13px;font-weight:500;color:#334155;display:block;margin-bottom:5px">Job title <span style="color:#DC2626">*</span></label>
+          <input type="text" id="biz-jobtitle" placeholder="e.g. Talent Acquisition Manager" />
+        </div>
+        <div class="field" style="text-align:left;margin-bottom:12px">
+          <label style="font-size:13px;font-weight:500;color:#334155;display:block;margin-bottom:5px">LinkedIn profile URL <span style="font-weight:400;color:var(--gray-400)">(optional but speeds up approval)</span></label>
+          <div style="display:flex;gap:8px;align-items:center">
+            <span style="font-size:13px;color:#64748B;white-space:nowrap">linkedin.com/in/</span>
+            <input type="text" id="biz-linkedin" placeholder="yourname" style="flex:1" />
+          </div>
+        </div>
+        <div class="field" style="text-align:left;margin-bottom:20px">
+          <label style="font-size:13px;font-weight:500;color:#334155;display:block;margin-bottom:5px">VAT / Company registration number <span style="font-weight:400;color:var(--gray-400)">(optional)</span></label>
+          <input type="text" id="biz-vat" placeholder="e.g. IT13449530016" />
+        </div>
+        <div style="background:#F8FAFC;border:1px solid var(--gray-200);border-radius:var(--radius);padding:12px 14px;font-size:12px;color:var(--gray-500);text-align:left;margin-bottom:16px;line-height:1.6">
+          <i class="fa-solid fa-circle-info" style="color:var(--blue);margin-right:6px"></i>
+          Your request will be reviewed by our team. Once approved you'll receive an email with your <strong>Pro plan activation link</strong>. No LinkedIn Recruiter licence required.
+        </div>
+        <button class="btn-primary gate-btn" onclick="submitBusinessVerification()"><i class="fa-solid fa-paper-plane" style="margin-right:8px"></i>Submit for review</button>
+        <button class="btn-ghost" style="margin-top:8px;width:100%;font-size:13px" onclick="gotoStep(1)">← Back</button>
+      </div>
+
+      <!-- Step 7: Agency request (Path C) -->
+      <div id="gate-step-7" class="gate-step">
+        <button class="gate-back-btn" onclick="gotoStep(1)"><i class="fa-solid fa-arrow-left"></i> Back</button>
+        <div class="gate-icon-wrap">
+          <div class="gate-icon" style="background:#FAF5FF;color:#7C3AED;border-color:#DDD6FE"><i class="fa-solid fa-sitemap"></i></div>
+        </div>
+        <div style="display:inline-flex;align-items:center;gap:6px;background:#FAF5FF;border:1px solid #DDD6FE;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;color:#7C3AED;margin-bottom:14px"><i class="fa-solid fa-users"></i> Agency plan · €149/month for unlimited seats</div>
+        <h2 class="gate-title">Agency access</h2>
+        <p class="gate-sub">One verification, unlimited colleagues. We set up your agency and all your recruiters get access under a single plan — no per-seat fees.</p>
+        <div class="field" style="text-align:left;margin-bottom:12px">
+          <label style="font-size:13px;font-weight:500;color:#334155;display:block;margin-bottom:5px">Your full name <span style="color:#DC2626">*</span></label>
+          <input type="text" id="ag-name" placeholder="e.g. Laura Bianchi" />
+        </div>
+        <div class="field" style="text-align:left;margin-bottom:12px">
+          <label style="font-size:13px;font-weight:500;color:#334155;display:block;margin-bottom:5px">Business email <span style="color:#DC2626">*</span></label>
+          <input type="email" id="ag-email" placeholder="laura@youragency.com" />
+        </div>
+        <div class="field" style="text-align:left;margin-bottom:12px">
+          <label style="font-size:13px;font-weight:500;color:#334155;display:block;margin-bottom:5px">Agency name <span style="color:#DC2626">*</span></label>
+          <input type="text" id="ag-agency" placeholder="e.g. SAP Talent Partners" />
+        </div>
+        <div class="field" style="text-align:left;margin-bottom:12px">
+          <label style="font-size:13px;font-weight:500;color:#334155;display:block;margin-bottom:5px">Estimated number of recruiters in your team</label>
+          <select id="ag-size">
+            <option value="">Select…</option>
+            <option value="2-5">2–5 recruiters</option>
+            <option value="6-15">6–15 recruiters</option>
+            <option value="16-50">16–50 recruiters</option>
+            <option value="50+">50+ recruiters</option>
+          </select>
+        </div>
+        <div class="field" style="text-align:left;margin-bottom:20px">
+          <label style="font-size:13px;font-weight:500;color:#334155;display:block;margin-bottom:5px">Agency website <span style="font-weight:400;color:var(--gray-400)">(optional)</span></label>
+          <input type="url" id="ag-website" placeholder="https://youragency.com" />
+        </div>
+        <div style="background:#FAF5FF;border:1px solid #DDD6FE;border-radius:var(--radius);padding:12px 14px;font-size:12px;color:#5B21B6;text-align:left;margin-bottom:16px;line-height:1.6">
+          <i class="fa-solid fa-circle-info" style="margin-right:6px"></i>
+          We'll contact you within 24 h to confirm your agency setup. All colleagues can then access the pool by simply signing up with their <strong>@youragency.com</strong> email — no LinkedIn Recruiter licence needed.
+        </div>
+        <button class="btn-primary gate-btn" style="background:#7C3AED;border-color:#7C3AED" onclick="submitAgencyRequest()"><i class="fa-solid fa-paper-plane" style="margin-right:8px"></i>Request agency access</button>
+        <button class="btn-ghost" style="margin-top:8px;width:100%;font-size:13px" onclick="gotoStep(1)">← Back</button>
+      </div>
+
+      <!-- Step 8: Pending review confirmation (Paths B & C) -->
+      <div id="gate-step-8" class="gate-step">
+        <div class="gate-icon-wrap">
+          <div class="gate-icon" style="background:#FFF7ED;color:#F97316;border-color:#FED7AA"><i class="fa-solid fa-hourglass-half"></i></div>
+        </div>
+        <h2 class="gate-title">Request submitted!</h2>
+        <p class="gate-sub" id="gate-pending-desc">We've received your request and will review it within 24 hours. You'll get an email with your access link as soon as it's approved.</p>
+        <div style="background:#F8FAFC;border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:16px 18px;text-align:left;margin-bottom:20px">
+          <div style="font-size:13px;font-weight:600;color:var(--gray-900);margin-bottom:10px">What happens next</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--gray-600)">
+              <div style="width:22px;height:22px;border-radius:50%;background:var(--blue);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">1</div>
+              <span>Our team verifies your professional details (usually within a few hours)</span>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--gray-600)">
+              <div style="width:22px;height:22px;border-radius:50%;background:var(--blue);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">2</div>
+              <span>You receive an activation email with your access link and plan details</span>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--gray-600)">
+              <div style="width:22px;height:22px;border-radius:50%;background:var(--blue);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">3</div>
+              <span>Click the link and access the full ERP talent pool instantly</span>
+            </div>
+          </div>
+        </div>
+        <button class="btn-primary gate-btn" onclick="showView('home')"><i class="fa-solid fa-house" style="margin-right:8px"></i>Back to homepage</button>
       </div>
 
     </div>
@@ -3126,6 +3279,117 @@ function startVerification() {
   runVerificationAnimation(url);
 }
 
+// ── GATE PATH ROUTING ───────────────────────────────────────────
+function selectGatePath(path) {
+  if (path === 'linkedin') {
+    gotoStep(2); // existing LinkedIn Recruiter flow
+  } else if (path === 'business') {
+    gotoStep(6); // new business verification
+  } else if (path === 'agency') {
+    gotoStep(7); // new agency request
+  }
+}
+
+function _isPersonalEmail(email) {
+  const personal = ['gmail.','yahoo.','hotmail.','outlook.','live.','icloud.','libero.','alice.','tin.','tiscali.','protonmail.','gmx.'];
+  const lower = email.toLowerCase();
+  return personal.some(d => lower.includes('@' + d) || lower.includes(d));
+}
+
+async function submitBusinessVerification() {
+  const name     = document.getElementById('biz-name').value.trim();
+  const email    = document.getElementById('biz-email').value.trim();
+  const company  = document.getElementById('biz-company').value.trim();
+  const jobtitle = document.getElementById('biz-jobtitle').value.trim();
+  const linkedin = document.getElementById('biz-linkedin').value.trim();
+  const vat      = document.getElementById('biz-vat').value.trim();
+  const errEl    = document.getElementById('biz-email-error');
+
+  if (!name)    { alert('Please enter your full name.');    return; }
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { alert('Please enter a valid email address.'); return; }
+  if (_isPersonalEmail(email)) { errEl.style.display = 'block'; return; } else { errEl.style.display = 'none'; }
+  if (!company) { alert('Please enter your company name.'); return; }
+  if (!jobtitle){ alert('Please enter your job title.');    return; }
+
+  const btn = document.querySelector('#gate-step-6 .btn-primary');
+  const orig = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Submitting…';
+
+  try {
+    // Send to admin via upgrade email edge function (reuse existing infra)
+    if (SUPABASE_READY && sb()) {
+      const EDGE_URL = SUPABASE_URL + '/functions/v1/send-upgrade-email';
+      const anonKey = typeof SUPABASE_ANON !== 'undefined' ? SUPABASE_ANON : '';
+      await fetch(EDGE_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + anonKey },
+        body: JSON.stringify({
+          recruiterName: name, recruiterEmail: email, recruiterCompany: company,
+          plan: 'pro',
+          verificationPath: 'business',
+          jobTitle: jobtitle,
+          linkedin: linkedin ? 'linkedin.com/in/' + linkedin : '',
+          vat: vat,
+        })
+      });
+    }
+    // Fallback mailto
+    else {
+      window.location.href = 'mailto:erptalenthub@gmail.com?subject=Business+Verification+Request+–+ERP+Talent+Hub&body='
+        + encodeURIComponent('Name: ' + name + '\nEmail: ' + email + '\nCompany: ' + company + '\nJob Title: ' + jobtitle + '\nLinkedIn: ' + (linkedin ? 'linkedin.com/in/' + linkedin : 'N/A') + '\nVAT: ' + (vat || 'N/A'));
+    }
+  } catch(e) { /* fail silently — step 8 still shows */ }
+
+  document.getElementById('gate-pending-desc').textContent =
+    'Thanks, ' + name.split(' ')[0] + '! We\'ve received your request and will review it within 24 hours. You\'ll get an email at ' + email + ' with your Pro access link as soon as it\'s approved.';
+  gotoStep(8);
+}
+
+async function submitAgencyRequest() {
+  const name    = document.getElementById('ag-name').value.trim();
+  const email   = document.getElementById('ag-email').value.trim();
+  const agency  = document.getElementById('ag-agency').value.trim();
+  const size    = document.getElementById('ag-size').value;
+  const website = document.getElementById('ag-website').value.trim();
+
+  if (!name)   { alert('Please enter your full name.');  return; }
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { alert('Please enter a valid email address.'); return; }
+  if (!agency) { alert('Please enter your agency name.'); return; }
+
+  const btn = document.querySelector('#gate-step-7 .btn-primary');
+  const orig = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Submitting…';
+
+  try {
+    if (SUPABASE_READY && sb()) {
+      const EDGE_URL = SUPABASE_URL + '/functions/v1/send-upgrade-email';
+      const anonKey = typeof SUPABASE_ANON !== 'undefined' ? SUPABASE_ANON : '';
+      await fetch(EDGE_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + anonKey },
+        body: JSON.stringify({
+          recruiterName: name, recruiterEmail: email, recruiterCompany: agency,
+          plan: 'agency',
+          verificationPath: 'agency',
+          teamSize: size || 'Not specified',
+          website: website || 'N/A',
+        })
+      });
+    } else {
+      window.location.href = 'mailto:erptalenthub@gmail.com?subject=Agency+Access+Request+–+ERP+Talent+Hub&body='
+        + encodeURIComponent('Name: ' + name + '\nEmail: ' + email + '\nAgency: ' + agency + '\nTeam size: ' + (size || 'N/A') + '\nWebsite: ' + (website || 'N/A'));
+    }
+  } catch(e) { /* fail silently */ }
+
+  document.getElementById('gate-pending-desc').textContent =
+    'Thanks, ' + name.split(' ')[0] + '! We\'ll contact you at ' + email + ' within 24 hours to set up agency access for ' + agency + '. All your colleagues will then be able to join without needing a LinkedIn Recruiter licence.';
+  gotoStep(8);
+}
+
+// ── END GATE PATH ROUTING ────────────────────────────────────────
+
 function runVerificationAnimation(handle) {
   const steps = ['vcheck-1','vcheck-2','vcheck-3','vcheck-4'];
   const delays = [0, 900, 1700, 2500];
@@ -3179,6 +3443,8 @@ function showApproved() {
   document.getElementById('gate-approved-name').textContent = recruiterProfile.name;
   document.getElementById('gate-approved-company').textContent = recruiterProfile.company;
   document.getElementById('gate-approved-url').textContent = 'linkedin.com/in/' + recruiterProfile.url;
+  // Tag the recruiter profile with its verification path
+  recruiterProfile.verificationPath = 'linkedin';
   gotoStep(5);
 }
 
