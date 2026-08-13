@@ -5769,6 +5769,27 @@ async function doRegister(email, password) {
   // Apply referral code if user came via a referral link
   if (data.user?.id) await _applyReferral(data.user.id);
 
+  // ── ADMIN NOTIFICATION — new user registered ────────────────────────────────
+  try {
+    const _anonKey = typeof SUPABASE_ANON !== 'undefined' ? SUPABASE_ANON : '';
+    await fetch(SUPABASE_URL + '/functions/v1/send-upgrade-email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + _anonKey,
+      },
+      body: JSON.stringify({
+        verificationPath: 'new_registration',
+        recruiterName:    name,
+        recruiterEmail:   email,
+        recruiterCompany: safeRole === 'recruiter' ? 'Recruiter' : 'ERP Candidate',
+        plan:             safeRole,
+        role:             safeRole,
+      }),
+    });
+  } catch(e) { /* non-critical — registration continues even if email fails */ }
+  // ── END ADMIN NOTIFICATION ──────────────────────────────────────────────────
+
   // 3. Check if email confirmation is required
   const needsConfirm = !data.user.confirmed_at && !data.session;
   if (needsConfirm) {
