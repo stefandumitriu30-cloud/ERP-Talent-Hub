@@ -5458,32 +5458,66 @@ async function requestUpgrade(plan, btn) {
   }
 }
 
-
-// ─────────────────────────────────────────
-// ── STRIPE SUCCESS / CANCEL HANDLER (runs after SUPABASE_READY is defined) ──
-window.addEventListener('DOMContentLoaded', function() {
+// ── STRIPE SUCCESS / CANCEL HANDLER ─────────────────────────────────────────
+(function handleStripeReturn() {
   const params = new URLSearchParams(window.location.search);
   const stripeResult = params.get('stripe');
   const plan = params.get('plan');
   if (!stripeResult) return;
+
+  // Clean URL
   window.history.replaceState({}, document.title, window.location.pathname);
+
   if (stripeResult === 'success' && plan) {
+    // Show success toast
     const toast = document.createElement('div');
     toast.style.cssText = 'position:fixed;top:24px;left:50%;transform:translateX(-50%);background:#22C55E;color:#fff;padding:16px 28px;border-radius:14px;font-weight:700;font-size:15px;z-index:99999;box-shadow:0 4px 24px rgba(0,0,0,0.2);text-align:center;max-width:90vw';
-    toast.innerHTML = '🎉 Payment successful! Your <strong>' + (plan === 'agency' ? 'Agency' : 'Pro') + '</strong> plan is being activated.<br><span style="font-size:13px;font-weight:400;opacity:.85">You\'ll receive a confirmation email shortly.</span>';
+    toast.innerHTML = `🎉 Payment successful! Your <strong>${plan === 'agency' ? 'Agency' : 'Pro'}</strong> plan is being activated.<br><span style="font-size:13px;font-weight:400;opacity:.85">You'll receive a confirmation email shortly.</span>`;
     document.body.appendChild(toast);
-    setTimeout(function() { toast.remove(); }, 8000);
+    setTimeout(() => toast.remove(), 8000);
+
+    // Also notify admin via edge function
+    setTimeout(async () => {
+      try {
+        const anonKey = typeof SUPABASE_ANON !== 'undefined' ? SUPABASE_ANON : '';
+        await fetch(SUPABASE_URL + '/functions/v1/send-upgrade-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + anonKey },
+          body: JSON.stringify({
+            verificationPath: 'upgrade',
+            recruiterName:  'Stripe Checkout Customer',
+            recruiterEmail: 'erptalenthub@gmail.com',
+            recruiterCompany: 'Stripe',
+            plan,
+            stripeSuccess: true,
+          }),
+        });
+      } catch(e) { /* non-critical */ }
+    }, 2000);
   }
+
   if (stripeResult === 'cancel') {
     const toast = document.createElement('div');
     toast.style.cssText = 'position:fixed;top:24px;left:50%;transform:translateX(-50%);background:#F97316;color:#fff;padding:14px 24px;border-radius:12px;font-weight:700;font-size:14px;z-index:99999;box-shadow:0 4px 20px rgba(0,0,0,0.2)';
     toast.textContent = 'Payment cancelled — no charge was made.';
     document.body.appendChild(toast);
-    setTimeout(function() { toast.remove(); }, 5000);
+    setTimeout(() => toast.remove(), 5000);
   }
-});
+})();
+
 // ── END STRIPE HANDLER ────────────────────────────────────────────────────────
 
+let _sb = null;
+function sb() {
+  if (!_sb && SUPABASE_READY && window.supabase) {
+    _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON, {
+      auth: { persistSession: true, autoRefreshToken: true, storageKey: 'erpth_sb', storage: window.localStorage, detectSessionInUrl: true }
+    });
+  }
+  return _sb;
+}
+
+// ─────────────────────────────────────────
 // AI PROXY (Mia) — calls the Supabase Edge Function 'ai-proxy' instead of
 // hitting api.anthropic.com directly from the browser. The Anthropic API key
 // lives only server-side (edge function secret), never in client code.
