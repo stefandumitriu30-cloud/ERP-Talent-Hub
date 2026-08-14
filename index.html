@@ -8742,12 +8742,9 @@ function renderPrivacyPolicy(lang) {
 // Admin is always allowed. Add new functions here as needed.
 // ═══════════════════════════════════════════════════════════════
 (function installRecruiterGuard() {
+  // Only wrap user-initiated action functions — NOT render functions
+  // called internally by admin impersonation flows (those have their own guards).
   var PROTECTED_REC_FNS = [
-    'enterRecruiterPortal',
-    'initRecruiterPortal',
-    'renderRecCandidateList',
-    'renderRecChatWindow',
-    'renderRecMessages',
     'recSendMessage',
     'recInputKey',
     'setRecTab',
