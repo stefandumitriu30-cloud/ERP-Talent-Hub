@@ -5535,19 +5535,26 @@ async function adminDeleteRecruiter(userId, name) {
 async function setRecruiterPlan(userId, plan, extraFields = {}) {
   if (!SUPABASE_READY || !sb()) return false;
   try {
-    const { error } = await sb()
+    if (!userId) { console.error('setRecruiterPlan: userId is empty'); return false; }
+    console.warn('setRecruiterPlan: updating', userId, 'plan=', plan, 'extra=', JSON.stringify(extraFields));
+    const { data, error } = await sb()
       .from('profiles')
       .update({ plan, ...extraFields })
-      .eq('id', userId);
+      .eq('id', userId)
+      .select('id, plan, verified_by_admin');
+    console.warn('setRecruiterPlan result:', JSON.stringify(data), 'error:', error?.message);
     if (error) throw error;
-    // Update local cache too
+    if (!data || data.length === 0) {
+      console.error('setRecruiterPlan: no rows updated — check RLS policies');
+      throw new Error('No rows updated — check Supabase RLS policies allow admin to update profiles');
+    }
     if (typeof currentUser !== 'undefined' && currentUser?.id === userId) {
       currentUser.plan = plan;
       if (extraFields.trial_started_at) currentUser.trial_started_at = extraFields.trial_started_at;
     }
     return true;
   } catch(e) {
-    console.error('setRecruiterPlan error:', e);
+    console.error('setRecruiterPlan error:', e.message);
     return false;
   }
 }
