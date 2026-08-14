@@ -5248,16 +5248,31 @@ function renderAdminList() {
       const div = document.createElement('div');
       div.className = 'cand-card';
       div.onclick = () => showAdminCandidateDetail(p);
-      div.innerHTML = `
-        <div style="${safePhotoSrc(p.photo) ? `width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0` : `width:38px;height:38px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0`}">${safePhotoSrc(p.photo) ? `<img src="${safePhotoSrc(p.photo)}" style="width:100%;height:100%;object-fit:cover">` : initials(fullName)}</div>
-        <div class="cand-info">
-          <div class="cand-name">${escHtml(fullName)}</div>
-          <div class="cand-meta">${escHtml(p.email)}</div>
-          <div class="cand-meta" style="margin-top:2px">${p.hasProfile
-            ? `<span style="color:#16A34A;font-size:10px;font-weight:600">✓ ${t('admin.cvSubmitted')||'CV submitted'}</span>`
-            : `<span style="color:#F97316;font-size:10px;font-weight:600">⏳ ${t('admin.noCV')||'Registered, no CV yet'}</span>`
-          }</div>
-        </div>`;
+      const avatarStyle = safePhotoSrc(p.photo)
+        ? 'width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0'
+        : 'width:38px;height:38px;border-radius:50%;background:' + color + ';display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0';
+      const avatarInner = safePhotoSrc(p.photo)
+        ? '<img src="' + safePhotoSrc(p.photo) + '" style="width:100%;height:100%;object-fit:cover">'
+        : initials(fullName);
+      const cvBadge = p.hasProfile
+        ? '<span style="color:#16A34A;font-size:10px;font-weight:600">\u2713 ' + (t('admin.cvSubmitted')||'CV submitted') + '</span>'
+        : '<span style="color:#F97316;font-size:10px;font-weight:600">\u23F3 ' + (t('admin.noCV')||'Registered, no CV yet') + '</span>';
+      div.innerHTML =
+        '<div style="' + avatarStyle + '">' + avatarInner + '</div>' +
+        '<div class="cand-info">' +
+          '<div class="cand-name">' + escHtml(fullName) + '</div>' +
+          '<div class="cand-meta">' + escHtml(p.email) + '</div>' +
+          '<div class="cand-meta" style="margin-top:2px">' + cvBadge + '</div>' +
+        '</div>';
+      if (!p.hasProfile) {
+        const btn = document.createElement('button');
+        btn.className = 'admin-del-cand-btn';
+        btn.title = 'Elimina profilo vuoto';
+        btn.innerHTML = '<i class="fa-solid fa-trash"></i>';
+        btn.style.cssText = 'margin-left:auto;flex-shrink:0;background:#FEF2F2;border:1px solid #FECACA;color:#DC2626;border-radius:8px;padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer';
+        btn.addEventListener('click', e => { e.stopPropagation(); adminDeleteCandidate(p); });
+        div.appendChild(btn);
+      }
       list.appendChild(div);
     });
   } else {
@@ -5579,6 +5594,48 @@ async function adminDeleteRecruiter(userId, name) {
 
   } catch(e) {
     console.error('adminDeleteRecruiter error:', e);
+    showToast({ id: Date.now(), icon: '❌', title: 'Errore', desc: 'Impossibile eliminare: ' + e.message, color: '#FEF2F2', iconColor: '#EF4444' });
+  }
+}
+
+// ─────────────────────────────────────────
+// ADMIN: Delete empty candidate account (no CV submitted)
+// ─────────────────────────────────────────
+async function adminDeleteCandidate(p) {
+  if (!p || !p.id) {
+    showToast({ id: Date.now(), icon: '❌', title: 'Errore', desc: 'ID utente mancante', color: '#FEF2F2', iconColor: '#EF4444' });
+    return;
+  }
+  if (!adminAuthenticated || !currentUser || currentUser.role !== 'admin') return;
+  if (p.hasProfile) {
+    showToast({ id: Date.now(), icon: '⚠️', title: 'Operazione bloccata', desc: 'Questo candidato ha un profilo attivo — non può essere eliminato da qui.', color: '#FFF7ED', iconColor: '#F97316' });
+    return;
+  }
+  const confirmed = window.confirm(
+    'Eliminare l\'account vuoto di "' + (p.email || p.id) + '"?\n\n' +
+    '\u2022 Rimuove il profilo dal database\n' +
+    '\u2022 Blocca l\'accesso all\'account\n' +
+    '\u2022 NON elimina l\'utente da Supabase Auth\n\n' +
+    'L\'operazione non pu\u00f2 essere annullata.'
+  );
+  if (!confirmed) return;
+  try {
+    const { error } = await sb()
+      .from('profiles')
+      .update({ role: 'deleted', profile_data: null, photo: null })
+      .eq('id', p.id);
+    if (error) throw error;
+    const idx = allCandidateProfiles.findIndex(c => c.id === p.id);
+    if (idx !== -1) allCandidateProfiles.splice(idx, 1);
+    renderAdminList();
+    const detail = document.getElementById('admin-detail');
+    if (detail) detail.innerHTML = '<div class="chat-empty-state"><i class="fa-solid fa-trash" style="color:var(--gray-300)"></i><p>Account eliminato.</p></div>';
+    showToast({ id: Date.now(), icon: '🗑️', title: 'Account eliminato', desc: (p.email || p.id) + ' rimosso dalla piattaforma.', color: '#FEF2F2', iconColor: '#DC2626' });
+    setTimeout(() => {
+      showToast({ id: Date.now(), icon: '\u26a0\ufe0f', title: 'Azione richiesta', desc: 'Elimina anche l\'utente da Supabase \u2192 Authentication \u2192 Users per revocare l\'accesso completo.', color: '#FFF7ED', iconColor: '#F97316' });
+    }, 2500);
+  } catch(e) {
+    console.error('adminDeleteCandidate error:', e);
     showToast({ id: Date.now(), icon: '❌', title: 'Errore', desc: 'Impossibile eliminare: ' + e.message, color: '#FEF2F2', iconColor: '#EF4444' });
   }
 }
