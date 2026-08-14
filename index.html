@@ -5234,7 +5234,7 @@ function renderAdminList() {
             ? '<span style="font-size:11px;background:#ECFDF5;color:#15803D;border:1px solid #BBF7D0;border-radius:10px;padding:2px 8px;white-space:nowrap"><i class=\"fa-solid fa-circle-check\"></i> Approvato</span>'
             : '<span style="font-size:11px;background:#FFF7ED;color:#C2410C;border:1px solid #FED7AA;border-radius:10px;padding:2px 8px;white-space:nowrap"><i class=\"fa-solid fa-clock\"></i> In attesa</span>'
           }
-          <select onchange="adminSetPlan('${r.userId||r.id||''}', this)" onclick="event.stopPropagation()" style="font-size:11px;border:1px solid var(--gray-200);border-radius:8px;padding:3px 6px;cursor:pointer;background:#fff" title="Piano abbonamento">
+          <select data-uid="${r.userId||r.id||''}" onchange="adminSetPlan(this.dataset.uid, this)" onclick="event.stopPropagation()" style="font-size:11px;border:1px solid var(--gray-200);border-radius:8px;padding:3px 6px;cursor:pointer;background:#fff" title="Piano abbonamento">
             <option value="free" ${(r.plan||'free')==='free'?'selected':''}>Free</option>
             <option value="trial" ${(r.plan||'')==='trial'?'selected':''}>Trial</option>
             <option value="pro" ${(r.plan||'')==='pro'?'selected':''}>Pro €49</option>
