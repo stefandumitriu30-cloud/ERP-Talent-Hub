@@ -8837,7 +8837,8 @@ function adminImpersonate(role) {
     if (!verifiedRecruiters.find(function(r){ return r.handle === handle; })) {
       verifiedRecruiters.push({ name: 'Admin', company: 'ERP Talent Hub', linkedin: '', handle: handle, verifiedAt: new Date().toISOString(), photo: null });
     }
-    setTimeout(function() {
+    showToast({ id: Date.now(), icon: '&#127970;', title: 'Viewing as Recruiter', desc: 'Previewing the recruiter portal.', color: '#F0FDF4', iconColor: '#16A34A' });
+    setTimeout(async function() {
       var gate = document.getElementById('rec-gate');
       if (gate) gate.style.display = 'none';
       var portal = document.getElementById('rec-portal');
@@ -8847,9 +8848,32 @@ function adminImpersonate(role) {
         if (badge) badge.textContent = 'Admin · ' + (t('rec.verified')||'Verified');
       }
       try { localStorage.setItem('erpth_impersonate', 'recruiter'); } catch(e) {}
+      // Load candidates from Supabase if not already loaded
+      if ((!allCandidateProfiles || allCandidateProfiles.length === 0) && SUPABASE_READY && sb()) {
+        try {
+          var res = await sb().rpc('get_all_profiles_for_admin');
+          var profiles = (!res.error && Array.isArray(res.data)) ? res.data : [];
+          if (profiles.length === 0) {
+            var res2 = await sb().from('profiles').select('id, name, role, profile_data, photo, created_at').eq('role', 'candidate');
+            profiles = res2.data || [];
+          }
+          allCandidateProfiles.length = 0;
+          profiles.forEach(function(p) {
+            if (p.role === 'candidate' || !p.role) {
+              allCandidateProfiles.push({
+                userId: p.id, firstName: p.profile_data?.firstName || p.name?.split(' ')[0] || '—',
+                lastName: p.profile_data?.lastName || p.name?.split(' ').slice(1).join(' ') || '',
+                city: p.profile_data?.city || '—', country: p.profile_data?.country || '—',
+                erp: p.profile_data?.erp || [], exps: p.profile_data?.exps || [],
+                yearsExp: p.profile_data?.yearsExp ?? null, hasProfile: !!p.profile_data,
+                email: p.email, photo: p.photo || null,
+              });
+            }
+          });
+        } catch(e) { console.warn('adminImpersonate: failed to load candidates', e); }
+      }
       if (typeof renderRecCandidateList === 'function') renderRecCandidateList();
     }, 50);
-    showToast({ id: Date.now(), icon: '&#127970;', title: 'Viewing as Recruiter', desc: 'Previewing the recruiter portal.', color: '#F0FDF4', iconColor: '#16A34A' });
   }
 }
 
