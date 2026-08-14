@@ -4724,7 +4724,15 @@ function showView(name) {
     if (!recruiterVerified) {
       document.getElementById('rec-gate').style.display = 'flex';
       document.getElementById('rec-portal').style.display = 'none';
-      gotoStep(1);
+      // If recruiter has submitted a request but is pending admin approval,
+      // show the pending screen instead of the initial gate
+      if (currentUser && currentUser.role === 'recruiter' && currentUser.recruiterData) {
+        gotoStep(8);
+        var desc = document.getElementById('gate-pending-desc');
+        if (desc) desc.textContent = 'La tua richiesta di accesso è in attesa di approvazione. Riceverai un’email non appena il team avrà verificato il tuo profilo LinkedIn Recruiter.';
+      } else {
+        gotoStep(1);
+      }
     } else {
       initRecruiterPortal();
     }
@@ -5016,7 +5024,10 @@ function setAdminTab(tab, el) {
 async function adminSetPlan(userId, selectEl) {
   const plan = selectEl.value;
   // When activating trial, stamp trial_started_at so expiry logic is server-grounded
-  const extraFields = plan === 'trial' ? { trial_started_at: new Date().toISOString() } : {};
+  // Setting any plan from the admin dashboard also marks the account as admin-approved
+  const extraFields = plan === 'trial'
+    ? { trial_started_at: new Date().toISOString(), verified_by_admin: true }
+    : { verified_by_admin: true };
   setRecruiterPlan(userId, plan, extraFields).then(ok => {
     if (ok) {
       showToast({ id: Date.now(), icon: '✅', title: 'Piano aggiornato', desc: `Piano impostato a ${plan}`, color: '#F0FDF4', iconColor: '#22C55E' });
@@ -5408,7 +5419,7 @@ async function adminDeleteRecruiter(userId, name) {
     // so this effectively blocks the account without losing audit trail
     const { error } = await sb()
       .from('profiles')
-      .update({ role: 'deleted', recruiter_data: null, plan: 'free', photo: null })
+      .update({ role: 'deleted', recruiter_data: null, plan: 'free', photo: null, verified_by_admin: false })
       .eq('id', userId);
 
     if (error) throw error;
@@ -6206,15 +6217,16 @@ function buildUserObject(authUser, profile) {
   // Supabase stores the role in app_metadata when set via the dashboard
   const jwtRole = authUser.app_metadata?.role || authUser.user_metadata?.role || null;
   return {
-    id:               authUser.id,
-    email:            authUser.email,
-    name:             profile?.name  || authUser.user_metadata?.full_name || authUser.email,
-    role:             profile?.role  || jwtRole || 'candidate',
-    plan:             profile?.plan  || 'free',
-    trial_started_at: profile?.trial_started_at || null,
-    photo:            profile?.photo || null,
-    profileData:      profile?.profile_data   || null,
-    recruiterData:    profile?.recruiter_data || null,
+    id:                authUser.id,
+    email:             authUser.email,
+    name:              profile?.name  || authUser.user_metadata?.full_name || authUser.email,
+    role:              profile?.role  || jwtRole || 'candidate',
+    plan:              profile?.plan  || 'free',
+    trial_started_at:  profile?.trial_started_at || null,
+    photo:             profile?.photo || null,
+    profileData:       profile?.profile_data   || null,
+    recruiterData:     profile?.recruiter_data || null,
+    verifiedByAdmin:   profile?.verified_by_admin === true,
   };
 }
 
@@ -6237,10 +6249,14 @@ function loginSuccess(user) {
     savedProfile = user.profileData;
     if (user.photo) candPhotoBase64 = user.photo;
   }
-  if (user.role === 'recruiter' && user.recruiterData) {
-    recruiterProfile = user.recruiterData;
-    recruiterVerified = true;
+  if (user.role === 'recruiter') {
+    if (user.recruiterData) recruiterProfile = user.recruiterData;
     if (user.photo) recPhotoBase64 = user.photo;
+    // Only grant portal access if admin has explicitly approved this account
+    recruiterVerified = user.verifiedByAdmin === true;
+    if (!recruiterVerified) {
+      console.info('Recruiter login: pending admin approval — gate will be shown.');
+    }
     // Trial expiry check — runs async, does not block login flow
     checkTrialExpiry(user);
   }
@@ -6792,6 +6808,7 @@ async function persistRecruiterData() {
   currentUser.recruiterData = recruiterProfile; currentUser.photo = recPhotoBase64;
   saveSession(currentUser);
   if (!SUPABASE_READY || !sb()) return;
+  // verified_by_admin is never set here — only admin can approve via adminApproveRecruiter()
   await sb().from('profiles').update({ recruiter_data: recruiterProfile, photo: recPhotoBase64 }).eq('id', currentUser.id);
 }
 
@@ -7948,9 +7965,9 @@ document.addEventListener('DOMContentLoaded', async () => {
           savedProfile = user.profileData;
           if (user.photo) candPhotoBase64 = user.photo;
         }
-        if (user.role === 'recruiter' && user.recruiterData) {
-          recruiterProfile = user.recruiterData;
-          recruiterVerified = true;
+        if (user.role === 'recruiter') {
+          if (user.recruiterData) recruiterProfile = user.recruiterData;
+          recruiterVerified = user.verifiedByAdmin === true;
           if (user.photo) recPhotoBase64 = user.photo;
         }
         // SECURITY: adminAuthenticated confirmed by live Supabase session only
@@ -7975,9 +7992,9 @@ document.addEventListener('DOMContentLoaded', async () => {
           savedProfile = cached.profileData;
           if (cached.photo) candPhotoBase64 = cached.photo;
         }
-        if (cached.role === 'recruiter' && cached.recruiterData) {
-          recruiterProfile = cached.recruiterData;
-          recruiterVerified = true;
+        if (cached.role === 'recruiter') {
+          if (cached.recruiterData) recruiterProfile = cached.recruiterData;
+          recruiterVerified = cached.verifiedByAdmin === true;
           if (cached.photo) recPhotoBase64 = cached.photo;
         }
         if (cached.role === 'admin') adminAuthenticated = true;
@@ -7990,9 +8007,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       savedProfile = cached.profileData;
       if (cached.photo) candPhotoBase64 = cached.photo;
     }
-    if (cached.role === 'recruiter' && cached.recruiterData) {
-      recruiterProfile = cached.recruiterData;
-      recruiterVerified = true;
+    if (cached.role === 'recruiter') {
+      if (cached.recruiterData) recruiterProfile = cached.recruiterData;
+      recruiterVerified = cached.verifiedByAdmin === true;
       if (cached.photo) recPhotoBase64 = cached.photo;
     }
     if (cached.role === 'admin') adminAuthenticated = true;
