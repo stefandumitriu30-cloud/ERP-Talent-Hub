@@ -5076,12 +5076,14 @@ async function initAdminPortal() {
         }
         if (p.role === 'recruiter') {
           verifiedRecruiters.push({
+            userId:      p.id,
             name:        p.recruiter_data?.name    || p.name || '—',
             company:     p.recruiter_data?.company || '—',
             url:         p.recruiter_data?.url     || '',
             photo:       p.photo || null,
             verifiedAt:  p.recruiter_data?.verifiedAt || p.created_at,
             email:       p.email,
+            plan:        p.plan || 'free',
           });
         }
       });
