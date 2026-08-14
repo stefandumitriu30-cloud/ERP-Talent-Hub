@@ -5200,6 +5200,7 @@ async function initAdminPortal() {
             photo:      p.photo || null,
             submittedAt: p.created_at,
             hasProfile: !!p.profile_data,
+            userId:     p.id,
           });
         }
         if (p.role === 'recruiter') {
