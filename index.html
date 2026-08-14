@@ -3542,7 +3542,7 @@ function showRejected() {
 function enterRecruiterPortal() {
   // SECURITY: only grant portal access if admin has approved this account in Supabase.
   // This prevents console-based bypass of the verification gate.
-  if (!currentUser || currentUser.verifiedByAdmin !== true) {
+  if (!currentUser || (currentUser.role !== 'admin' && currentUser.verifiedByAdmin !== true)) {
     console.warn('[ERP] enterRecruiterPortal blocked — account not approved by admin.');
     return;
   }
@@ -3906,7 +3906,7 @@ let recTabFilter = 'all';
 
 function initRecruiterPortal() {
   // SECURITY: block portal init if not admin-approved
-  if (!currentUser || currentUser.verifiedByAdmin !== true) {
+  if (!currentUser || (currentUser.role !== 'admin' && currentUser.verifiedByAdmin !== true)) {
     console.warn('[ERP] initRecruiterPortal blocked — not verified by admin.');
     document.getElementById('rec-gate').style.display = 'flex';
     document.getElementById('rec-portal').style.display = 'none';
@@ -3946,7 +3946,7 @@ function getRecCandidates() {
 function renderRecCandidateList(q) {
   // SECURITY: re-check authorization at render time
   // Prevents DOM manipulation from bypassing the gate
-  if (!recruiterVerified || !currentUser || currentUser.verifiedByAdmin !== true) {
+  if (!recruiterVerified || !currentUser || (currentUser.role !== 'admin' && currentUser.verifiedByAdmin !== true)) {
     return;
   }
   const search = (q || document.getElementById('rec-search')?.value || '').toLowerCase();
@@ -4120,6 +4120,11 @@ function recInputKey(e, candidateId) {
 }
 
 function recSendMessage(candidateId) {
+  // SECURITY: only approved recruiters or admin can send messages
+  if (!currentUser || (currentUser.role !== 'admin' && currentUser.verifiedByAdmin !== true)) {
+    console.warn('[ERP] recSendMessage blocked — not verified by admin.');
+    return;
+  }
   const input = document.getElementById('rec-input');
   const text = input.value.trim();
   if (!text) return;
@@ -4458,7 +4463,7 @@ async function miaAnalyzeMatches(searchQuery) {
   if (currentUser?.role === 'recruiter' && currentUser?.verifiedByAdmin !== true) {
     console.warn('[ERP] miaAnalyzeMatches blocked — recruiter not verified by admin.');
     return;
-  }
+  }  // admin always allowed
 
   // If allCandidateProfiles is empty (e.g. recruiter view without admin init),
   // try to fetch from Supabase directly via the admin RPC or profiles table
@@ -8728,6 +8733,48 @@ function renderPrivacyPolicy(lang) {
   s('pp-h8', tr.h8); s('pp-p8', tr.p8);
   document.querySelectorAll('.modal-close-btn').forEach(function(btn) { btn.textContent = tr.close; });
 }
+
+// ═══════════════════════════════════════════════════════════════
+// RECRUITER AUTHORIZATION WRAPPER
+// Automatically enforces verifiedByAdmin on all recruiter-portal
+// functions at runtime. Any function listed in PROTECTED_REC_FNS
+// will be blocked if the current user is a non-approved recruiter.
+// Admin is always allowed. Add new functions here as needed.
+// ═══════════════════════════════════════════════════════════════
+(function installRecruiterGuard() {
+  var PROTECTED_REC_FNS = [
+    'enterRecruiterPortal',
+    'initRecruiterPortal',
+    'renderRecCandidateList',
+    'renderRecChatWindow',
+    'renderRecMessages',
+    'recSendMessage',
+    'recInputKey',
+    'setRecTab',
+    'filterCandidates',
+    'miaAnalyzeMatches',
+  ];
+
+  function isRecruiterAuthorized() {
+    if (!window.currentUser) return false;
+    if (window.currentUser.role === 'admin') return true;
+    return window.currentUser.verifiedByAdmin === true;
+  }
+
+  PROTECTED_REC_FNS.forEach(function(fnName) {
+    var original = window[fnName];
+    if (typeof original !== 'function') return;
+    window[fnName] = function() {
+      if (!isRecruiterAuthorized()) {
+        console.warn('[ERP Guard] ' + fnName + ' blocked — recruiter not verified by admin.');
+        return;
+      }
+      return original.apply(this, arguments);
+    };
+  });
+
+  /* [ERP Guard] Recruiter authorization wrapper installed on ' + PROTECTED_REC_FNS.length + ' functions. */
+})();
 
 // ── ADMIN IMPERSONATE ─────────────────────────────────────────
 function _openRecruiterPortal(name) {
