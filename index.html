@@ -3884,16 +3884,8 @@ function avatarColor(name){ let h=0; for(let c of name) h=(h*31+c.charCodeAt(0))
 function initials(name){ return name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2); }
 
 // ── Sample candidate data ──
-const CANDIDATES = [
-  {id:1, name:'Marco Rossi',       role:'SAP S/4HANA Consultant',     location:'Milan, Italy',       systems:['SAP S/4HANA','SAP ECC'],   online:true},
-  {id:2, name:'Laura Müller',      role:'Oracle Fusion Architect',     location:'Munich, Germany',    systems:['Oracle Fusion','Oracle EBS'],online:false},
-  {id:3, name:'Carlos García',     role:'MS Dynamics 365 Specialist',  location:'Madrid, Spain',      systems:['Microsoft Dynamics 365'],  online:true},
-  {id:4, name:'Sophie Dubois',     role:'SAP FI/CO Lead',              location:'Paris, France',      systems:['SAP ECC','SAP S/4HANA'],   online:false},
-  {id:5, name:'Lena Andersson',    role:'Workday HCM Consultant',      location:'Stockholm, Sweden',  systems:['Workday'],                 online:true},
-  {id:6, name:'James O\'Brien',    role:'NetSuite ERP Developer',      location:'Dublin, Ireland',    systems:['NetSuite'],                online:false},
-  {id:7, name:'Fatima Al-Hassan',  role:'Infor LN Functional Expert',  location:'Dubai, UAE',         systems:['Infor LN'],                online:true},
-  {id:8, name:'Piotr Kowalski',    role:'SAP MM/WM Consultant',        location:'Warsaw, Poland',     systems:['SAP ECC','SAP S/4HANA'],   online:false},
-];
+// Demo candidates removed — only real Supabase profiles are shown
+const CANDIDATES = [];
 
 // ── Shared conversation store ──
 // conversations[candidateId] = { opened: bool, messages: [{from:'rec'|'cand', text, time}] }
@@ -3923,22 +3915,19 @@ function filterCandidates(q) {
 }
 
 function getRecCandidates() {
-  // Use real Supabase profiles if available, otherwise fallback to sample data
-  if (allCandidateProfiles && allCandidateProfiles.length > 0) {
-    return allCandidateProfiles.map(function(p, idx) {
-      return {
-        id: p.userId || p.id || ('real_' + idx),
-        name: (p.firstName || '') + ' ' + (p.lastName || ''),
-        role: (p.exps && p.exps.length > 0) ? (p.exps[0].jobTitle + (p.exps[0].company ? ' @ ' + p.exps[0].company : '')) : 'ERP Professional',
-        location: [p.city, p.country].filter(Boolean).join(', '),
-        systems: p.erp || [],
-        yearsExp: (p.yearsExp === null || p.yearsExp === undefined) ? null : p.yearsExp,
-        online: false,
-        _profile: p,
-      };
-    });
-  }
-  return CANDIDATES;
+  // Always use real Supabase profiles only — no demo fallback
+  return allCandidateProfiles.map(function(p, idx) {
+    return {
+      id: p.userId || p.id || ('real_' + idx),
+      name: (p.firstName || '') + ' ' + (p.lastName || ''),
+      role: (p.exps && p.exps.length > 0) ? (p.exps[0].jobTitle + (p.exps[0].company ? ' @ ' + p.exps[0].company : '')) : 'ERP Professional',
+      location: [p.city, p.country].filter(Boolean).join(', '),
+      systems: p.erp || [],
+      yearsExp: (p.yearsExp === null || p.yearsExp === undefined) ? null : p.yearsExp,
+      online: false,
+      _profile: p,
+    };
+  });
 }
 
 function renderRecCandidateList(q) {
