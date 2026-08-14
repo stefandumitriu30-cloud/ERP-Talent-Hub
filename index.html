@@ -4783,7 +4783,13 @@ function showView(name) {
   }
   if (name === 'admin') initAdminPortal();
   if (name === 'recruiter') {
-    if (!recruiterVerified) {
+    // Sync recruiterVerified with currentUser.verifiedByAdmin at view time
+    // to avoid stale state from session restore timing issues
+    if (currentUser && currentUser.role === 'recruiter') {
+      recruiterVerified = currentUser.verifiedByAdmin === true;
+    }
+    var _isAdminView = currentUser && currentUser.role === 'admin';
+    if (!_isAdminView && !recruiterVerified) {
       document.getElementById('rec-gate').style.display = 'flex';
       document.getElementById('rec-portal').style.display = 'none';
       // If recruiter has submitted a request but is pending admin approval,
