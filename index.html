@@ -3374,6 +3374,9 @@ async function submitBusinessVerification() {
   if (_isPersonalEmail(email)) { errEl.style.display = 'block'; return; } else { errEl.style.display = 'none'; }
   if (!company) { alert('Please enter your company name.'); return; }
   if (!jobtitle){ alert('Please enter your job title.');    return; }
+  // Validate LinkedIn username — must be at least 3 valid chars (blocks bots submitting empty/prefix-only values)
+  const linkedinClean = sanitizeLinkedInUsername(linkedin);
+  if (!linkedinClean || linkedinClean.length < 3) { alert("Please enter a valid LinkedIn profile URL or username (e.g. john-doe)."); return; }
 
   const btn = document.querySelector('#gate-step-6 .btn-primary');
   const orig = btn.innerHTML;
