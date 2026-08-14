@@ -3923,6 +3923,7 @@ async function initRecruiterPortal() {
       } else {
         // Verified recruiter uses the dedicated RPC (SECURITY DEFINER, checks verified_by_admin)
         var res = await sb().rpc('get_candidates_for_recruiter');
+        console.warn('[ERP] get_candidates_for_recruiter result:', res.data?.length, 'error:', res.error?.message, res.error?.code);
         profiles = (!res.error && Array.isArray(res.data)) ? res.data : [];
       }
       allCandidateProfiles.length = 0;
