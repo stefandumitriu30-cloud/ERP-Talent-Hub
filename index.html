@@ -3946,7 +3946,8 @@ function getRecCandidates() {
 function renderRecCandidateList(q) {
   // SECURITY: re-check authorization at render time
   // Prevents DOM manipulation from bypassing the gate
-  if (!recruiterVerified || !currentUser || (currentUser.role !== 'admin' && currentUser.verifiedByAdmin !== true)) {
+  var _isAdminViewing = currentUser && currentUser.role === 'admin';
+  if (!_isAdminViewing && (!recruiterVerified || !currentUser || currentUser.verifiedByAdmin !== true)) {
     return;
   }
   const search = (q || document.getElementById('rec-search')?.value || '').toLowerCase();
