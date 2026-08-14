@@ -75,6 +75,8 @@
 <!-- font-display=swap prevents invisible text during font load -->
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet" />
 <!-- Font Awesome loaded non-blocking: preload + swap on load, noscript fallback -->
+<!-- DOMPurify — XSS sanitization for any innerHTML usage -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js" integrity="sha512-jB0TkTBeQC9ZSkBqDhdmfTv1qdfbWpGE72yMBVqMnSAdDPLv4bfQQh538TdVPTm0IVgKMDnOuRtBd/LUhUGzw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
 <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" /></noscript>
 <style>
@@ -8119,6 +8121,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch(e) {
       console.warn('Supabase session check failed — falling back to cache:', e);
       // Fallback: use cache only if Supabase is unavailable
+      // SECURITY: adminAuthenticated is intentionally NOT restored from cache —
+      // it must be confirmed by a live Supabase session to prevent localStorage tampering.
       if (cached) {
         currentUser = cached;
         if (cached.role === 'candidate' && cached.profileData) {
@@ -8130,11 +8134,13 @@ document.addEventListener('DOMContentLoaded', async () => {
           recruiterVerified = cached.verifiedByAdmin === true;
           if (cached.photo) recPhotoBase64 = cached.photo;
         }
-        if (cached.role === 'admin') adminAuthenticated = true;
+        // adminAuthenticated intentionally NOT set here — requires live Supabase session
       }
     }
   } else if (cached) {
     // Supabase not configured — use cache as-is (offline/demo mode)
+    // SECURITY: adminAuthenticated is intentionally NOT restored from cache —
+    // admin access requires a live Supabase session regardless of mode.
     currentUser = cached;
     if (cached.role === 'candidate' && cached.profileData) {
       savedProfile = cached.profileData;
@@ -8145,7 +8151,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       recruiterVerified = cached.verifiedByAdmin === true;
       if (cached.photo) recPhotoBase64 = cached.photo;
     }
-    if (cached.role === 'admin') adminAuthenticated = true;
+    // adminAuthenticated intentionally NOT set here — requires live Supabase session
   }
 
   renderNav();
