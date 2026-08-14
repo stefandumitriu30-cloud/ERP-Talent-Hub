@@ -3915,11 +3915,15 @@ async function initRecruiterPortal() {
   // Load candidates from Supabase if not already in memory
   if ((!allCandidateProfiles || allCandidateProfiles.length === 0) && SUPABASE_READY && sb()) {
     try {
-      var res = await sb().rpc('get_all_profiles_for_admin');
-      var profiles = (!res.error && Array.isArray(res.data)) ? res.data : [];
-      if (profiles.length === 0) {
-        var res2 = await sb().from('profiles').select('id, name, role, profile_data, photo, created_at').eq('role', 'candidate');
-        profiles = res2.data || [];
+      var profiles = [];
+      if (currentUser && currentUser.role === 'admin') {
+        // Admin uses the privileged RPC
+        var res = await sb().rpc('get_all_profiles_for_admin');
+        profiles = (!res.error && Array.isArray(res.data)) ? res.data : [];
+      } else {
+        // Verified recruiter uses the dedicated RPC (SECURITY DEFINER, checks verified_by_admin)
+        var res = await sb().rpc('get_candidates_for_recruiter');
+        profiles = (!res.error && Array.isArray(res.data)) ? res.data : [];
       }
       allCandidateProfiles.length = 0;
       profiles.forEach(function(p) {
@@ -8895,7 +8899,7 @@ function adminImpersonate(role) {
           var profiles = (!res.error && Array.isArray(res.data)) ? res.data : [];
           if (profiles.length === 0) {
             var res2 = await sb().from('profiles').select('id, name, role, profile_data, photo, created_at').eq('role', 'candidate');
-            profiles = res2.data || [];
+            profiles = (res2.data || []);
           }
           allCandidateProfiles.length = 0;
           profiles.forEach(function(p) {
