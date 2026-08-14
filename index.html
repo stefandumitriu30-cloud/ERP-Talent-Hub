@@ -5247,48 +5247,77 @@ function showAdminCandidateDetail(p) {
 }
 
 function showAdminRecruiterDetail(r) {
-  const detail = document.getElementById('admin-detail');
-  const color  = avatarColor(r.name);
-  detail.innerHTML = `
-    <div style="padding:28px;overflow-y:auto;height:100%">
-      <div style="display:flex;align-items:center;gap:14px;margin-bottom:24px;flex-wrap:wrap">
-        <div style="${safePhotoSrc(r.photo) ? `width:52px;height:52px;border-radius:50%;overflow:hidden;flex-shrink:0` : `width:52px;height:52px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;flex-shrink:0`}">${safePhotoSrc(r.photo) ? `<img src="${safePhotoSrc(r.photo)}" style="width:100%;height:100%;object-fit:cover">` : initials(r.name)}</div>
-        <div>
-          <div style="font-size:18px;font-weight:600">${escHtml(r.name)}</div>
-          <div style="font-size:13px;color:var(--gray-500)">${escHtml(r.company)}</div>
-        </div>
-        ${r.url
-          ? '<span style="margin-left:auto;font-size:11px;background:#ECFDF5;color:#15803D;border:1px solid #BBF7D0;border-radius:10px;padding:3px 12px;font-weight:600"><i class=\"fa-solid fa-circle-check\"></i> Verified LinkedIn</span>'
-          : '<span style="margin-left:auto;font-size:11px;background:#FFF7ED;color:#C2410C;border:1px solid #FED7AA;border-radius:10px;padding:3px 12px;font-weight:600"><i class=\"fa-solid fa-triangle-exclamation\"></i> No LinkedIn verificato</span>'
-        }
-      </div>
-      <div class="form-card">
-        <div class="section-header"><i class="fa-brands fa-linkedin" style="color:#0A66C2"></i><h3>LinkedIn Recruiter</h3></div>
-        ${!r.url ? '<div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:8px;padding:10px 14px;font-size:12px;color:#92400E;margin-bottom:12px"><i class="fa-solid fa-triangle-exclamation" style="margin-right:6px"></i><strong>Attenzione:</strong> questo account non ha completato la verifica LinkedIn dal flusso normale. Potrebbe essere un account di test o creato manualmente da Supabase.</div>' : ''}
-        <div style="font-size:13px;display:flex;flex-direction:column;gap:10px">
-          <div><strong>Full name:</strong> ${escHtml(r.name)}</div>
-          <div><strong>Company / Agency:</strong> ${escHtml(r.company)}</div>
-          <div><strong>Email:</strong> ${escHtml(r.email || '—')}</div>
-          <div><strong>LinkedIn URL:</strong>
-            ${r.url
-              ? `<a href="https://www.linkedin.com/in/${escHtml(r.url)}" target="_blank" rel="noopener" style="color:#0A66C2;word-break:break-all">https://www.linkedin.com/in/${escHtml(r.url)}</a>`
-              : '<span style="color:#F97316;font-weight:500">⚠️ Non disponibile — verifica non completata via LinkedIn</span>'}
-          </div>
-          <div><strong>Piano:</strong> <span style="font-weight:600;text-transform:capitalize">${escHtml(r.plan || 'free')}</span></div>
-          <div><strong>Verified on:</strong> ${new Date(r.verifiedAt).toLocaleString()}</div>
-        </div>
-      </div>
-      <div class="form-card" style="margin-top:16px">
-        <div class="section-header"><i class="fa-solid fa-comments"></i><h3>Conversations opened</h3></div>
-        ${Object.entries(conversations).filter(([,c]) => c.opened).length === 0
-          ? '<p style="font-size:13px;color:var(--gray-400)">No conversations started yet.</p>'
-          : Object.entries(conversations).filter(([,c]) => c.opened).map(([cid, c]) => {
-              const cand = CANDIDATES.find(x => x.id === parseInt(cid));
-              return cand ? `<div style="font-size:13px;margin-bottom:6px"><i class="fa-solid fa-comment" style="color:var(--blue);margin-right:6px"></i>${escHtml(cand.name)} · ${c.messages.length} message${c.messages.length !== 1 ? 's' : ''}</div>` : '';
-            }).join('')
-        }
-      </div>
-    </div>`;
+  var detail = document.getElementById('admin-detail');
+  var color  = avatarColor(r.name);
+
+  // Avatar
+  var avatarStyle = safePhotoSrc(r.photo)
+    ? 'width:52px;height:52px;border-radius:50%;overflow:hidden;flex-shrink:0'
+    : 'width:52px;height:52px;border-radius:50%;background:' + color + ';display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;flex-shrink:0';
+  var avatarInner = safePhotoSrc(r.photo)
+    ? '<img src="' + safePhotoSrc(r.photo) + '" style="width:100%;height:100%;object-fit:cover">'
+    : initials(r.name);
+
+  // LinkedIn badge
+  var liBadge = r.url
+    ? '<span style="margin-left:auto;font-size:11px;background:#ECFDF5;color:#15803D;border:1px solid #BBF7D0;border-radius:10px;padding:3px 12px;font-weight:600"><i class="fa-solid fa-circle-check"></i> Verified LinkedIn</span>'
+    : '<span style="margin-left:auto;font-size:11px;background:#FFF7ED;color:#C2410C;border:1px solid #FED7AA;border-radius:10px;padding:3px 12px;font-weight:600"><i class="fa-solid fa-triangle-exclamation"></i> No LinkedIn verificato</span>';
+
+  // Warning banner if no LinkedIn
+  var noLiWarning = r.url ? '' :
+    '<div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:8px;padding:10px 14px;font-size:12px;color:#92400E;margin-bottom:12px">' +
+    '<i class="fa-solid fa-triangle-exclamation" style="margin-right:6px"></i>' +
+    '<strong>Attenzione:</strong> questo account non ha completato la verifica LinkedIn dal flusso normale. Potrebbe essere un account di test o creato manualmente da Supabase.</div>';
+
+  // LinkedIn URL field
+  var liUrl = r.url
+    ? '<a href="https://www.linkedin.com/in/' + escHtml(r.url) + '" target="_blank" rel="noopener" style="color:#0A66C2;word-break:break-all">https://www.linkedin.com/in/' + escHtml(r.url) + '</a>'
+    : '<span style="color:#F97316;font-weight:500">&#9888;&#65039; Non disponibile &mdash; verifica non completata via LinkedIn</span>';
+
+  // Conversations
+  var convEntries = Object.entries(conversations).filter(function(e){ return e[1].opened; });
+  var convHtml = convEntries.length === 0
+    ? '<p style="font-size:13px;color:var(--gray-400)">No conversations started yet.</p>'
+    : convEntries.map(function(e) {
+        var cid = e[0]; var c = e[1];
+        var cand = CANDIDATES.find(function(x){ return x.id === parseInt(cid); });
+        return cand ? '<div style="font-size:13px;margin-bottom:6px"><i class="fa-solid fa-comment" style="color:var(--blue);margin-right:6px"></i>' + escHtml(cand.name) + ' &middot; ' + c.messages.length + ' message' + (c.messages.length !== 1 ? 's' : '') + '</div>' : '';
+      }).join('');
+
+  detail.innerHTML =
+    '<div style="padding:28px;overflow-y:auto;height:100%">' +
+      '<div style="display:flex;align-items:center;gap:14px;margin-bottom:24px;flex-wrap:wrap">' +
+        '<div style="' + avatarStyle + '">' + avatarInner + '</div>' +
+        '<div>' +
+          '<div style="font-size:18px;font-weight:600">' + escHtml(r.name) + '</div>' +
+          '<div style="font-size:13px;color:var(--gray-500)">' + escHtml(r.company) + '</div>' +
+        '</div>' +
+        liBadge +
+      '</div>' +
+      '<div class="form-card">' +
+        '<div class="section-header"><i class="fa-brands fa-linkedin" style="color:#0A66C2"></i><h3>LinkedIn Recruiter</h3></div>' +
+        noLiWarning +
+        '<div style="font-size:13px;display:flex;flex-direction:column;gap:10px">' +
+          '<div><strong>Full name:</strong> ' + escHtml(r.name) + '</div>' +
+          '<div><strong>Company / Agency:</strong> ' + escHtml(r.company) + '</div>' +
+          '<div><strong>Email:</strong> ' + escHtml(r.email || '—') + '</div>' +
+          '<div><strong>LinkedIn URL:</strong> ' + liUrl + '</div>' +
+          '<div><strong>Piano:</strong> <span style="font-weight:600;text-transform:capitalize">' + escHtml(r.plan || 'free') + '</span></div>' +
+          '<div><strong>Verified on:</strong> ' + new Date(r.verifiedAt).toLocaleString() + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="form-card" style="margin-top:16px">' +
+        '<div class="section-header"><i class="fa-solid fa-comments"></i><h3>Conversations opened</h3></div>' +
+        convHtml +
+      '</div>' +
+      '<div style="margin-top:20px;padding-top:16px;border-top:1px solid #FEE2E2">' +
+        '<button data-uid="' + escHtml(r.userId || '') + '" data-uname="' + escHtml(r.name) + '"' +
+          ' onclick="adminDeleteRecruiter(this.dataset.uid, this.dataset.uname)"' +
+          ' style="width:100%;background:#FEF2F2;color:#DC2626;border:1.5px solid #FECACA;border-radius:8px;padding:10px 16px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">' +
+          '<i class="fa-solid fa-trash"></i> Elimina account recruiter' +
+        '</button>' +
+      '</div>' +
+    '</div>';
 }
 
 // ─────────────────────────────────────────
@@ -5352,6 +5381,56 @@ function getRecruiterPlan() {
     if (days <= 14) return 'trial';
   }
   return 'free';
+}
+
+// ─────────────────────────────────────────
+// ADMIN: Delete recruiter account
+// ─────────────────────────────────────────
+async function adminDeleteRecruiter(userId, name) {
+  if (!userId) {
+    showToast({ id: Date.now(), icon: '❌', title: 'Errore', desc: 'ID utente mancante', color: '#FEF2F2', iconColor: '#EF4444' });
+    return;
+  }
+  if (!adminAuthenticated || !currentUser || currentUser.role !== 'admin') return;
+
+  const confirmed = window.confirm(
+    'Sei sicuro di voler eliminare l\u2019account di "' + name + '"?\n\n' +
+    'Questa azione:\n' +
+    '\u2022 Rimuove il profilo dal database\n' +
+    '\u2022 Blocca l\u2019accesso all\u2019account\n' +
+    '\u2022 NON elimina l\u2019utente da Supabase Auth (fallo manualmente se necessario)\n\n' +
+    'L\u2019operazione non pu\u00f2 essere annullata.'
+  );
+  if (!confirmed) return;
+
+  try {
+    // Set role='deleted' — login flow only admits recruiter/candidate/admin
+    // so this effectively blocks the account without losing audit trail
+    const { error } = await sb()
+      .from('profiles')
+      .update({ role: 'deleted', recruiter_data: null, plan: 'free', photo: null })
+      .eq('id', userId);
+
+    if (error) throw error;
+
+    // Remove from local cache and re-render list
+    const idx = verifiedRecruiters.findIndex(r => r.userId === userId);
+    if (idx !== -1) verifiedRecruiters.splice(idx, 1);
+    renderAdminList();
+
+    // Clear detail panel
+    const detail = document.getElementById('admin-detail');
+    if (detail) detail.innerHTML = '<div class="chat-empty-state"><i class="fa-solid fa-trash" style="color:var(--gray-300)"></i><p>Account eliminato.</p></div>';
+
+    showToast({ id: Date.now(), icon: '🗑️', title: 'Account eliminato', desc: name + ' rimosso dalla piattaforma.', color: '#FEF2F2', iconColor: '#DC2626' });
+    setTimeout(() => {
+      showToast({ id: Date.now(), icon: '⚠️', title: 'Azione richiesta', desc: 'Elimina anche l\u2019utente da Supabase → Authentication → Users per revocare l\u2019accesso completo.', color: '#FFF7ED', iconColor: '#F97316' });
+    }, 2500);
+
+  } catch(e) {
+    console.error('adminDeleteRecruiter error:', e);
+    showToast({ id: Date.now(), icon: '❌', title: 'Errore', desc: 'Impossibile eliminare: ' + e.message, color: '#FEF2F2', iconColor: '#EF4444' });
+  }
 }
 
 // Update plan in Supabase (called by admin)
