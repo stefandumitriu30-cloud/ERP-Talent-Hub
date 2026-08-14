@@ -8055,7 +8055,16 @@ document.addEventListener('DOMContentLoaded', async () => {
           } catch(fe) { console.warn('[ERP] REST fallback error:', fe); }
         }
 
+        // DEBUG: log profile fields to diagnose verified_by_admin issue
+        console.warn('[ERP DEBUG] profile from DB:', JSON.stringify({
+          id: profile?.id, role: profile?.role,
+          plan: profile?.plan, verified_by_admin: profile?.verified_by_admin
+        }));
+
         const user = buildUserObject(session.user, profile);
+        console.warn('[ERP DEBUG] user object:', JSON.stringify({
+          role: user.role, plan: user.plan, verifiedByAdmin: user.verifiedByAdmin
+        }));
 
         // Always clear any stale cache and write fresh data
         currentUser = user;
