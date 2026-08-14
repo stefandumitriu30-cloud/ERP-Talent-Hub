@@ -5015,7 +5015,9 @@ function setAdminTab(tab, el) {
 
 async function adminSetPlan(userId, selectEl) {
   const plan = selectEl.value;
-  setRecruiterPlan(userId, plan).then(ok => {
+  // When activating trial, stamp trial_started_at so expiry logic is server-grounded
+  const extraFields = plan === 'trial' ? { trial_started_at: new Date().toISOString() } : {};
+  setRecruiterPlan(userId, plan, extraFields).then(ok => {
     if (ok) {
       showToast({ id: Date.now(), icon: '✅', title: 'Piano aggiornato', desc: `Piano impostato a ${plan}`, color: '#F0FDF4', iconColor: '#22C55E' });
     } else {
@@ -5337,17 +5339,19 @@ function getRecruiterPlan() {
 }
 
 // Update plan in Supabase (called by admin)
-async function setRecruiterPlan(userId, plan) {
+// extraFields: optional extra columns to update alongside plan (e.g. trial_started_at)
+async function setRecruiterPlan(userId, plan, extraFields = {}) {
   if (!SUPABASE_READY || !sb()) return false;
   try {
     const { error } = await sb()
       .from('profiles')
-      .update({ plan })
+      .update({ plan, ...extraFields })
       .eq('id', userId);
     if (error) throw error;
     // Update local cache too
     if (typeof currentUser !== 'undefined' && currentUser?.id === userId) {
       currentUser.plan = plan;
+      if (extraFields.trial_started_at) currentUser.trial_started_at = extraFields.trial_started_at;
     }
     return true;
   } catch(e) {
@@ -5358,6 +5362,110 @@ async function setRecruiterPlan(userId, plan) {
 
 function getPlanLimits() {
   return PLANS[getRecruiterPlan()] || PLANS.free;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// TRIAL EXPIRY LOGIC
+// Called at recruiter login. Reads trial_started_at from the
+// Supabase profile (set by admin when activating Trial).
+// Day 0-11 : nothing
+// Day 12-13: send a warning email (once, guarded by trial_warn_sent)
+// Day 14+  : degrade plan to 'free', send expiry email
+// All email calls use the existing send-upgrade-email edge function.
+// ═══════════════════════════════════════════════════════════════
+async function checkTrialExpiry(user) {
+  if (!user || user.plan !== 'trial' || !user.trial_started_at) return;
+  const EDGE_URL = typeof SUPABASE_URL !== 'undefined' ? SUPABASE_URL + '/functions/v1/send-upgrade-email' : null;
+  const anonKey  = typeof SUPABASE_ANON !== 'undefined' ? SUPABASE_ANON : '';
+
+  const started = new Date(user.trial_started_at).getTime();
+  const days    = (Date.now() - started) / (1000 * 60 * 60 * 24);
+
+  // ── Expired (>= 14 days) ─────────────────────────────────────
+  if (days >= 14) {
+    // Degrade to free in Supabase
+    const degraded = await setRecruiterPlan(user.id, 'free');
+    if (degraded) {
+      if (typeof currentUser !== 'undefined') currentUser.plan = 'free';
+      // Show banner
+      showTrialBanner('expired');
+      // Send expiry email
+      if (EDGE_URL) {
+        try {
+          await fetch(EDGE_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + anonKey },
+            body: JSON.stringify({
+              verificationPath: 'trial_expired',
+              recruiterName:    user.name,
+              recruiterEmail:   user.email,
+              recruiterCompany: user.recruiterData?.company || '',
+              plan:             'free',
+            }),
+          });
+        } catch(e) { /* non-critical */ }
+      }
+    }
+    return;
+  }
+
+  // ── Warning (>= 12 days, < 14) ───────────────────────────────
+  if (days >= 12) {
+    // Guard: send only once per trial (check flag in Supabase profile field or localStorage)
+    const warnKey = 'erpth_trial_warn_' + user.id;
+    if (!localStorage.getItem(warnKey)) {
+      localStorage.setItem(warnKey, '1');
+      // Show banner
+      const daysLeft = Math.max(1, Math.ceil(14 - days));
+      showTrialBanner('warning', daysLeft);
+      // Send warning email
+      if (EDGE_URL) {
+        try {
+          await fetch(EDGE_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + anonKey },
+            body: JSON.stringify({
+              verificationPath: 'trial_warning',
+              recruiterName:    user.name,
+              recruiterEmail:   user.email,
+              recruiterCompany: user.recruiterData?.company || '',
+              plan:             'trial',
+              daysLeft,
+            }),
+          });
+        } catch(e) { /* non-critical */ }
+      }
+    }
+  }
+}
+
+// Banner shown to the recruiter inside the portal
+function showTrialBanner(type, daysLeft) {
+  const existing = document.getElementById('trial-banner');
+  if (existing) existing.remove();
+
+  const isExpired = type === 'expired';
+  const bg    = isExpired ? '#FEF2F2' : '#FFF7ED';
+  const border= isExpired ? '#FECACA' : '#FED7AA';
+  const color = isExpired ? '#991B1B' : '#92400E';
+  const icon  = isExpired ? '⛔' : '⏳';
+  const msg   = isExpired
+    ? 'Il tuo periodo di prova è scaduto. Il tuo account è stato riportato al piano <strong>Free</strong>. Scegli un piano Pro o Agency per mantenere l\'accesso completo.'
+    : `Il tuo periodo di prova scade tra <strong>${daysLeft} giorn${daysLeft === 1 ? 'o' : 'i'}</strong>. Attiva un piano Pro o Agency per non perdere l'accesso.`;
+
+  const banner = document.createElement('div');
+  banner.id = 'trial-banner';
+  banner.style.cssText = `background:${bg};border-bottom:1px solid ${border};color:${color};padding:10px 20px;font-size:13px;display:flex;align-items:center;gap:10px;position:sticky;top:60px;z-index:90;flex-wrap:wrap`;
+  banner.innerHTML = `
+    <span style="flex:1">${icon} ${msg}</span>
+    <button onclick="showUpgradeModal('candidates')" style="background:${isExpired?'#DC2626':'#EA580C'};color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap">
+      ${isExpired ? 'Scegli un piano' : 'Attiva ora'}
+    </button>
+    <button onclick="this.parentElement.remove()" style="background:none;border:none;color:${color};font-size:16px;cursor:pointer;padding:0 4px">✕</button>`;
+
+  // Insert at top of recruiter portal content area
+  const portal = document.getElementById('rec-portal') || document.getElementById('recruiter-view');
+  if (portal) portal.prepend(banner);
 }
 
 function getMonthlyMessageCount() {
@@ -6003,14 +6111,15 @@ function buildUserObject(authUser, profile) {
   // Supabase stores the role in app_metadata when set via the dashboard
   const jwtRole = authUser.app_metadata?.role || authUser.user_metadata?.role || null;
   return {
-    id:            authUser.id,
-    email:         authUser.email,
-    name:          profile?.name  || authUser.user_metadata?.full_name || authUser.email,
-    role:          profile?.role  || jwtRole || 'candidate',
-    plan:          profile?.plan  || 'free',
-    photo:         profile?.photo || null,
-    profileData:   profile?.profile_data   || null,
-    recruiterData: profile?.recruiter_data || null,
+    id:               authUser.id,
+    email:            authUser.email,
+    name:             profile?.name  || authUser.user_metadata?.full_name || authUser.email,
+    role:             profile?.role  || jwtRole || 'candidate',
+    plan:             profile?.plan  || 'free',
+    trial_started_at: profile?.trial_started_at || null,
+    photo:            profile?.photo || null,
+    profileData:      profile?.profile_data   || null,
+    recruiterData:    profile?.recruiter_data || null,
   };
 }
 
@@ -6037,6 +6146,8 @@ function loginSuccess(user) {
     recruiterProfile = user.recruiterData;
     recruiterVerified = true;
     if (user.photo) recPhotoBase64 = user.photo;
+    // Trial expiry check — runs async, does not block login flow
+    checkTrialExpiry(user);
   }
   const target = pendingNavTarget || defaultViewForRole(user.role);
   pendingNavTarget = null;
