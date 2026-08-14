@@ -3912,6 +3912,11 @@ async function initRecruiterPortal() {
     document.getElementById('rec-portal').style.display = 'none';
     return;
   }
+  // Show portal, hide gate
+  var gate = document.getElementById('rec-gate');
+  var portal = document.getElementById('rec-portal');
+  if (gate) gate.style.display = 'none';
+  if (portal) portal.style.display = 'flex';
   // Load candidates from Supabase if not already in memory
   if ((!allCandidateProfiles || allCandidateProfiles.length === 0) && SUPABASE_READY && sb()) {
     try {
