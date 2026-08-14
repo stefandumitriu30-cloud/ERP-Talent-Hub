@@ -3285,10 +3285,23 @@ function validateGateUrl() {
   return valid;
 }
 
+function sanitizeLinkedInUsername(raw) {
+  // Strip any URL prefix the user may have pasted (e.g. https://linkedin.com/in/john-doe)
+  var stripped = raw.trim()
+    .replace(/^https?:\/\/(www\.)?linkedin\.com\/in\//i, '')
+    .replace(/\/.*$/, '')   // remove anything after a slash
+    .trim();
+  // Keep ONLY valid LinkedIn username chars: a-z, 0-9, hyphens, underscores, dots
+  // This neutralises javascript:, data:, ../, and any other injection attempt
+  return stripped.replace(/[^a-zA-Z0-9\-_.]/g, '').slice(0, 100);
+}
+
 function startVerification() {
-  const url = document.getElementById('gate-li-url').value.trim();
-  const name = document.getElementById('gate-li-name').value.trim();
+  const rawUrl  = document.getElementById('gate-li-url').value.trim();
+  const name    = document.getElementById('gate-li-name').value.trim();
   const company = document.getElementById('gate-li-company').value.trim();
+
+  const url = sanitizeLinkedInUsername(rawUrl);
 
   if (!url || url.length < 3) {
     document.getElementById('gate-url-error').style.display = 'block';
@@ -3296,6 +3309,9 @@ function startVerification() {
   }
   if (!name) { alert('Please enter your full name.'); return; }
   if (!company) { alert('Please enter your company or agency.'); return; }
+
+  // Write sanitized value back so the user sees what was accepted
+  document.getElementById('gate-li-url').value = url;
 
   recruiterProfile = { url, name, company };
   gotoStep(3);
@@ -3437,11 +3453,12 @@ async function submitAgencyRequest() {
 // ── END GATE PATH ROUTING ────────────────────────────────────────
 
 function runVerificationAnimation(handle) {
+  // SECURITY: no client-side LinkedIn API exists. All paths go to pending review.
+  // Admin approves manually from the dashboard.
   const steps = ['vcheck-1','vcheck-2','vcheck-3','vcheck-4'];
   const delays = [0, 900, 1700, 2500];
   const doneTimes = [700, 1600, 2400, 3300];
 
-  // Reset all to idle
   steps.forEach(id => {
     const row = document.getElementById(id);
     const icon = row.querySelector('.vcheck-icon');
@@ -3449,11 +3466,6 @@ function runVerificationAnimation(handle) {
     icon.innerHTML = '<i class="fa-solid fa-circle"></i>';
     row.classList.remove('done-row');
   });
-
-  const isApproved = VERIFIED_RECRUITER_HANDLES.includes(handle.toLowerCase()) ||
-                     handle.toLowerCase().includes('rec') ||
-                     handle.toLowerCase().includes('hr') ||
-                     handle.toLowerCase().includes('talent');
 
   steps.forEach((id, i) => {
     setTimeout(() => {
@@ -3466,21 +3478,50 @@ function runVerificationAnimation(handle) {
     setTimeout(() => {
       const row = document.getElementById(id);
       const icon = row.querySelector('.vcheck-icon');
-      const isLastStep = i === steps.length - 1;
-      const fail = isLastStep && !isApproved;
-      if (fail) {
-        icon.className = 'vcheck-icon fail';
-        icon.innerHTML = '<i class="fa-solid fa-xmark"></i>';
-      } else {
+      if (i < steps.length - 1) {
         icon.className = 'vcheck-icon done';
         icon.innerHTML = '<i class="fa-solid fa-check"></i>';
         row.classList.add('done-row');
+      } else {
+        // Last step always shows "pending review" — never auto-approve
+        icon.className = 'vcheck-icon pending';
+        icon.innerHTML = '<i class="fa-solid fa-clock"></i>';
       }
-      if (isLastStep) {
-        setTimeout(() => isApproved ? showApproved() : showRejected(), 600);
+      if (i === steps.length - 1) {
+        setTimeout(() => showPendingReview(), 600);
       }
     }, doneTimes[i]);
   });
+}
+
+async function showPendingReview() {
+  recruiterProfile.verificationPath = 'linkedin';
+  recruiterProfile.status = 'pending';
+  // Save recruiter_data to Supabase so admin sees the request
+  await persistRecruiterData();
+  // Notify admin via edge function
+  try {
+    var anonKey = typeof SUPABASE_ANON !== 'undefined' ? SUPABASE_ANON : '';
+    await fetch(SUPABASE_URL + '/functions/v1/send-upgrade-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + anonKey },
+      body: JSON.stringify({
+        verificationPath: 'linkedin_pending',
+        recruiterName:    recruiterProfile.name,
+        recruiterEmail:   currentUser ? currentUser.email : '',
+        recruiterCompany: recruiterProfile.company,
+        linkedinUrl:      'https://www.linkedin.com/in/' + sanitizeLinkedInUsername(recruiterProfile.url || ''),
+        plan:             'free',
+      }),
+    });
+  } catch(e) { /* non-critical */ }
+  // Show pending screen
+  gotoStep(8);
+  var desc = document.getElementById('gate-pending-desc');
+  if (desc) {
+    var firstName = recruiterProfile.name ? recruiterProfile.name.split(' ')[0] : '';
+    desc.textContent = 'Grazie ' + firstName + '! Abbiamo ricevuto il tuo profilo LinkedIn Recruiter e lo verificheremo manualmente entro 24 ore. Riceverai un’email con il link di accesso non appena approvato.';
+  }
 }
 
 function showApproved() {
@@ -5281,8 +5322,9 @@ function showAdminRecruiterDetail(r) {
     '<strong>Attenzione:</strong> questo account non ha completato la verifica LinkedIn dal flusso normale. Potrebbe essere un account di test o creato manualmente da Supabase.</div>';
 
   // LinkedIn URL field
-  var liUrl = r.url
-    ? '<a href="https://www.linkedin.com/in/' + escHtml(r.url) + '" target="_blank" rel="noopener" style="color:#0A66C2;word-break:break-all">https://www.linkedin.com/in/' + escHtml(r.url) + '</a>'
+  var safeUrl = sanitizeLinkedInUsername(r.url || '');
+  var liUrl = safeUrl
+    ? '<a href="https://www.linkedin.com/in/' + escHtml(safeUrl) + '" target="_blank" rel="noopener noreferrer" style="color:#0A66C2;word-break:break-all">https://www.linkedin.com/in/' + escHtml(safeUrl) + '</a>'
     : '<span style="color:#F97316;font-weight:500">&#9888;&#65039; Non disponibile &mdash; verifica non completata via LinkedIn</span>';
 
   // Conversations
