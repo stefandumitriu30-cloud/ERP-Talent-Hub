@@ -5602,7 +5602,8 @@ async function adminDeleteRecruiter(userId, name) {
 // ADMIN: Delete empty candidate account (no CV submitted)
 // ─────────────────────────────────────────
 async function adminDeleteCandidate(p) {
-  if (!p || !p.id) {
+  const uid = p && (p.userId || p.id);
+  if (!uid) {
     showToast({ id: Date.now(), icon: '❌', title: 'Errore', desc: 'ID utente mancante', color: '#FEF2F2', iconColor: '#EF4444' });
     return;
   }
@@ -5612,7 +5613,7 @@ async function adminDeleteCandidate(p) {
     return;
   }
   const confirmed = window.confirm(
-    'Eliminare l\'account vuoto di "' + (p.email || p.id) + '"?\n\n' +
+    'Eliminare l\'account vuoto di "' + (p.email || uid) + '"?\n\n' +
     '\u2022 Rimuove il profilo dal database\n' +
     '\u2022 Blocca l\'accesso all\'account\n' +
     '\u2022 NON elimina l\'utente da Supabase Auth\n\n' +
@@ -5623,14 +5624,14 @@ async function adminDeleteCandidate(p) {
     const { error } = await sb()
       .from('profiles')
       .update({ role: 'deleted', profile_data: null, photo: null })
-      .eq('id', p.id);
+      .eq('id', uid);
     if (error) throw error;
-    const idx = allCandidateProfiles.findIndex(c => c.id === p.id);
+    const idx = allCandidateProfiles.findIndex(c => (c.userId || c.id) === uid);
     if (idx !== -1) allCandidateProfiles.splice(idx, 1);
     renderAdminList();
     const detail = document.getElementById('admin-detail');
     if (detail) detail.innerHTML = '<div class="chat-empty-state"><i class="fa-solid fa-trash" style="color:var(--gray-300)"></i><p>Account eliminato.</p></div>';
-    showToast({ id: Date.now(), icon: '🗑️', title: 'Account eliminato', desc: (p.email || p.id) + ' rimosso dalla piattaforma.', color: '#FEF2F2', iconColor: '#DC2626' });
+    showToast({ id: Date.now(), icon: '🗑️', title: 'Account eliminato', desc: (p.email || uid) + ' rimosso dalla piattaforma.', color: '#FEF2F2', iconColor: '#DC2626' });
     setTimeout(() => {
       showToast({ id: Date.now(), icon: '\u26a0\ufe0f', title: 'Azione richiesta', desc: 'Elimina anche l\'utente da Supabase \u2192 Authentication \u2192 Users per revocare l\'accesso completo.', color: '#FFF7ED', iconColor: '#F97316' });
     }, 2500);
