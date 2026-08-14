@@ -5258,7 +5258,13 @@ function showAdminRecruiterDetail(r) {
         <div style="font-size:13px;display:flex;flex-direction:column;gap:10px">
           <div><strong>Full name:</strong> ${escHtml(r.name)}</div>
           <div><strong>Company / Agency:</strong> ${escHtml(r.company)}</div>
-          <div><strong>LinkedIn URL:</strong> <a href="https://linkedin.com/in/${escHtml(r.url)}" target="_blank" style="color:#0A66C2">linkedin.com/in/${escHtml(r.url)}</a></div>
+          <div><strong>Email:</strong> ${escHtml(r.email || '—')}</div>
+          <div><strong>LinkedIn URL:</strong>
+            ${r.url
+              ? `<a href="https://www.linkedin.com/in/${escHtml(r.url)}" target="_blank" rel="noopener" style="color:#0A66C2;word-break:break-all">https://www.linkedin.com/in/${escHtml(r.url)}</a>`
+              : '<span style="color:var(--gray-400)">—</span>'}
+          </div>
+          <div><strong>Piano:</strong> <span style="font-weight:600;text-transform:capitalize">${escHtml(r.plan || 'free')}</span></div>
           <div><strong>Verified on:</strong> ${new Date(r.verifiedAt).toLocaleString()}</div>
         </div>
       </div>
