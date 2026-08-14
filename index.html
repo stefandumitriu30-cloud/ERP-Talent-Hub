@@ -3967,9 +3967,11 @@ function renderRecCandidateList(q) {
   if (contactedEl) contactedEl.textContent = all.filter(c => conversations[c.id]?.opened).length;
   if (newEl)       newEl.textContent       = all.filter(c => !conversations[c.id]?.opened).length;
 
+  // Admin always sees all candidates regardless of plan limits
+  const _isAdmin = currentUser && currentUser.role === 'admin';
   const _planLimits = getPlanLimits();
-  const _visibleCands = _planLimits.candidatesVisible === Infinity ? all : all.slice(0, _planLimits.candidatesVisible);
-  if (all.length > _visibleCands.length) {
+  const _visibleCands = (_isAdmin || _planLimits.candidatesVisible === Infinity) ? all : all.slice(0, _planLimits.candidatesVisible);
+  if (!_isAdmin && all.length > _visibleCands.length) {
     const _existing = list.parentElement?.querySelector('.plan-limit-banner');
     if (!_existing) {
       const _banner = document.createElement('div');
