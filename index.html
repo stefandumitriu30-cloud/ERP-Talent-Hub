@@ -5077,11 +5077,14 @@ async function initAdminPortal() {
           });
         }
         if (p.role === 'recruiter') {
+          // url = LinkedIn username stored at verification; fallback to profile_data.linkedin
+          const liUrl = p.recruiter_data?.url || '';
+          const liFallback = (p.profile_data?.linkedin || '').replace(/^https?:\/\/(www\.)?linkedin\.com\/in\//i, '').replace(/\/$/, '');
           verifiedRecruiters.push({
             userId:      p.id,
             name:        p.recruiter_data?.name    || p.name || '—',
             company:     p.recruiter_data?.company || '—',
-            url:         p.recruiter_data?.url     || '',
+            url:         liUrl || liFallback,
             photo:       p.photo || null,
             verifiedAt:  p.recruiter_data?.verifiedAt || p.created_at,
             email:       p.email,
