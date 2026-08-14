@@ -5092,6 +5092,13 @@ async function adminSetPlan(userId, selectEl) {
     : { verified_by_admin: true };
   setRecruiterPlan(userId, plan, extraFields).then(ok => {
     if (ok) {
+      // Update local cache so badge refreshes without a full reload
+      const rec = verifiedRecruiters.find(r => r.userId === userId);
+      if (rec) {
+        rec.plan = plan;
+        rec.verifiedByAdmin = true;
+      }
+      renderAdminList();
       showToast({ id: Date.now(), icon: '✅', title: 'Piano aggiornato', desc: `Piano impostato a ${plan}`, color: '#F0FDF4', iconColor: '#22C55E' });
     } else {
       showToast({ id: Date.now(), icon: '❌', title: 'Errore', desc: 'Impossibile aggiornare il piano', color: '#FEF2F2', iconColor: '#EF4444' });
