@@ -3540,6 +3540,12 @@ function showRejected() {
 }
 
 function enterRecruiterPortal() {
+  // SECURITY: only grant portal access if admin has approved this account in Supabase.
+  // This prevents console-based bypass of the verification gate.
+  if (!currentUser || currentUser.verifiedByAdmin !== true) {
+    console.warn('[ERP] enterRecruiterPortal blocked — account not approved by admin.');
+    return;
+  }
   recruiterVerified = true;
   verifiedRecruiters.push({ ...recruiterProfile, photo: recPhotoBase64, verifiedAt: new Date().toISOString() });
   persistRecruiterData();
@@ -3899,6 +3905,13 @@ let recTabFilter = 'all';
 // ─── RECRUITER PORTAL ───────────────────────────────────
 
 function initRecruiterPortal() {
+  // SECURITY: block portal init if not admin-approved
+  if (!currentUser || currentUser.verifiedByAdmin !== true) {
+    console.warn('[ERP] initRecruiterPortal blocked — not verified by admin.');
+    document.getElementById('rec-gate').style.display = 'flex';
+    document.getElementById('rec-portal').style.display = 'none';
+    return;
+  }
   renderRecCandidateList();
 }
 
@@ -3931,6 +3944,11 @@ function getRecCandidates() {
 }
 
 function renderRecCandidateList(q) {
+  // SECURITY: re-check authorization at render time
+  // Prevents DOM manipulation from bypassing the gate
+  if (!recruiterVerified || !currentUser || currentUser.verifiedByAdmin !== true) {
+    return;
+  }
   const search = (q || document.getElementById('rec-search')?.value || '').toLowerCase();
   const list = document.getElementById('rec-candidate-list');
   if (!list) return;
@@ -4435,6 +4453,12 @@ function _miaMatchMsg(key) {
 
 async function miaAnalyzeMatches(searchQuery) {
   if (currentUser?.role !== 'recruiter' && currentUser?.role !== 'admin') return;
+
+  // SECURITY: never fetch candidate data if recruiter is not admin-approved
+  if (currentUser?.role === 'recruiter' && currentUser?.verifiedByAdmin !== true) {
+    console.warn('[ERP] miaAnalyzeMatches blocked — recruiter not verified by admin.');
+    return;
+  }
 
   // If allCandidateProfiles is empty (e.g. recruiter view without admin init),
   // try to fetch from Supabase directly via the admin RPC or profiles table
@@ -5387,7 +5411,23 @@ const SUPABASE_READY = SUPABASE_URL !== 'YOUR_SUPABASE_URL' && SUPABASE_ANON !==
       localStorage.removeItem('erpth_trial_start');
       window.history.replaceState({}, document.title, window.location.pathname);
       window.addEventListener('load', () => {
-        setTimeout(() => {
+        // Also persist verified_by_admin=true in Supabase so the flag survives
+        // across devices and sessions — not just localStorage
+        setTimeout(async () => {
+          if (SUPABASE_READY && sb()) {
+            try {
+              const { data: { session } } = await sb().auth.getSession();
+              if (session) {
+                await sb().from('profiles')
+                  .update({ plan: plan, verified_by_admin: true })
+                  .eq('id', session.user.id);
+                if (typeof currentUser !== 'undefined' && currentUser) {
+                  currentUser.plan = plan;
+                  currentUser.verifiedByAdmin = true;
+                }
+              }
+            } catch(e) { /* non-critical — localStorage fallback still works */ }
+          }
           const t = document.createElement('div');
           t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#22C55E;color:#fff;padding:14px 24px;border-radius:12px;font-weight:700;font-size:15px;z-index:99999;box-shadow:0 4px 20px rgba(0,0,0,0.2)';
           t.textContent = '✅ Piano ' + plan.toUpperCase() + ' attivato con successo!';
