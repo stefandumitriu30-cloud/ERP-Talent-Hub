@@ -5153,10 +5153,13 @@ function renderAdminList() {
         <div class="cand-info">
           <div class="cand-name">${escHtml(r.name)}</div>
           <div class="cand-meta">${escHtml(r.company)}</div>
-          <div class="cand-meta" style="color:var(--blue)">linkedin.com/in/${escHtml(r.url)}</div>
+          <div class="cand-meta" style="color:${r.url ? 'var(--blue)' : '#F97316'}">${r.url ? 'linkedin.com/in/' + escHtml(r.url) : '⚠️ LinkedIn non verificato'}</div>
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
-          <span style="font-size:11px;background:#ECFDF5;color:#15803D;border:1px solid #BBF7D0;border-radius:10px;padding:2px 8px;white-space:nowrap">Verified</span>
+          ${r.url
+            ? '<span style="font-size:11px;background:#ECFDF5;color:#15803D;border:1px solid #BBF7D0;border-radius:10px;padding:2px 8px;white-space:nowrap"><i class=\"fa-solid fa-circle-check\"></i> Verified</span>'
+            : '<span style="font-size:11px;background:#FFF7ED;color:#C2410C;border:1px solid #FED7AA;border-radius:10px;padding:2px 8px;white-space:nowrap"><i class=\"fa-solid fa-triangle-exclamation\"></i> No LinkedIn</span>'
+          }
           <select onchange="adminSetPlan('${r.userId||r.id||''}', this)" onclick="event.stopPropagation()" style="font-size:11px;border:1px solid var(--gray-200);border-radius:8px;padding:3px 6px;cursor:pointer;background:#fff" title="Piano abbonamento">
             <option value="free" ${(r.plan||'free')==='free'?'selected':''}>Free</option>
             <option value="trial" ${(r.plan||'')==='trial'?'selected':''}>Trial</option>
@@ -5254,10 +5257,14 @@ function showAdminRecruiterDetail(r) {
           <div style="font-size:18px;font-weight:600">${escHtml(r.name)}</div>
           <div style="font-size:13px;color:var(--gray-500)">${escHtml(r.company)}</div>
         </div>
-        <span style="margin-left:auto;font-size:11px;background:#ECFDF5;color:#15803D;border:1px solid #BBF7D0;border-radius:10px;padding:3px 12px;font-weight:600"><i class="fa-solid fa-circle-check"></i> Verified Recruiter</span>
+        ${r.url
+          ? '<span style="margin-left:auto;font-size:11px;background:#ECFDF5;color:#15803D;border:1px solid #BBF7D0;border-radius:10px;padding:3px 12px;font-weight:600"><i class=\"fa-solid fa-circle-check\"></i> Verified LinkedIn</span>'
+          : '<span style="margin-left:auto;font-size:11px;background:#FFF7ED;color:#C2410C;border:1px solid #FED7AA;border-radius:10px;padding:3px 12px;font-weight:600"><i class=\"fa-solid fa-triangle-exclamation\"></i> No LinkedIn verificato</span>'
+        }
       </div>
       <div class="form-card">
         <div class="section-header"><i class="fa-brands fa-linkedin" style="color:#0A66C2"></i><h3>LinkedIn Recruiter</h3></div>
+        ${!r.url ? '<div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:8px;padding:10px 14px;font-size:12px;color:#92400E;margin-bottom:12px"><i class="fa-solid fa-triangle-exclamation" style="margin-right:6px"></i><strong>Attenzione:</strong> questo account non ha completato la verifica LinkedIn dal flusso normale. Potrebbe essere un account di test o creato manualmente da Supabase.</div>' : ''}
         <div style="font-size:13px;display:flex;flex-direction:column;gap:10px">
           <div><strong>Full name:</strong> ${escHtml(r.name)}</div>
           <div><strong>Company / Agency:</strong> ${escHtml(r.company)}</div>
@@ -5265,7 +5272,7 @@ function showAdminRecruiterDetail(r) {
           <div><strong>LinkedIn URL:</strong>
             ${r.url
               ? `<a href="https://www.linkedin.com/in/${escHtml(r.url)}" target="_blank" rel="noopener" style="color:#0A66C2;word-break:break-all">https://www.linkedin.com/in/${escHtml(r.url)}</a>`
-              : '<span style="color:var(--gray-400)">—</span>'}
+              : '<span style="color:#F97316;font-weight:500">⚠️ Non disponibile — verifica non completata via LinkedIn</span>'}
           </div>
           <div><strong>Piano:</strong> <span style="font-weight:600;text-transform:capitalize">${escHtml(r.plan || 'free')}</span></div>
           <div><strong>Verified on:</strong> ${new Date(r.verifiedAt).toLocaleString()}</div>
