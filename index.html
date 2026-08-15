@@ -4,10 +4,10 @@
 <meta charset="UTF-8" />
 
 <meta http-equiv="X-Content-Type-Options" content="nosniff" />
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; img-src 'self' data: blob: https://qqcuipttgjhtbizplwtp.supabase.co https://www.google-analytics.com https://www.googletagmanager.com; connect-src 'self' https://qqcuipttgjhtbizplwtp.supabase.co https://nominatim.openstreetmap.org https://api.anthropic.com https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com https://ec.europa.eu; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self';" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com https://tagmanager.google.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; img-src 'self' data: blob: https://qqcuipttgjhtbizplwtp.supabase.co https://www.google-analytics.com https://www.googletagmanager.com; connect-src 'self' https://qqcuipttgjhtbizplwtp.supabase.co wss://qqcuipttgjhtbizplwtp.supabase.co https://nominatim.openstreetmap.org https://api.anthropic.com https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com https://ec.europa.eu; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self';" />
 <meta name="referrer" content="strict-origin-when-cross-origin" />
 <!-- ═══ SECURITY HEADERS (meta fallback — also set at server/CDN level) ═══ -->
-<meta http-equiv="X-Frame-Options" content="DENY" />
+<!-- X-Frame-Options moved to HTTP header (meta tag ignored by browsers) -->
 <!-- CSP is set via HTTP headers at CDN level (Cloudflare/server) — meta tag CSP does not apply to WebSocket connections in Safari/Firefox -->
 <!-- NOTE: Strict-Transport-Security and Permissions-Policy must be set as HTTP response headers,
      not meta tags. Add to your Cloudflare / server config:
@@ -166,7 +166,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet" />
 <!-- Font Awesome loaded non-blocking: preload + swap on load, noscript fallback -->
 <!-- DOMPurify — XSS sanitization for any innerHTML usage -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js" integrity="sha512-jB0TkTBeQC9ZSkBqDhdmfTv1qdfbWpGE72yMBVqMnSAdDPLv4bfQQh538TdVPTm0IVgKMDnOuRtBd/LUhUGzw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.4/dist/purify.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
 <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" /></noscript>
 <style>
