@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://js.stripe.com https://www.googletagmanager.com https://googletagmanager.com https://ssl.google-analytics.com https://www.google-analytics.com https://google-analytics.com https://tagmanager.google.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://snap.licdn.com https://connect.facebook.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; img-src 'self' data: blob: https://qqcuipttgjhtbizplwtp.supabase.co https://www.google-analytics.com https://www.googletagmanager.com; connect-src 'self' https://qqcuipttgjhtbizplwtp.supabase.co wss://qqcuipttgjhtbizplwtp.supabase.co https://nominatim.openstreetmap.org https://api.anthropic.com https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com https://ec.europa.eu; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self';" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://js.stripe.com https://www.googletagmanager.com https://googletagmanager.com https://ssl.google-analytics.com https://www.google-analytics.com https://google-analytics.com https://tagmanager.google.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://snap.licdn.com https://connect.facebook.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; img-src 'self' data: blob: https://qqcuipttgjhtbizplwtp.supabase.co https://www.google-analytics.com https://www.googletagmanager.com; connect-src 'self' https://qqcuipttgjhtbizplwtp.supabase.co wss://qqcuipttgjhtbizplwtp.supabase.co https://nominatim.openstreetmap.org https://api.anthropic.com https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com https://ec.europa.eu; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self'; script-src-elem 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://js.stripe.com https://www.googletagmanager.com https://googletagmanager.com https://ssl.google-analytics.com https://www.google-analytics.com https://tagmanager.google.com;" />
 <meta charset="UTF-8" />
 
 <meta http-equiv="X-Content-Type-Options" content="nosniff" />
@@ -61,95 +61,38 @@
 
   <!-- Structured Data (JSON-LD) -->
   <script type="application/ld+json">
-  [
-    {
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "ERP Talent Hub",
-      "alternateName": "ERP Talent Hub by Vantage Finance & Tech",
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "ERP Talent Hub",
+    "url": "https://erptalenthub.com",
+    "description": "ERP Talent Hub is the specialist recruiting platform for SAP, Oracle, Microsoft Dynamics, S/4HANA and Workday professionals.",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Web, iOS, Android",
+    "offers": [
+      { "@type": "Offer", "name": "Free", "price": "0", "priceCurrency": "EUR" },
+      { "@type": "Offer", "name": "Pro Recruiter", "price": "49", "priceCurrency": "EUR" },
+      { "@type": "Offer", "name": "Agency", "price": "149", "priceCurrency": "EUR" }
+    ],
+    "publisher": {
+      "@type": "Organization",
+      "name": "Vantage Finance & Tech",
       "url": "https://erptalenthub.com",
-      "description": "ERP Talent Hub is the specialist recruiting platform for SAP, Oracle, Microsoft Dynamics, S/4HANA and Workday professionals. Verified recruiters, free candidate profiles, direct connections across Europe.",
-      "applicationCategory": "BusinessApplication",
-      "operatingSystem": "Web, iOS, Android",
-      "inLanguage": ["en", "it", "de"],
-      "offers": [
-        { "@type": "Offer", "name": "Free", "price": "0", "priceCurrency": "EUR", "description": "Free candidate profile, unlimited ERP job browsing" },
-        { "@type": "Offer", "name": "Pro Recruiter", "price": "49", "priceCurrency": "EUR", "billingIncrement": "P1M", "description": "Full recruiter access, candidate search, messaging" },
-        { "@type": "Offer", "name": "Agency", "price": "149", "priceCurrency": "EUR", "billingIncrement": "P1M", "description": "Multi-recruiter agency plan with team management" }
-      ],
-      "publisher": {
-        "@type": "Organization",
-        "name": "Vantage Finance & Tech",
-        "url": "https://erptalenthub.com",
-        "logo": { "@type": "ImageObject", "url": "https://erptalenthub.com/mia-preview.png" },
-        "founder": {
-          "@type": "Person",
-          "name": "Stefan Dumitriu",
-          "jobTitle": "Founder and Owner",
-          "url": "https://stefan.erptalenthub.com",
-          "sameAs": [
-            "https://www.linkedin.com/in/stefan-dumitriu",
-            "https://stefan.erptalenthub.com"
-          ]
-        },
-        "address": {
-          "@type": "PostalAddress",
-          "addressLocality": "Turin",
-          "addressRegion": "Piedmont",
-          "addressCountry": "IT"
-        },
-        "sameAs": [
-          "https://www.linkedin.com/company/erp-talent-hub-by-vantage-finance-tech"
-        ]
-      }
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "What is ERP Talent Hub?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "ERP Talent Hub is a specialist recruiting platform that connects SAP, Oracle, Microsoft Dynamics, S/4HANA, and Workday professionals with verified recruiters across Europe and globally."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Is ERP Talent Hub free for candidates?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes. Candidates can create a full ERP profile and be discovered by recruiters completely free of charge. No credit card required."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "How much does ERP Talent Hub cost for recruiters?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Recruiters can access ERP Talent Hub from €49/month for the Pro plan, or €149/month for the Agency plan which supports multiple recruiters and team management."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Which ERP systems does ERP Talent Hub cover?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "ERP Talent Hub covers all major ERP platforms including SAP (S/4HANA, FICO, MM, SD, HR), Oracle (Fusion, EBS), Microsoft Dynamics 365, Workday, Infor, and many more."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Is ERP Talent Hub available outside Italy?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes. ERP Talent Hub operates across Europe and internationally. Recruiters and candidates from Germany, Netherlands, UK, USA, and other countries are welcome."
-          }
-        }
-      ]
+      "founder": { "@type": "Person", "name": "Stefan Dumitriu", "jobTitle": "Founder and Owner", "url": "https://stefan.erptalenthub.com" },
+      "address": { "@type": "PostalAddress", "addressLocality": "Turin", "addressRegion": "Piedmont", "addressCountry": "IT" }
     }
-  ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      { "@type": "Question", "name": "What is ERP Talent Hub?", "acceptedAnswer": { "@type": "Answer", "text": "A specialist recruiting platform for SAP, Oracle, Dynamics, S/4HANA and Workday professionals." } },
+      { "@type": "Question", "name": "Is it free for candidates?", "acceptedAnswer": { "@type": "Answer", "text": "Yes, completely free for candidates." } },
+      { "@type": "Question", "name": "How much for recruiters?", "acceptedAnswer": { "@type": "Answer", "text": "From 49 EUR/month Pro or 149 EUR/month Agency." } }
+    ]
+  }
   </script>
   <!-- PWA -->
   <link rel="manifest" href="manifest.json?v=3" />
