@@ -1803,6 +1803,7 @@ input[type=file].photo-input{display:none}
         <div class="field" style="text-align:left;margin-bottom:12px">
           <label style="font-size:13px;font-weight:500;color:#334155;display:block;margin-bottom:5px">Business email <span style="color:#DC2626">*</span></label>
           <input type="email" id="ag-email" placeholder="laura@youragency.com" />
+          <div id="ag-email-error" style="display:none;font-size:12px;color:#DC2626;margin-top:4px"><i class="fa-solid fa-triangle-exclamation"></i> Please enter a valid business email (no Gmail/Yahoo/Hotmail or similar).</div>
         </div>
         <div class="field" style="text-align:left;margin-bottom:12px">
           <label style="font-size:13px;font-weight:500;color:#334155;display:block;margin-bottom:5px">Agency name <span style="color:#DC2626">*</span></label>
@@ -3417,11 +3418,190 @@ function selectGatePath(path) {
   }
 }
 
+// ── EMAIL DOMAIN BLOCKLIST ────────────────────────────────────────────────
+// Blocks free consumer email providers and disposable/temporary address services.
+// Matching is exact on the full domain (after the @), case-insensitive.
+const _BLOCKED_EMAIL_DOMAINS = new Set([
+  // ── Google ──
+  'gmail.com','googlemail.com',
+  // ── Microsoft ──
+  'hotmail.com','hotmail.it','hotmail.fr','hotmail.de','hotmail.es','hotmail.co.uk',
+  'hotmail.nl','hotmail.be','hotmail.se','hotmail.no','hotmail.dk','hotmail.fi',
+  'hotmail.pt','hotmail.com.br','hotmail.com.ar','hotmail.com.au',
+  'outlook.com','outlook.it','outlook.fr','outlook.de','outlook.es','outlook.co.uk',
+  'outlook.nl','outlook.be','outlook.se','outlook.pt','outlook.com.br',
+  'live.com','live.it','live.fr','live.de','live.es','live.co.uk','live.nl',
+  'live.be','live.se','live.no','live.dk','live.fi','live.com.br','live.com.ar',
+  'live.com.au','msn.com','passport.com',
+  // ── Yahoo ──
+  'yahoo.com','yahoo.it','yahoo.fr','yahoo.de','yahoo.es','yahoo.co.uk',
+  'yahoo.co.in','yahoo.com.br','yahoo.com.ar','yahoo.com.au','yahoo.com.mx',
+  'yahoo.nl','yahoo.be','yahoo.se','yahoo.no','yahoo.dk','yahoo.fi','yahoo.at',
+  'yahoo.gr','yahoo.pl','yahoo.ro','yahoo.hu','yahoo.cz','yahoo.pt','yahoo.ie',
+  'ymail.com','rocketmail.com',
+  // ── Apple ──
+  'icloud.com','me.com','mac.com',
+  // ── Italian ISP / consumer ──
+  'libero.it','alice.it','tin.it','tiscali.it','virgilio.it','inwind.it',
+  'iol.it','katamail.com','email.it','infinito.it','aruba.it','supereva.it',
+  'fastwebnet.it','wind.it','tre.it','vodafone.it',
+  // ── German consumer ──
+  'gmx.de','gmx.at','gmx.ch','gmx.net','gmx.com','gmx.org','gmx.eu',
+  'web.de','t-online.de','freenet.de','arcor.de','online.de','net-online.de',
+  // ── French consumer ──
+  'orange.fr','wanadoo.fr','laposte.net','free.fr','sfr.fr','bbox.fr',
+  'neuf.fr','voila.fr','caramail.com','noos.fr','club-internet.fr',
+  // ── Spanish consumer ──
+  'terra.es','telefonica.net','ono.com',
+  // ── UK consumer ──
+  'btinternet.com','sky.com','talktalk.net','virginmedia.com','ntlworld.com',
+  'blueyonder.co.uk',
+  // ── Netherlands / Belgium ──
+  'xs4all.nl','planet.nl','ziggo.nl','telenet.be','skynet.be','pandora.be',
+  // ── Scandinavian ──
+  'telia.com','telenor.no','swissmail.ch',
+  // ── Eastern European consumer ──
+  'wp.pl','onet.pl','interia.pl','poczta.fm','op.pl',
+  'mail.ru','yandex.ru','yandex.com','yandex.ua','yandex.kz',
+  'rambler.ru','bk.ru','list.ru','inbox.ru',
+  'abv.bg','mail.bg',
+  'freemail.hu','citromail.hu',
+  'email.cz','centrum.cz','seznam.cz',
+  // ── AOL / Verizon legacy ──
+  'aol.com','aol.co.uk','aim.com','verizon.net','comcast.net','att.net',
+  'bellsouth.net','cox.net','charter.net','earthlink.net','juno.com',
+  // ── General free providers ──
+  'mail.com','email.com','usa.com','myself.com','consultant.com','engineer.com',
+  'post.com','dr.com','null.net','fastmail.com','fastmail.fm','fastmail.org',
+  'fastmail.to','fastmail.net','fastmail.us','fastmail.cn','fastmail.es',
+  'fastmail.de','fastmail.in','fastmail.jp','fastmail.co.uk',
+  'hushmail.com','hush.com','hush.ai',
+  'zoho.com','zohomail.com',
+  'protonmail.com','protonmail.ch','pm.me','tutanota.com','tutanota.de',
+  'tuta.io','keemail.me',
+  'mailfence.com','disroot.org','posteo.de','posteo.net','posteo.org',
+  'mailbox.org','cock.li','danwin1210.de',
+  // ── Disposable / temporary / throwaway ──
+  'mailinator.com','guerrillamail.com','guerrillamail.net','guerrillamail.org',
+  'guerrillamail.biz','guerrillamail.de','guerrillamail.info',
+  'throwam.com','throwaway.email','trashmail.com','trashmail.at','trashmail.io',
+  'trashmail.me','trashmail.net','trashmail.org','trashmail.xyz',
+  'yopmail.com','yopmail.fr','yopmail.net','cool.fr.nf','jetable.fr.nf',
+  'nospam.ze.tc','nomail.xl.cx','mega.zik.dj','speed.1s.fr','courriel.fr.nf',
+  'moncourrier.fr.nf','monemail.fr.nf','monmail.fr.nf',
+  'sharklasers.com','guerrillamailblock.com','grr.la','guerrillamail.info',
+  'spam4.me','tempmail.com','tempmail.it','tempmail.net','tempmail.org',
+  'temp-mail.org','temp-mail.io','temp-mail.ru','dispostable.com',
+  'mailnull.com','spamgourmet.com','spamgourmet.net','spamgourmet.org',
+  'spam.la','spamfree24.org','spamtrap.ro','spam.su','0-mail.com',
+  'maildrop.cc','spamhero.com','sendspamhere.com','getonemail.com',
+  'throwam.com','fakeinbox.com','fakeinbox.net','fakeinbox.org',
+  'mailnew.com','mailscrap.com','spamevader.com','mailpoof.com',
+  'mailbolt.com','mailc.net','mailcat.biz','mailcatch.com','mailfall.com',
+  '10minutemail.com','10minutemail.net','10minutemail.org','10minutemail.de',
+  '20minutemail.com','30minutemail.com','60minutemail.com',
+  'minutemail.com','minutemailbox.com','mailzilla.com','emailsensei.com',
+  'byom.de','clrmail.com','crapmail.org','dayrep.com','deyom.com',
+  'discardmail.com','discardmail.de','discard.email','discard.id',
+  'emailfake.com','emailfake.ml','emailfake.ga','emailfake.cf',
+  'emailondeck.com','emailsensei.com','emailtemporal.org','emailwarden.com',
+  'emltmp.com','ephemail.net','evilzone.org',
+  'filzmail.com','fleckens.hu','fuckingdumbass.com',
+  'gawab.com','getairmail.com','getairmail.cf','getairmail.ga','getairmail.gq',
+  'getairmail.ml','getairmail.tk',
+  'girlsundertheinfluence.com','gmail.net','goemailgo.com',
+  'h8s.org','has.dating','haltospam.com','hatespam.org','herp.in',
+  'hulapla.de','hushmail.me',
+  'ieatspam.eu','ieatspam.info','ilovespam.com','inoutmail.de','inoutmail.eu',
+  'inoutmail.info','inoutmail.net',
+  'jetable.com','jetable.net','jetable.org','jetable.de','jetable.fr',
+  'jnxjn.com','joetestalot.com','jourrapide.com','jumjum.com',
+  'killmail.com','killmail.net','klassmaster.com','kurzepost.de',
+  'laoeq.com','letthemeatspam.com','link2mail.net',
+  'mailblocks.com','maildu.de','maileimer.de','mailexpire.com',
+  'mailguard.me','mailimate.com','mailme.lv','mailme24.com','mailmetrash.com',
+  'mailmoat.com','mailnew.com','mailnull.com','mailscrap.com',
+  'mailsiphon.com','mailslite.com','mailspam.me','mailspam.xyz',
+  'mailsuck.com','mailtemp.info','mailtemp.net','mailtemporaire.com',
+  'mailtemporaire.fr','mailtome.de','mailtrash.net','mailzilla.com',
+  'mailzilla.org',
+  'meltmail.com','messagebeamer.de','mierdamail.com','mobileninja.co.uk',
+  'mohmal.com','moncourrier.fr.nf','monemail.fr.nf','monmail.fr.nf',
+  'mt2015.com','mt2016.com','mt2017.com','mt2018.com',
+  'mytempemail.com','mytrashmail.com',
+  'nbzmr.com','neomailbox.com','nepwk.com','nervmich.net','nervtmich.net',
+  'netmails.com','netmails.net','netzidiot.de','neverbox.com',
+  'nice-4u.com','no-spam.ws','nobulk.com','noclickemail.com','nodezine.com',
+  'nogmailspam.info','nomail.pw','nomail.xl.cx','nomail2me.com',
+  'nospam.ze.tc','nospam4.us','nospamfor.us','nospammail.net',
+  'notmailinator.com','nowmymail.com','nwldx.com',
+  'objectmail.com','obobbo.com','oneoffemail.com','onewaymail.com',
+  'oopi.org','opayq.com','ordinaryamerican.net','oxopoha.com',
+  'papierkorb.me','paplease.com','payspade.com','penisgoes.in',
+  'pepbot.com','pfui.ru','pimpedupmyspace.com',
+  'pjjkp.com','plexolan.de','pm-bounces.com','poofy.org',
+  'postinbox.com','postpro.net','privacy0.com',
+  'proxymail.eu','put2.net',
+  'qq.com','quickinbox.com',
+  'rcpt.at','reallymymail.com','receiveee.com','recipeforfailure.com',
+  'recursor.net','regbypass.com','regbypass.comsafe-mail.net',
+  'rklips.com','rmqkr.net','robot-mail.com','runbox.com',
+  's0ny.net','safe-mail.net','safetymail.info','safetypost.de',
+  'sandelf.de','saynotospams.com','scatmail.com','schafmail.de',
+  'schrott-email.de','secretemail.de','sexyalwashere.com',
+  'sharedmailbox.org','shieldedmail.com','shitmail.me','shitmail.org',
+  'shitware.nl','sibmail.com','skeefmail.com','sl0.pl','slamdunk.ninja',
+  'slapsfromlastnight.com','slaskpost.se','slave-auctions.net',
+  'slopsbox.com','slushmail.com','smellfear.com','snakemail.com',
+  'sneakemail.com','sneakmail.de','snkmail.com','sofimail.com',
+  'sofort-mail.de','softpls.asia','sogetthis.com','soodonims.com',
+  'spam.2012-2016.ru','spam.care','spam.coroam.es','spam.la',
+  'spam.mccrew.com','spam.org.es','spam.su','spam.wtf',
+  'spamcon.org','spamdecoy.net','spamex.com','spamfree.eu',
+  'spamfree24.de','spamfree24.eu','spamfree24.info','spamfree24.net',
+  'spamfree24.org','spamgoes.in','spamgourmet.com','spamgourmet.net',
+  'spamgourmet.org','spamhole.com','spamify.com','spaminator.de',
+  'spamkill.info','spaml.com','spaml.de','spammotel.com','spamobox.com',
+  'spamoff.de','spamslicer.com','spamstack.net','spamthis.co.uk',
+  'spamtroll.net','speed.1s.fr','spoofmail.de',
+  'squizzy.de','squizzy.eu','squizzy.net','stinkefinger.net',
+  'stuffmail.de','super-auswahl.de','suremail.info',
+  'tafmail.com','tagyourself.com','takuyakamio.com','tapchicuoihoi.com',
+  'teewars.org','teleworm.com','teleworm.us','tempalias.com',
+  'tempe-mail.com','tempinbox.co.uk','tempinbox.com',
+  'tempmail.eu','tempmailer.com','temporar.email','temporary.email',
+  'temporaryemail.net','temporaryemail.us','temporaryforwarding.com',
+  'temporaryinbox.com','temporarymail.org','tempsky.com',
+  'thanksnospam.info','thecloudindex.com','thetimezone.com',
+  'thisisnotmyrealemail.com','throwam.com','throwaway.email',
+  'throwem.com','thurstonhowell.com','tilien.com','tittbit.in',
+  'tmail.com','tmail.io','tmailinator.com','toiea.com','tonytmobile.com',
+  'totalvista.com','trbvm.com','trialmail.de','truemail.ga','truemail.io',
+  'truzztit.com','tumbling-with.me','twinmail.de',
+  'tyldd.com','uggsrock.com','umail.net','unlimit.com',
+  'upliftnow.com','uroid.com','utemail.net',
+  'venompen.com','veryrealemail.com','viditag.com','viralplays.com',
+  'vkcode.ru','vmailing.info','vpn.st',
+  'walala.org','watchever.biz','webemail.me','weg-werf-email.de',
+  'welikecookies.com','whatpaas.com','whyspam.me',
+  'willhackforfood.biz','wilemail.com','wimsg.com','wronghead.com',
+  'wuzupmail.net',
+  'xagloo.com','xemaps.com','xents.com','xing886.uu.gl',
+  'xoxy.net','xsecurity.org','yapped.net','yeah.net',
+  'yep.it','yogamaven.com','yopmail.pp.ua','yourdomain.com',
+  'ypmail.webarnak.fr.eu.org','yroid.com',
+  'z1p.biz','za.com','zemail.me','zippymail.info',
+  'zoemail.net','zoemail.org','zomg.info',
+]);
+
 function _isPersonalEmail(email) {
-  const personal = ['gmail.','yahoo.','hotmail.','outlook.','live.','icloud.','libero.','alice.','tin.','tiscali.','protonmail.','gmx.'];
-  const lower = email.toLowerCase();
-  return personal.some(d => lower.includes('@' + d) || lower.includes(d));
+  const lower = email.toLowerCase().trim();
+  const atIdx = lower.lastIndexOf('@');
+  if (atIdx < 0) return false;
+  const domain = lower.slice(atIdx + 1);
+  return _BLOCKED_EMAIL_DOMAINS.has(domain);
 }
+// ─────────────────────────────────────────────────────────────────────────────
 
 // ── GATE RATE LIMITER ────────────────────────────────────────────────────────
 // Prevents spam submissions on the business/agency verification forms.
@@ -3725,6 +3905,14 @@ async function submitAgencyRequest() {
 
   if (!name)   { alert('Please enter your full name.');  return; }
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { alert('Please enter a valid email address.'); return; }
+  if (_isPersonalEmail(email)) {
+    const errEl = document.getElementById('ag-email-error');
+    if (errEl) errEl.style.display = 'block';
+    return;
+  } else {
+    const errEl = document.getElementById('ag-email-error');
+    if (errEl) errEl.style.display = 'none';
+  }
   if (!agency) { alert('Please enter your agency name.'); return; }
 
   const btn = document.querySelector('#gate-step-7 .btn-primary');
