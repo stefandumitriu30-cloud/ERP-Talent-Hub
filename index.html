@@ -5332,6 +5332,13 @@ function autoResizeTextarea(el) {
 
 // ─── View management + portal init ───────────────────────
 function showView(name) {
+  // Persist current view so auto-update reload can restore it
+  if (name && name !== 'home') {
+    try { sessionStorage.setItem('erpth_last_view', name); } catch(_) {}
+  } else {
+    try { sessionStorage.removeItem('erpth_last_view'); } catch(_) {}
+  }
+
   // Auth guards for protected views
   const guards = { form:'candidate', myprofile:'candidate', candidate:'candidate', recruiter:'recruiter', admin:'admin' };
   if (guards[name] && !currentUser) {
@@ -7028,7 +7035,21 @@ function loginSuccess(user) {
     // Trial expiry check — runs async, does not block login flow
     checkTrialExpiry(user);
   }
-  const target = pendingNavTarget || defaultViewForRole(user.role);
+  // Restore view from before auto-update reload (if any), then pendingNavTarget, then role default
+  let _restoredView = null;
+  try { _restoredView = sessionStorage.getItem('erpth_last_view'); } catch(_) {}
+  // Only restore protected views if the user's role actually allows them
+  const _roleAllows = {
+    admin:    ['admin','recruiter','candidate','myprofile','form'],
+    recruiter:['recruiter'],
+    candidate:['candidate','myprofile','form'],
+  };
+  const _allowed = _roleAllows[user.role] || [];
+  if (_restoredView && !_allowed.includes(_restoredView)) _restoredView = null;
+  // Extra guard: admin view requires adminAuthenticated (set below)
+  if (_restoredView === 'admin' && user.role !== 'admin') _restoredView = null;
+  const target = _restoredView || pendingNavTarget || defaultViewForRole(user.role);
+  try { sessionStorage.removeItem('erpth_last_view'); } catch(_) {}
   pendingNavTarget = null;
   // SECURITY: set adminAuthenticated only after Supabase confirmed role='admin'
   if (user.role === 'admin') {
@@ -9531,10 +9552,9 @@ function renderPrivacyPolicy(lang) {
     setInterval(checkForUpdate, CHECK_INTERVAL);
   }, 10000);
 
-  // Also check when the PWA comes back to foreground (visibilitychange)
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') checkForUpdate();
-  });
+  // NOTE: visibilitychange intentionally removed — it caused the SPA to reload
+  // and lose navigation state every time the user switched apps on mobile.
+  // Updates are checked every 5 minutes via setInterval instead.
 })();
 // ─────────────────────────────────────────────────────────────────────────────
 
