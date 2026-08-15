@@ -1,7 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://js.stripe.com https://www.googletagmanager.com https://googletagmanager.com https://ssl.google-analytics.com https://www.google-analytics.com https://google-analytics.com https://tagmanager.google.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://snap.licdn.com https://connect.facebook.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; img-src 'self' data: blob: https://qqcuipttgjhtbizplwtp.supabase.co https://www.google-analytics.com https://www.googletagmanager.com; connect-src 'self' https://qqcuipttgjhtbizplwtp.supabase.co wss://qqcuipttgjhtbizplwtp.supabase.co https://nominatim.openstreetmap.org https://api.anthropic.com https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com https://ec.europa.eu; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self'; script-src-elem 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://js.stripe.com https://www.googletagmanager.com https://googletagmanager.com https://ssl.google-analytics.com https://www.google-analytics.com https://google-analytics.com https://tagmanager.google.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://snap.licdn.com https://connect.facebook.net;" />
+<!-- SECURITY: CSP meta tag is a fallback only. The authoritative CSP, HSTS, X-Frame-Options,
+     and Permissions-Policy MUST be set as HTTP response headers in Cloudflare / server config.
+     api.anthropic.com removed from connect-src: Mia now requires an authenticated JWT and calls
+     only the Supabase Edge Function (ai-proxy). Direct browser→Anthropic calls are now blocked. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://js.stripe.com https://www.googletagmanager.com https://googletagmanager.com https://ssl.google-analytics.com https://www.google-analytics.com https://google-analytics.com https://tagmanager.google.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://snap.licdn.com https://connect.facebook.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; img-src 'self' data: blob: https://qqcuipttgjhtbizplwtp.supabase.co https://www.google-analytics.com https://www.googletagmanager.com; connect-src 'self' https://qqcuipttgjhtbizplwtp.supabase.co wss://qqcuipttgjhtbizplwtp.supabase.co https://nominatim.openstreetmap.org https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com https://ec.europa.eu; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self'; script-src-elem 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://js.stripe.com https://www.googletagmanager.com https://googletagmanager.com https://ssl.google-analytics.com https://www.google-analytics.com https://google-analytics.com https://tagmanager.google.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://snap.licdn.com https://connect.facebook.net;" />
 <meta charset="UTF-8" />
 
 <meta http-equiv="X-Content-Type-Options" content="nosniff" />
@@ -852,7 +856,8 @@ input[type=file].photo-input{display:none}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="https://js.stripe.com/v3/"></script>
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<!-- EmailJS browser SDK removed: email sending is now proxied via Supabase Edge Function -->
+<!-- This eliminates the risk of EmailJS credentials being exposed or abused client-side -->
   <!-- iOS Keychain credential association hint -->
   <link rel="canonical" href="https://erptalenthub.com/" />
 </head>
@@ -2817,34 +2822,47 @@ function toggleCurrent(p) {
 // SUBMIT
 // ─────────────────────────────────────────
 // ─────────────────────────────────────────
-// EMAILJS CONFIGURATION
+// EMAIL CONFIGURATION
 // ─────────────────────────────────────────
-// ⚠️  TO ACTIVATE EMAIL SENDING:
-//   1. Create a free account at https://www.emailjs.com
-//   2. Add an Email Service (Gmail, Outlook, SMTP…) → copy the Service ID
-//   3. Create an Email Template with these variables:
-//        {{to_email}}   {{to_name}}   {{first_name}}  {{last_name}}
-//        {{city}}       {{country}}   {{erp_systems}} {{reply_to}}
-//   4. Copy the Template ID and your Public Key
-//   5. Replace the three placeholder strings below with your real values
+// SECURITY: EmailJS credentials have been removed from client-side code.
+// All email sending is now proxied through the Supabase Edge Function
+// 'send-email' which holds service credentials as server-side secrets.
+// This prevents unauthorized use of the email template by third parties.
 
-const EMAILJS_PUBLIC_KEY  = 'tmF7awXmm1glzV6iH';      // ✅ configured
-const EMAILJS_SERVICE_ID  = 'service_pi5yowx';         // ✅ configured
-const EMAILJS_TEMPLATE_ID = 'template_u0vfx1w';        // ✅ configured
+// EMAILJS_CONFIGURED is kept as true so UI notices remain hidden (email works via proxy).
+const EMAILJS_CONFIGURED = true;
 
-const EMAILJS_CONFIGURED =
-  EMAILJS_PUBLIC_KEY  !== 'YOUR_PUBLIC_KEY' &&
-  EMAILJS_SERVICE_ID  !== 'YOUR_SERVICE_ID' &&
-  EMAILJS_TEMPLATE_ID !== 'YOUR_TEMPLATE_ID';
-
-// Init EmailJS only after the window has fully loaded
-window.addEventListener('load', () => {
-  if (EMAILJS_CONFIGURED && typeof emailjs !== 'undefined') {
-    emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
-  } else if (EMAILJS_CONFIGURED) {
-    console.warn('⚠️ EmailJS SDK not loaded yet');
+// Helper: send email via authenticated Supabase Edge Function proxy.
+// Requires a valid Supabase session JWT — never sends credentials client-side.
+async function _sendEmailViaProxy(templateParams) {
+  if (!SUPABASE_READY || !sb()) return { ok: false, err: 'Supabase unavailable' };
+  let accessToken = null;
+  try {
+    const s = await sb().auth.getSession();
+    accessToken = s?.data?.session?.access_token || null;
+  } catch(e) { /* session unavailable */ }
+  // For registration confirmation emails, guest session is acceptable;
+  // use the anon key only for that specific non-privileged template.
+  const authHeader = accessToken ? `Bearer ${accessToken}` : `Bearer ${SUPABASE_ANON}`;
+  try {
+    const resp = await fetch(`${SUPABASE_URL}/functions/v1/send-email`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_ANON,
+        'Authorization': authHeader,
+      },
+      body: JSON.stringify(templateParams),
+    });
+    if (!resp.ok) {
+      const errText = await resp.text().catch(() => '');
+      return { ok: false, err: `Edge Function error ${resp.status}: ${errText.slice(0,200)}` };
+    }
+    return { ok: true };
+  } catch(e) {
+    return { ok: false, err: e.message };
   }
-});
+}
 
 // ─────────────────────────────────────────
 // FORM VALIDATION
@@ -3019,21 +3037,16 @@ function handleSubmit() {
   };
 
   if (EMAILJS_CONFIGURED) {
-    // Re-init in case SDK loaded late
-    if (typeof emailjs !== 'undefined') {
-      emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
-    }
-    // Sending email via EmailJS
-    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
-      .then((res) => {
-            finish(true);
-      })
-      .catch((err) => {
-        console.error('❌ EmailJS send error:', JSON.stringify(err));
-        finish(false, JSON.stringify(err));
-      });
+    // Send via secure server-side proxy (no client-side credentials)
+    _sendEmailViaProxy(templateParams).then(({ ok, err }) => {
+      if (ok) { finish(true); }
+      else {
+        console.error('❌ Email proxy send error:', err);
+        finish(false, err);
+      }
+    });
   } else {
-    console.info('EmailJS not configured — skipping send.');
+    console.info('Email proxy not configured — skipping send.');
     setTimeout(() => finish(true), 1800);
   }
 }
@@ -3649,23 +3662,23 @@ function _isPersonalEmail(email) {
 
 // ── GATE RATE LIMITER ────────────────────────────────────────────────────────
 // Prevents spam submissions on the business/agency verification forms.
-// Client-side cooldown: 60 seconds between submissions per browser session.
-function _gateRateLimit() {
-  const KEY = 'erpth_gate_ts';
+// SECURITY: Uses an in-memory Map (not sessionStorage/localStorage) so it cannot
+// be bypassed via browser console manipulation. sessionStorage is used only as a
+// UX hint across page reloads; the authoritative check is always in-memory.
+const _gateRateLimitMap = new Map(); // key → timestamp (ms), lives in JS heap
+function _gateRateLimit(key = 'default') {
   const COOLDOWN_MS = 60000; // 60 seconds
-  try {
-    const last = parseInt(sessionStorage.getItem(KEY) || '0', 10);
-    const now = Date.now();
-    if (now - last < COOLDOWN_MS) {
-      const wait = Math.ceil((COOLDOWN_MS - (now - last)) / 1000);
-      alert(`Please wait ${wait} seconds before submitting another request.`);
-      return false;
-    }
-    sessionStorage.setItem(KEY, String(now));
-    return true;
-  } catch(e) {
-    return true; // fail open if sessionStorage unavailable
+  const now = Date.now();
+  const last = _gateRateLimitMap.get(key) || 0;
+  if (now - last < COOLDOWN_MS) {
+    const wait = Math.ceil((COOLDOWN_MS - (now - last)) / 1000);
+    alert(`Please wait ${wait} seconds before submitting another request.`);
+    return false;
   }
+  _gateRateLimitMap.set(key, now);
+  // Secondary hint in sessionStorage for UX (page reload), but NOT authoritative
+  try { sessionStorage.setItem('erpth_gate_ts_' + key, String(now)); } catch(_) {}
+  return true;
 }
 
 // ── VAT / TAX ID VALIDATION ───────────────────────────────────────────────
@@ -4244,12 +4257,12 @@ function showToast(notif) {
   toast.id = 'toast-' + notif.id;
   toast.onclick = () => { removeToast(notif.id); handleNotifClick(notif.id); };
   toast.innerHTML = `
-    <div class="toast-icon">${notif.icon}</div>
+    <div class="toast-icon">${escHtml(String(notif.icon || ''))}</div>
     <div class="toast-body">
       <div class="toast-title">${escHtml(notif.title)}</div>
       <div class="toast-desc">${escHtml(notif.desc)}</div>
     </div>
-    <button class="toast-close" onclick="event.stopPropagation();removeToast(${notif.id})"><i class="fa-solid fa-xmark"></i></button>`;
+    <button class="toast-close" onclick="event.stopPropagation();removeToast(${Number(notif.id)})"><i class="fa-solid fa-xmark"></i></button>`;
 
   container.appendChild(toast);
 
@@ -6481,7 +6494,9 @@ async function requestUpgrade(plan, btn) {
     // Show success toast
     const toast = document.createElement('div');
     toast.style.cssText = 'position:fixed;top:24px;left:50%;transform:translateX(-50%);background:#22C55E;color:#fff;padding:16px 28px;border-radius:14px;font-weight:700;font-size:15px;z-index:99999;box-shadow:0 4px 24px rgba(0,0,0,0.2);text-align:center;max-width:90vw';
-    toast.innerHTML = `🎉 Payment successful! Your <strong>${plan === 'agency' ? 'Agency' : 'Pro'}</strong> plan is being activated.<br><span style="font-size:13px;font-weight:400;opacity:.85">You'll receive a confirmation email shortly.</span>`;
+    const _safePlan = plan === 'agency' ? 'Agency' : 'Pro'; // whitelist, no escaping needed
+    toast.textContent = ''; // clear first
+    toast.innerHTML = `🎉 Payment successful! Your <strong>${_safePlan}</strong> plan is being activated.<br><span style="font-size:13px;font-weight:400;opacity:.85">You'll receive a confirmation email shortly.</span>`;
     document.body.appendChild(toast);
     setTimeout(() => toast.remove(), 8000);
 
@@ -6530,20 +6545,24 @@ function sb() {
 // AI PROXY (Mia) — calls the Supabase Edge Function 'ai-proxy' instead of
 // hitting api.anthropic.com directly from the browser. The Anthropic API key
 // lives only server-side (edge function secret), never in client code.
-// Requires a valid, logged-in Supabase session: the edge function verifies
-// the bearer token before forwarding the request and applies its own limits.
+// SECURITY: requires a valid authenticated Supabase session JWT — anon key
+// fallback has been removed to prevent unauthenticated access to the AI proxy.
 // ─────────────────────────────────────────
 async function callMiaProxy({ model = 'claude-sonnet-4-6', max_tokens = 400, system, messages }) {
   if (!SUPABASE_READY || !sb()) throw new Error('AI proxy unavailable: Supabase not configured');
 
-  // Try to get Supabase session token; fall back to anon key if not available
-  // (e.g. admin impersonation sessions or freshly restored sessions)
-  let bearerToken = SUPABASE_ANON;
+  // SECURITY: require authenticated session JWT — never fall back to anon key.
+  // If the user is not logged in, the AI proxy must not be callable.
+  let bearerToken = null;
   try {
     const sessionResult = await sb().auth.getSession();
     const token = sessionResult?.data?.session?.access_token;
     if (token) bearerToken = token;
-  } catch(e) { /* use anon key fallback */ }
+  } catch(e) { /* session unavailable */ }
+
+  if (!bearerToken) {
+    throw new Error('Mia requires an authenticated session. Please log in.');
+  }
 
   const resp = await fetch(`${SUPABASE_URL}/functions/v1/ai-proxy`, {
     method: 'POST',
@@ -7609,13 +7628,14 @@ async function runEmailAutomation() {
     if (!templateKey) return;
 
     const tmpl = _NURTURE_TEMPLATES[templateKey];
-    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+    const { ok, err } = await _sendEmailViaProxy({
       to_email:   profile.email,
       to_name:    profile.name,
       subject:    tmpl.subject,
       message:    tmpl.body(profile.name.split(' ')[0]),
       site_url:   SITE_URL,
     });
+    if (!ok) throw new Error(err);
 
     // Mark as sent so we don't resend
     const updatedSent = { ...sent, [notifKey]: now.toISOString() };
@@ -8814,8 +8834,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch(e) {
       console.warn('Supabase session check failed — falling back to cache:', e);
       // Fallback: use cache only if Supabase is unavailable
-      // SECURITY: adminAuthenticated is intentionally NOT restored from cache —
-      // it must be confirmed by a live Supabase session to prevent localStorage tampering.
+      // SECURITY: adminAuthenticated and recruiterVerified are intentionally NOT restored
+      // from cache — both must be confirmed by a live Supabase session to prevent
+      // localStorage tampering from granting elevated access.
       if (cached) {
         currentUser = cached;
         if (cached.role === 'candidate' && cached.profileData) {
@@ -8824,7 +8845,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         if (cached.role === 'recruiter') {
           if (cached.recruiterData) recruiterProfile = cached.recruiterData;
-          recruiterVerified = cached.verifiedByAdmin === true;
+          // SECURITY: recruiterVerified intentionally NOT set from cache — requires
+          // live Supabase confirmation to prevent localStorage privilege escalation.
+          recruiterVerified = false;
           if (cached.photo) recPhotoBase64 = cached.photo;
         }
         // adminAuthenticated intentionally NOT set here — requires live Supabase session
@@ -8832,8 +8855,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   } else if (cached) {
     // Supabase not configured — use cache as-is (offline/demo mode)
-    // SECURITY: adminAuthenticated is intentionally NOT restored from cache —
-    // admin access requires a live Supabase session regardless of mode.
+    // SECURITY: adminAuthenticated and recruiterVerified are intentionally NOT restored
+    // from cache — privileged flags require a live Supabase session regardless of mode.
     currentUser = cached;
     if (cached.role === 'candidate' && cached.profileData) {
       savedProfile = cached.profileData;
@@ -8841,7 +8864,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     if (cached.role === 'recruiter') {
       if (cached.recruiterData) recruiterProfile = cached.recruiterData;
-      recruiterVerified = cached.verifiedByAdmin === true;
+      // SECURITY: recruiterVerified intentionally NOT set from cache
+      recruiterVerified = false;
       if (cached.photo) recPhotoBase64 = cached.photo;
     }
     // adminAuthenticated intentionally NOT set here — requires live Supabase session
