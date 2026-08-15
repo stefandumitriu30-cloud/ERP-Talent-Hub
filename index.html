@@ -4410,7 +4410,7 @@ function buildStatusControlHTML(candidateId) {
 
   return `<div class="status-control">
     <div class="status-control-label">Selection status</div>
-    <select class="status-select" onchange="updateCandidateStage(${candidateId}, this.value)">
+    <select class="status-select" onchange="updateCandidateStage('${candidateId}', this.value)">
       ${options}
     </select>
     ${timerHTML}
@@ -4902,8 +4902,8 @@ function renderCandChatWindow(candidateId) {
       ${canReply
         ? `<div class="chat-input-area">
             <div class="chat-input-row">
-              <textarea class="chat-textarea" id="cand-input" rows="1" placeholder="Write a reply…" onkeydown="candInputKey(event,${candidateId})"></textarea>
-              <button class="chat-send-btn" onclick="candSendMessage(${candidateId})" title="Send"><i class="fa-solid fa-paper-plane"></i></button>
+              <textarea class="chat-textarea" id="cand-input" rows="1" placeholder="Write a reply…" onkeydown="candInputKey(event,'${candidateId}')"></textarea>
+              <button class="chat-send-btn" onclick="candSendMessage('${candidateId}')" title="Send"><i class="fa-solid fa-paper-plane"></i></button>
             </div>
            </div>`
         : `<div class="chat-locked-notice"><i class="fa-solid fa-lock"></i> You can reply once the recruiter sends you the first message.</div>`
