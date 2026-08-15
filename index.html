@@ -9518,70 +9518,9 @@ function renderPrivacyPolicy(lang) {
   /* [ERP Guard] Recruiter authorization wrapper installed on ' + PROTECTED_REC_FNS.length + ' functions. */
 })();
 
-// ── AUTO-UPDATE FOR iOS PWA (no Service Worker required) ────────────────────
-// Safari/iOS does not honour the CSP meta tag for Service Worker registration,
-// and the WKWebView used by installed PWAs caches aggressively. This lightweight
-// solution polls a version endpoint (the page itself, HEAD request) and reloads
-// when the server has a newer build — without any Service Worker.
-(function () {
-  // Build stamp embedded at deploy time — change this string on every deploy.
-  const CURRENT_VERSION = 'v2026.08.15';
-  const VERSION_HEADER  = 'x-app-version'; // optional: set this header on your CDN/server
-  const CHECK_INTERVAL  = 5 * 60 * 1000;   // check every 5 minutes
+// ─────────────────────────────────────────
+// PROFILE COMPLETENESS SCORE (Mia)
 
-  async function checkForUpdate() {
-    try {
-      // HEAD request — tiny, no body downloaded
-      const res = await fetch(location.href, {
-        method: 'HEAD',
-        cache: 'no-store',   // bypass browser cache
-        headers: { 'Accept': 'text/html' }
-      });
-
-      // Strategy 1: server sends x-app-version header (set this in Cloudflare/Netlify)
-      const serverVersion = res.headers.get(VERSION_HEADER);
-      if (serverVersion && serverVersion !== CURRENT_VERSION) {
-        reload();
-        return;
-      }
-
-      // Strategy 2: compare Last-Modified / ETag with a stored value
-      const etag         = res.headers.get('etag') || '';
-      const lastModified = res.headers.get('last-modified') || '';
-      const serverStamp  = etag || lastModified;
-
-      if (!serverStamp) return; // server doesn't send these headers — skip
-
-      const stored = sessionStorage.getItem('erpth_stamp');
-      if (!stored) {
-        // First check — store current stamp, don't reload
-        sessionStorage.setItem('erpth_stamp', serverStamp);
-        return;
-      }
-      if (stored !== serverStamp) {
-        reload();
-      }
-    } catch (_) {
-      // Network error / offline — silently skip
-    }
-  }
-
-  function reload() {
-    // Append cache-bust query so iOS WKWebView fetches fresh HTML
-    const sep = location.search ? '&' : '?';
-    location.replace(location.pathname + location.search + sep + '_v=' + Date.now() + location.hash);
-  }
-
-  // Start polling after 10 s (let the app fully boot first)
-  setTimeout(() => {
-    checkForUpdate();
-    setInterval(checkForUpdate, CHECK_INTERVAL);
-  }, 10000);
-
-  // NOTE: visibilitychange intentionally removed — it caused the SPA to reload
-  // and lose navigation state every time the user switched apps on mobile.
-  // Updates are checked every 5 minutes via setInterval instead.
-})();
 // ─────────────────────────────────────────────────────────────────────────────
 
 // ── ADMIN IMPERSONATE ─────────────────────────────────────────
