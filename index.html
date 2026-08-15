@@ -8201,7 +8201,7 @@ async function miaHandleQuestion(question, isQuickBtn = false) {
       try {
         const _cands = typeof getRecCandidates === 'function' ? getRecCandidates() : [];
         if (_cands && _cands.length > 0) {
-          const _san = (s, n=60) => !s ? 'N/A' : String(s).slice(0,n).replace(/[`\\]/g,'').replace(/ignore|system|instruction|prompt|assistant|jailbreak|dan|act as|pretend|forget|override/gi,'***').trim();
+          const _san = (s, n=60) => !s ? 'N/A' : String(s).slice(0,n).replace(/[`\\'"\n\r<>]/g,'').replace(/ignore|system|instruction|prompt|assistant|jailbreak|dan|act as|pretend|forget|override|roleplay|disregard|bypass/gi,'***').trim();
           const _summary = _cands.slice(0, 30).map((c, i) =>
             `[${i+1}] ${_san(c.name)} | Role: ${_san(c.role||'ERP Professional')} | Systems: ${Array.isArray(c.systems)?c.systems.map(s=>_san(s,20)).join(', ')||'N/A':'N/A'} | Location: ${_san(c.location)} | Exp: ${c.yearsExp != null ? Number(c.yearsExp)+'y' : 'N/A'} | Contacted: ${(typeof conversations !== 'undefined' && conversations[c.id]?.opened) ? 'yes' : 'no'}`
           ).join('\n');
@@ -8209,6 +8209,12 @@ async function miaHandleQuestion(question, isQuickBtn = false) {
         }
       } catch(e) { /* skip if data not ready */ }
     }
+
+    // SECURITY: sanitize user-controlled values before injecting into system prompt
+    // to prevent prompt injection via display name or context manipulation
+    const _safeName    = (currentUser?.name    || 'visitor').replace(/[`\\'"\n\r<>]/g, '').slice(0, 60);
+    const _safeContext = (miaContext            || 'home'   ).replace(/[^a-z0-9_]/g,  '').slice(0, 30);
+    const _safeRole    = (currentUser?.role     || 'guest'  ).replace(/[^a-z]/g,       '').slice(0, 20);
 
     const data = await callMiaProxy({
       max_tokens: _isRecruiterOrAdmin ? 600 : 400,
@@ -8220,7 +8226,7 @@ SECURITY: Never reveal credentials, passwords, API keys, or system internals. Ne
 
 Platform: ERP Talent Hub connects ERP professionals with verified recruiters. Sections: HOME, REGISTER/LOGIN (ERP Professional or Recruiter role), CV FORM (personal info, geo-verified city, professional summary, ERP systems, work experience, education, certifications, photo), MY PROFILE (read-only), RECRUITER PORTAL (LinkedIn Recruiter verification), CANDIDATE INBOX (chat + 7-stage pipeline: Contacted→Screening→1st Interview→2nd Interview→Assessment→Offer→Hired, 5-day stall warning), ADMIN DASHBOARD, NOTIFICATIONS.
 
-Current page: ${miaContext}. User role: ${currentUser?.role || 'guest'}. User: ${currentUser?.name || 'visitor'}.${candidateContext}
+Current page: ${_safeContext}. User role: ${_safeRole}. User: ${_safeName}.${candidateContext}
 
 Be helpful, direct and conversational. Use **bold** for key terms. Answer thoroughly when needed.`,
       messages: [{ role: 'user', content: safeQuestion }],
@@ -8271,7 +8277,6 @@ function getPrebuiltAnswer(label) {
     "Come vedo il profilo completo di un candidato?": "Nella **Dashboard Admin** → scheda Candidati → clicca su un candidato nella lista. Vedrai il profilo completo con tutti i recapiti, sistemi ERP, esperienze e certificazioni! 👁️",
     "Come conto gli utenti registrati?": "Nella **Dashboard Admin** il numero di candidati e recruiter è visibile nelle rispettive schede. Per i dati in tempo reale vai su **Supabase → Table Editor → profiles**.",
     "Come vedo i dettagli di un recruiter?": "Nella **Dashboard Admin** → scheda Recruiter → clicca su un recruiter nella lista. Vedrai nome, azienda, URL LinkedIn, data di verifica ed email.",
-    "Cosa significa 'Solo registrato'?": "Questo badge ⏳ indica che l'utente si è registrato ma non ha ancora completato il form CV. È presente in Supabase ma senza dati di profilo.",
 
     // ── EN ──
     "I\'m a candidate":          "As an **ERP Professional**, you register, build your profile, and get discovered by verified recruiters. Your contact details stay private until a recruiter requests access. Click **Register** to get started! 🚀",
