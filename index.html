@@ -1734,8 +1734,12 @@ input[type=file].photo-input{display:none}
           </div>
         </div>
         <div class="field" style="text-align:left;margin-bottom:20px">
-          <label style="font-size:13px;font-weight:500;color:#334155;display:block;margin-bottom:5px">VAT / Company registration number <span style="font-weight:400;color:var(--gray-400)">(optional)</span></label>
-          <input type="text" id="biz-vat" placeholder="e.g. IT13449530016" />
+          <label style="font-size:13px;font-weight:500;color:#334155;display:block;margin-bottom:5px">VAT / P.IVA <span style="color:#DC2626">*</span></label>
+          <div style="position:relative">
+            <input type="text" id="biz-vat" placeholder="e.g. IT13449530016" style="padding-right:38px" oninput="onVatInput(this)" />
+            <span id="biz-vat-icon" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:15px;display:none"></span>
+          </div>
+          <div id="biz-vat-status" style="margin-top:5px;font-size:12px;display:none"></div>
         </div>
         <div style="background:#F8FAFC;border:1px solid var(--gray-200);border-radius:var(--radius);padding:12px 14px;font-size:12px;color:var(--gray-500);text-align:left;margin-bottom:16px;line-height:1.6">
           <i class="fa-solid fa-circle-info" style="color:var(--blue);margin-right:6px"></i>
@@ -3402,6 +3406,155 @@ function _gateRateLimit() {
   }
 }
 
+// ── VAT / P.IVA VALIDATION ────────────────────────────────────────────────
+// Normalise: strip spaces, dots, dashes → uppercase
+function _normaliseVat(raw) {
+  return raw.replace(/[\s.\-]/g, '').toUpperCase();
+}
+
+// Basic format check per country prefix (EU + CH/NO/GB)
+const VAT_PATTERNS = {
+  AT: /^ATU\d{8}$/,
+  BE: /^BE0?\d{9,10}$/,
+  BG: /^BG\d{9,10}$/,
+  CY: /^CY\d{8}[A-Z]$/,
+  CZ: /^CZ\d{8,10}$/,
+  DE: /^DE\d{9}$/,
+  DK: /^DK\d{8}$/,
+  EE: /^EE\d{9}$/,
+  EL: /^EL\d{9}$/,
+  ES: /^ES[A-Z0-9]\d{7}[A-Z0-9]$/,
+  FI: /^FI\d{8}$/,
+  FR: /^FR[A-Z0-9]{2}\d{9}$/,
+  HR: /^HR\d{11}$/,
+  HU: /^HU\d{8}$/,
+  IE: /^IE\d[A-Z0-9+*]\d{5}[A-Z]{1,2}$/,
+  IT: /^IT\d{11}$/,
+  LT: /^LT(\d{9}|\d{12})$/,
+  LU: /^LU\d{8}$/,
+  LV: /^LV\d{11}$/,
+  MT: /^MT\d{8}$/,
+  NL: /^NL\d{9}B\d{2}$/,
+  PL: /^PL\d{10}$/,
+  PT: /^PT\d{9}$/,
+  RO: /^RO\d{2,10}$/,
+  SE: /^SE\d{12}$/,
+  SI: /^SI\d{8}$/,
+  SK: /^SK\d{10}$/,
+  GB: /^GB(\d{9}|\d{12}|GD\d{3}|HA\d{3})$/,
+  CH: /^CHE-?\d{3}\.?\d{3}\.?\d{3}/,
+  NO: /^NO\d{9}MVA$/,
+};
+
+function _vatFormatOk(vat) {
+  const n = _normaliseVat(vat);
+  if (n.length < 5) return false;
+  const prefix = n.slice(0, 2);
+  const pattern = VAT_PATTERNS[prefix];
+  if (!pattern) return n.length >= 5; // unknown country — accept if non-empty
+  return pattern.test(n);
+}
+
+// Debounce timer for live check
+let _vatDebounceTimer = null;
+let _vatVerified = false;   // true = VIES confirmed valid
+let _vatChecking = false;
+
+function onVatInput(el) {
+  clearTimeout(_vatDebounceTimer);
+  _vatVerified = false;
+  const raw = el.value.trim();
+  const statusEl = document.getElementById('biz-vat-status');
+  const iconEl   = document.getElementById('biz-vat-icon');
+  if (!raw) {
+    statusEl.style.display = 'none';
+    iconEl.style.display = 'none';
+    return;
+  }
+  _vatDebounceTimer = setTimeout(() => _doVatCheck(raw), 600);
+}
+
+async function _doVatCheck(raw) {
+  const statusEl = document.getElementById('biz-vat-status');
+  const iconEl   = document.getElementById('biz-vat-icon');
+  const vatEl    = document.getElementById('biz-vat');
+
+  const normalised = _normaliseVat(raw);
+
+  // Step 1: format check
+  if (!_vatFormatOk(normalised)) {
+    _setVatUI('error', '⚠ Formato non valido. Esempio: IT13449530016 o DE123456789', vatEl, statusEl, iconEl);
+    return;
+  }
+
+  // Step 2: live VIES check (EU VAT only — prefix is 2-letter EU country)
+  const prefix = normalised.slice(0, 2);
+  const isEU = Object.keys(VAT_PATTERNS).includes(prefix) && !['GB','CH','NO'].includes(prefix);
+
+  if (isEU) {
+    _setVatUI('loading', '🔍 Verifica in corso sul registro EU (VIES)…', vatEl, statusEl, iconEl);
+    _vatChecking = true;
+    try {
+      // Use the public VIES REST API via a CORS-friendly proxy
+      const countryCode = prefix;
+      const vatNumber   = normalised.slice(2); // strip country prefix for VIES
+      // Primary: European Commission VIES REST endpoint (no CORS issues as of 2024)
+      const res = await fetch(
+        `https://ec.europa.eu/taxation_customs/vies/rest-api/ms/${encodeURIComponent(countryCode)}/vat/${encodeURIComponent(vatNumber)}`,
+        { signal: AbortSignal.timeout(8000) }
+      );
+      if (!res.ok) throw new Error('VIES HTTP ' + res.status);
+      const data = await res.json();
+      _vatChecking = false;
+
+      if (data && data.isValid === true) {
+        const companyName = (data.name && data.name !== '---') ? data.name : '';
+        _vatVerified = true;
+        _setVatUI('ok',
+          '✓ P.IVA/VAT verificata sul registro VIES' + (companyName ? ` · <strong>${companyName}</strong>` : ''),
+          vatEl, statusEl, iconEl);
+        // Auto-fill company field if empty
+        if (companyName) {
+          const companyInput = document.getElementById('biz-company');
+          if (companyInput && !companyInput.value.trim()) {
+            companyInput.value = companyName.replace(/\*+/g, '').trim();
+          }
+        }
+      } else {
+        _vatVerified = false;
+        _setVatUI('warn',
+          '⚠ Partita IVA non trovata nel registro VIES. Controlla il numero o procedi comunque (verifica manuale).',
+          vatEl, statusEl, iconEl);
+      }
+    } catch(e) {
+      _vatChecking = false;
+      // VIES unreachable — fallback to format-only
+      _vatVerified = true; // allow submit; admin will verify manually
+      _setVatUI('warn',
+        '⚠ Impossibile contattare il registro VIES in questo momento. Il formato è corretto — la verifica sarà manuale.',
+        vatEl, statusEl, iconEl);
+    }
+  } else {
+    // Non-EU or unknown: accept if format passes
+    _vatVerified = true;
+    _setVatUI('ok', '✓ Formato valido', vatEl, statusEl, iconEl);
+  }
+}
+
+function _setVatUI(type, msg, vatEl, statusEl, iconEl) {
+  const colors = { ok: '#15803D', warn: '#92400E', error: '#DC2626', loading: '#2563EB' };
+  const icons  = { ok: '✓', warn: '⚠', error: '✕', loading: '⏳' };
+  const borderColors = { ok: '#16A34A', warn: '#D97706', error: '#DC2626', loading: '#2563EB' };
+  statusEl.innerHTML = msg;
+  statusEl.style.color = colors[type];
+  statusEl.style.display = 'block';
+  iconEl.textContent = icons[type];
+  iconEl.style.color = colors[type];
+  iconEl.style.display = 'inline';
+  vatEl.style.borderColor = borderColors[type];
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 async function submitBusinessVerification() {
   if (!_gateRateLimit()) return;
   const name     = document.getElementById('biz-name').value.trim();
@@ -3420,6 +3573,11 @@ async function submitBusinessVerification() {
   // Validate LinkedIn username — must be at least 3 valid chars (blocks bots submitting empty/prefix-only values)
   const linkedinClean = sanitizeLinkedInUsername(linkedin);
   if (!linkedinClean || linkedinClean.length < 3) { alert("Please enter a valid LinkedIn profile URL or username (e.g. john-doe)."); return; }
+
+  // VAT: required and must pass format check
+  if (!vat) { alert('Per favore inserisci la tua Partita IVA / VAT number. È obbligatoria per la verifica aziendale.'); document.getElementById('biz-vat').focus(); return; }
+  if (!_vatFormatOk(vat)) { alert('Il formato della Partita IVA non è valido. Esempio: IT13449530016 o DE123456789'); document.getElementById('biz-vat').focus(); return; }
+  if (_vatChecking) { alert('Verifica P.IVA in corso… attendi un momento e riprova.'); return; }
 
   const btn = document.querySelector('#gate-step-6 .btn-primary');
   const orig = btn.innerHTML;
