@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 
 <meta http-equiv="X-Content-Type-Options" content="nosniff" />
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; img-src 'self' data: blob: https://qqcuipttgjhtbizplwtp.supabase.co https://www.google-analytics.com https://www.googletagmanager.com; connect-src 'self' https://qqcuipttgjhtbizplwtp.supabase.co https://nominatim.openstreetmap.org https://api.anthropic.com https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self';" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; img-src 'self' data: blob: https://qqcuipttgjhtbizplwtp.supabase.co https://www.google-analytics.com https://www.googletagmanager.com; connect-src 'self' https://qqcuipttgjhtbizplwtp.supabase.co https://nominatim.openstreetmap.org https://api.anthropic.com https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com https://ec.europa.eu; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self';" />
 <meta name="referrer" content="strict-origin-when-cross-origin" />
 <!-- ═══ SECURITY HEADERS (meta fallback — also set at server/CDN level) ═══ -->
 <meta http-equiv="X-Frame-Options" content="DENY" />
@@ -20,7 +20,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
-<!-- ERP Talent Hub v2026.08.14 -->
+<!-- ERP Talent Hub v2026.08.15 -->
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-E8PPG6HZ9Q"></script>
 <script>
@@ -9389,6 +9389,73 @@ function renderPrivacyPolicy(lang) {
 
   /* [ERP Guard] Recruiter authorization wrapper installed on ' + PROTECTED_REC_FNS.length + ' functions. */
 })();
+
+// ── AUTO-UPDATE FOR iOS PWA (no Service Worker required) ────────────────────
+// Safari/iOS does not honour the CSP meta tag for Service Worker registration,
+// and the WKWebView used by installed PWAs caches aggressively. This lightweight
+// solution polls a version endpoint (the page itself, HEAD request) and reloads
+// when the server has a newer build — without any Service Worker.
+(function () {
+  // Build stamp embedded at deploy time — change this string on every deploy.
+  const CURRENT_VERSION = 'v2026.08.15';
+  const VERSION_HEADER  = 'x-app-version'; // optional: set this header on your CDN/server
+  const CHECK_INTERVAL  = 5 * 60 * 1000;   // check every 5 minutes
+
+  async function checkForUpdate() {
+    try {
+      // HEAD request — tiny, no body downloaded
+      const res = await fetch(location.href, {
+        method: 'HEAD',
+        cache: 'no-store',   // bypass browser cache
+        headers: { 'Accept': 'text/html' }
+      });
+
+      // Strategy 1: server sends x-app-version header (set this in Cloudflare/Netlify)
+      const serverVersion = res.headers.get(VERSION_HEADER);
+      if (serverVersion && serverVersion !== CURRENT_VERSION) {
+        reload();
+        return;
+      }
+
+      // Strategy 2: compare Last-Modified / ETag with a stored value
+      const etag         = res.headers.get('etag') || '';
+      const lastModified = res.headers.get('last-modified') || '';
+      const serverStamp  = etag || lastModified;
+
+      if (!serverStamp) return; // server doesn't send these headers — skip
+
+      const stored = sessionStorage.getItem('erpth_stamp');
+      if (!stored) {
+        // First check — store current stamp, don't reload
+        sessionStorage.setItem('erpth_stamp', serverStamp);
+        return;
+      }
+      if (stored !== serverStamp) {
+        reload();
+      }
+    } catch (_) {
+      // Network error / offline — silently skip
+    }
+  }
+
+  function reload() {
+    // Append cache-bust query so iOS WKWebView fetches fresh HTML
+    const sep = location.search ? '&' : '?';
+    location.replace(location.pathname + location.search + sep + '_v=' + Date.now() + location.hash);
+  }
+
+  // Start polling after 10 s (let the app fully boot first)
+  setTimeout(() => {
+    checkForUpdate();
+    setInterval(checkForUpdate, CHECK_INTERVAL);
+  }, 10000);
+
+  // Also check when the PWA comes back to foreground (visibilitychange)
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') checkForUpdate();
+  });
+})();
+// ─────────────────────────────────────────────────────────────────────────────
 
 // ── ADMIN IMPERSONATE ─────────────────────────────────────────
 function _openRecruiterPortal(name) {
