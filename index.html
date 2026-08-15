@@ -6059,41 +6059,44 @@ const SUPABASE_READY = SUPABASE_URL !== 'YOUR_SUPABASE_URL' && SUPABASE_ANON !==
 
 // ═══════════════════════════════════════════════════════════════
 // MAGIC LINK ACTIVATION
-// Send: erptalenthub.com/?activate=pro&ref=email@example.com&key=Erpth#9vX!mK2$qL8nR4wZ
+// SECURITY: activation is now validated server-side via Supabase only.
+// The old client-side secret key has been removed — it was visible in
+// page source and could be exploited to activate paid plans for free.
+// Activation flow: admin updates verified_by_admin=true and plan in DB
+// directly via the admin dashboard. No client-side secret needed.
 // ═══════════════════════════════════════════════════════════════
 (function() {
   try {
     const params = new URLSearchParams(window.location.search);
     const plan = params.get('activate');
-    const key  = params.get('key');
-    const SECRET = 'Erpth#9vX!mK2$qL8nR4wZ';
-    if (plan && key === SECRET && ['pro','agency'].includes(plan)) {
-      localStorage.setItem('erpth_plan', plan);
-      localStorage.removeItem('erpth_trial_start');
-      window.history.replaceState({}, document.title, window.location.pathname);
+    // REMOVED: client-side secret key check (was visible in page source)
+    // Activation is now handled exclusively by admin via Supabase dashboard.
+    if (plan && ['pro','agency'].includes(plan)) {
+      // Only activate if Supabase confirms this user is already verified_by_admin
       window.addEventListener('load', () => {
-        // Also persist verified_by_admin=true in Supabase so the flag survives
-        // across devices and sessions — not just localStorage
         setTimeout(async () => {
-          if (SUPABASE_READY && sb()) {
-            try {
-              const { data: { session } } = await sb().auth.getSession();
-              if (session) {
-                await sb().from('profiles')
-                  .update({ plan: plan, verified_by_admin: true })
-                  .eq('id', session.user.id);
-                if (typeof currentUser !== 'undefined' && currentUser) {
-                  currentUser.plan = plan;
-                  currentUser.verifiedByAdmin = true;
-                }
-              }
-            } catch(e) { /* non-critical — localStorage fallback still works */ }
-          }
-          const t = document.createElement('div');
-          t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#22C55E;color:#fff;padding:14px 24px;border-radius:12px;font-weight:700;font-size:15px;z-index:99999;box-shadow:0 4px 20px rgba(0,0,0,0.2)';
-          t.textContent = '✅ Piano ' + plan.toUpperCase() + ' attivato con successo!';
-          document.body.appendChild(t);
-          setTimeout(() => t.remove(), 5000);
+          if (!SUPABASE_READY || !sb()) return;
+          try {
+            const { data: { session } } = await sb().auth.getSession();
+            if (!session) return;
+            // Server-side check: only proceed if admin already set verified_by_admin=true in DB
+            const { data: profile } = await sb().from('profiles')
+              .select('verified_by_admin, plan')
+              .eq('id', session.user.id)
+              .single();
+            if (!profile || !profile.verified_by_admin) return; // not authorized
+            // Safe: DB already has the correct plan set by admin
+            window.history.replaceState({}, document.title, window.location.pathname);
+            if (typeof currentUser !== 'undefined' && currentUser) {
+              currentUser.plan = profile.plan;
+              currentUser.verifiedByAdmin = true;
+            }
+            const t = document.createElement('div');
+            t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#22C55E;color:#fff;padding:14px 24px;border-radius:12px;font-weight:700;font-size:15px;z-index:99999;box-shadow:0 4px 20px rgba(0,0,0,0.2)';
+            t.textContent = '✅ Piano ' + (profile.plan || plan).toUpperCase() + ' attivato con successo!';
+            document.body.appendChild(t);
+            setTimeout(() => t.remove(), 5000);
+          } catch(e) { /* non-critical */ }
         }, 1500);
       });
     }
