@@ -3259,7 +3259,7 @@ function renderRecChatWindow(candidateId) {
       <div class="chat-messages" id="rec-messages"></div>
       <div class="chat-input-area">
         <div class="chat-input-row">
-          <textarea class="chat-textarea" id="rec-input" rows="1" placeholder="Write a message…" onkeydown="recInputKey(event,${candidateId})"></textarea>
+          <textarea class="chat-textarea" id="rec-input" rows="1" placeholder="Write a message…" onkeydown="recInputKey(event,'${candidateId}')"></textarea>
           <button class="chat-send-btn" onclick="recSendMessage(${candidateId})" title="Send"><i class="fa-solid fa-paper-plane"></i></button>
         </div>
         ${!conv.opened ? `<div style="font-size:11px;color:var(--gray-400);margin-top:6px;text-align:center"><i class="fa-solid fa-info-circle"></i> You are opening this conversation for the first time. The candidate will be able to reply after you send your first message.</div>` : ''}
