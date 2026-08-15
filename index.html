@@ -4733,7 +4733,7 @@ function recInputKey(e, candidateId) {
   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); recSendMessage(candidateId); }
 }
 
-function recSendMessage(candidateId) {
+async function recSendMessage(candidateId) {
   // SECURITY: only approved recruiters or admin can send messages
   if (!currentUser || (currentUser.role !== 'admin' && currentUser.verifiedByAdmin !== true)) {
     console.warn('[ERP] recSendMessage blocked — not verified by admin.');
@@ -4743,11 +4743,65 @@ function recSendMessage(candidateId) {
   const text = input.value.trim();
   if (!text) return;
 
-  const _lim = getPlanLimits();
-  if (_lim.messagesPerMonth !== Infinity && getMonthlyMessageCount() >= _lim.messagesPerMonth) {
-    showUpgradeModal('messages');
-    return;
+  // ── SERVER-SIDE PLAN CHECK ────────────────────────────────────────────────
+  // Validates message limit against DB — prevents localStorage bypass.
+  // Falls back to client-side check if Edge Function is unreachable.
+  if (currentUser.role !== 'admin' && SUPABASE_READY && sb()) {
+    try {
+      const { data: { session } } = await sb().auth.getSession();
+      if (session) {
+        const res = await fetch(
+          `${SUPABASE_URL}/functions/v1/check-plan`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${session.access_token}`,
+              'apikey': SUPABASE_ANON,
+            },
+            body: JSON.stringify({ action: 'can_send_message' }),
+            signal: AbortSignal.timeout(5000),
+          }
+        );
+        if (res.ok) {
+          const result = await res.json();
+          if (!result.allowed) {
+            if (result.reason === 'limit_reached') {
+              showUpgradeModal('messages');
+            } else if (result.reason === 'not_verified') {
+              showToast({ id: Date.now(), icon: '🔒', title: 'Not verified', desc: 'Your account is pending admin approval.', color: '#FEF2F2', iconColor: '#DC2626' });
+            }
+            return;
+          }
+          // Update client-side counter to match server (keeps UI in sync)
+          if (result.remaining !== null && result.limit) {
+            const used = result.limit - result.remaining;
+            try {
+              const month = new Date().toISOString().slice(0,7);
+              localStorage.setItem('erpth_msg_count', JSON.stringify({ [month]: used }));
+            } catch(_) {}
+          }
+        }
+        // If fetch fails or non-ok — fall through to client-side check below
+      }
+    } catch(e) {
+      console.warn('[ERP] check-plan Edge Function unreachable — falling back to client-side check:', e.message);
+      // Client-side fallback
+      const _lim = getPlanLimits();
+      if (_lim.messagesPerMonth !== Infinity && getMonthlyMessageCount() >= _lim.messagesPerMonth) {
+        showUpgradeModal('messages');
+        return;
+      }
+    }
+  } else {
+    // No Supabase / admin — client-side check only
+    const _lim = getPlanLimits();
+    if (_lim.messagesPerMonth !== Infinity && getMonthlyMessageCount() >= _lim.messagesPerMonth) {
+      showUpgradeModal('messages');
+      return;
+    }
   }
+  // ─────────────────────────────────────────────────────────────────────────
 
   // Content moderation
   if (_containsProfanity(text)) {
@@ -4760,7 +4814,7 @@ function recSendMessage(candidateId) {
   const isFirst = !conv.opened;
   conv.opened = true;
   conv.messages.push({ from: 'rec', text, time: new Date().toISOString(), read: true });
-  incrementMonthlyMessageCount();
+  incrementMonthlyMessageCount(); // keep local counter in sync
   input.value = '';
   input.style.height = 'auto';
 
