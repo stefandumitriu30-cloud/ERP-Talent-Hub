@@ -32,10 +32,14 @@
 <title>ERP Talent Hub — The ERP Recruiting Platform | SAP, Oracle, Dynamics</title>
 
   <!-- SEO Meta Tags -->
-  <meta name="description" content="ERP Talent Hub connects ERP professionals with verified recruiters. Find SAP, Oracle, Microsoft Dynamics, and other ERP talent. Free to join. Pro plans from €49/month." />
-  <meta name="keywords" content="ERP recruiting, SAP jobs, Oracle ERP, Microsoft Dynamics, ERP talent, ERP professionals, SAP consultant, ERP recruiter, ERP platform, ERP careers" />
-  <meta name="author" content="ERP Talent Hub — Vantage Finance &amp; Tech" />
+  <meta name="description" content="ERP Talent Hub is the specialist recruiting platform for SAP, Oracle, Microsoft Dynamics, S/4HANA and Workday professionals. Verified recruiters, free candidate profiles, and direct connections across Europe and beyond." />
+  <meta name="keywords" content="ERP recruiting, SAP jobs, Oracle ERP, Microsoft Dynamics, S/4HANA, Workday, ERP talent, SAP consultant jobs, ERP recruiter platform, SAP FICO jobs, SAP MM jobs, Oracle Fusion, Dynamics 365, ERP careers Europe, ERP talent Italy, ERP staffing" />
+  <meta name="author" content="Stefan Dumitriu — Vantage Finance &amp; Tech" />
   <meta name="robots" content="index, follow" />
+  <meta name="geo.region" content="IT-TO" />
+  <meta name="geo.placename" content="Turin, Italy" />
+  <meta name="geo.position" content="45.0703;7.6869" />
+  <meta name="ICBM" content="45.0703, 7.6869" />
 
   <!-- Open Graph (LinkedIn, Facebook) -->
   <meta property="og:type" content="website" />
@@ -45,6 +49,9 @@
   <meta property="og:image" content="https://erptalenthub.com/mia-preview.png" />
   <meta property="og:site_name" content="ERP Talent Hub" />
   <meta property="og:locale" content="en_US" />
+  <meta property="og:locale:alternate" content="it_IT" />
+  <meta property="og:locale:alternate" content="de_DE" />
+  <meta property="og:locale:alternate" content="nl_NL" />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
@@ -54,21 +61,95 @@
 
   <!-- Structured Data (JSON-LD) -->
   <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebApplication",
-    "name": "ERP Talent Hub",
-    "url": "https://erptalenthub.com",
-    "description": "ERP Talent Hub connects ERP professionals with verified recruiters. Find SAP, Oracle, Microsoft Dynamics, and other ERP talent.",
-    "applicationCategory": "BusinessApplication",
-    "operatingSystem": "Web, iOS, Android",
-    "offers": [
-      { "@type": "Offer", "name": "Free", "price": "0", "priceCurrency": "EUR" },
-      { "@type": "Offer", "name": "Pro", "price": "49", "priceCurrency": "EUR", "billingIncrement": "P1M" },
-      { "@type": "Offer", "name": "Agency", "price": "149", "priceCurrency": "EUR", "billingIncrement": "P1M" }
-    ],
-    "publisher": { "@type": "Organization", "name": "Vantage Finance & Tech", "url": "https://erptalenthub.com" }
-  }
+  [
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "ERP Talent Hub",
+      "alternateName": "ERP Talent Hub by Vantage Finance & Tech",
+      "url": "https://erptalenthub.com",
+      "description": "ERP Talent Hub is the specialist recruiting platform for SAP, Oracle, Microsoft Dynamics, S/4HANA and Workday professionals. Verified recruiters, free candidate profiles, direct connections across Europe.",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web, iOS, Android",
+      "inLanguage": ["en", "it", "de"],
+      "offers": [
+        { "@type": "Offer", "name": "Free", "price": "0", "priceCurrency": "EUR", "description": "Free candidate profile, unlimited ERP job browsing" },
+        { "@type": "Offer", "name": "Pro Recruiter", "price": "49", "priceCurrency": "EUR", "billingIncrement": "P1M", "description": "Full recruiter access, candidate search, messaging" },
+        { "@type": "Offer", "name": "Agency", "price": "149", "priceCurrency": "EUR", "billingIncrement": "P1M", "description": "Multi-recruiter agency plan with team management" }
+      ],
+      "publisher": {
+        "@type": "Organization",
+        "name": "Vantage Finance & Tech",
+        "url": "https://erptalenthub.com",
+        "logo": { "@type": "ImageObject", "url": "https://erptalenthub.com/mia-preview.png" },
+        "founder": {
+          "@type": "Person",
+          "name": "Stefan Dumitriu",
+          "jobTitle": "Founder and Owner",
+          "url": "https://stefan.erptalenthub.com",
+          "sameAs": [
+            "https://www.linkedin.com/in/stefan-dumitriu",
+            "https://stefan.erptalenthub.com"
+          ]
+        },
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Turin",
+          "addressRegion": "Piedmont",
+          "addressCountry": "IT"
+        },
+        "sameAs": [
+          "https://www.linkedin.com/company/erp-talent-hub-by-vantage-finance-tech"
+        ]
+      }
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is ERP Talent Hub?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "ERP Talent Hub is a specialist recruiting platform that connects SAP, Oracle, Microsoft Dynamics, S/4HANA, and Workday professionals with verified recruiters across Europe and globally."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is ERP Talent Hub free for candidates?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Candidates can create a full ERP profile and be discovered by recruiters completely free of charge. No credit card required."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How much does ERP Talent Hub cost for recruiters?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Recruiters can access ERP Talent Hub from €49/month for the Pro plan, or €149/month for the Agency plan which supports multiple recruiters and team management."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Which ERP systems does ERP Talent Hub cover?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "ERP Talent Hub covers all major ERP platforms including SAP (S/4HANA, FICO, MM, SD, HR), Oracle (Fusion, EBS), Microsoft Dynamics 365, Workday, Infor, and many more."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is ERP Talent Hub available outside Italy?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. ERP Talent Hub operates across Europe and internationally. Recruiters and candidates from Germany, Netherlands, UK, USA, and other countries are welcome."
+          }
+        }
+      ]
+    }
+  ]
   </script>
   <!-- PWA -->
   <link rel="manifest" href="manifest.json?v=3" />
