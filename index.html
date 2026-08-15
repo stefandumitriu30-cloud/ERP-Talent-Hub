@@ -1894,6 +1894,26 @@ input[type=file].photo-input{display:none}
             <div class="portal-role-badge recruiter-badge"><i class="fa-solid fa-circle-check"></i> <span id="rec-verified-name" data-i18n="rec.verifiedRecruiter">Verified Recruiter</span></div>
             <button class="btn-ghost btn-sm" onclick="showView('home')" title="Back to home" aria-label="Back to home"><i class="fa-solid fa-arrow-left"></i></button>
           </div>
+
+          <!-- ── Piano attivo + pulsante gestione ── -->
+          <div id="rec-plan-bar" style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 10px;background:var(--gray-100);border-radius:8px;margin-bottom:6px;font-size:12px">
+            <span id="rec-plan-label" style="font-weight:600;color:var(--gray-700)"></span>
+            <button id="rec-manage-plan-btn"
+                    onclick="openStripeBillingPortal()"
+                    style="display:none;background:none;border:1px solid var(--gray-300);border-radius:6px;padding:3px 9px;font-size:11px;font-weight:600;color:var(--gray-700);cursor:pointer;white-space:nowrap;transition:background .15s"
+                    onmouseover="this.style.background='var(--gray-300)'"
+                    onmouseout="this.style.background='none'">
+              <i class="fa-solid fa-gear" style="margin-right:4px"></i>Gestisci piano
+            </button>
+          </div>
+          <!-- Avviso cancellazione per piani a pagamento -->
+          <div id="rec-cancel-notice" style="display:none;background:#FFF7ED;border:1px solid #FED7AA;border-radius:8px;padding:8px 10px;margin-bottom:10px;font-size:11px;color:#92400E;line-height:1.5">
+            <i class="fa-solid fa-circle-info" style="margin-right:4px;color:#F97316"></i>
+            Per cancellare il tuo abbonamento scrivi a
+            <a href="mailto:erptalenthub@gmail.com?subject=Cancellazione abbonamento ERP Talent Hub" style="color:#EA580C;font-weight:600;text-decoration:underline">erptalenthub@gmail.com</a>
+            — ti risponderemo entro 24 ore.
+          </div>
+
           <h2 class="portal-title" data-i18n="rec.pool">ERP Talent Pool</h2>
 
           <!-- Search bar — full width -->
@@ -4437,6 +4457,8 @@ async function initRecruiterPortal() {
   var portal = document.getElementById('rec-portal');
   if (gate) gate.style.display = 'none';
   if (portal) portal.style.display = 'flex';
+  // Aggiorna la barra del piano (piano label + pulsante gestione)
+  updateRecPlanBar();
   // Load candidates from Supabase if not already in memory
   if ((!allCandidateProfiles || allCandidateProfiles.length === 0) && SUPABASE_READY && sb()) {
     try {
@@ -7002,6 +7024,7 @@ function buildUserObject(authUser, profile) {
     profileData:       profile?.profile_data   || null,
     recruiterData:     profile?.recruiter_data || null,
     verifiedByAdmin:   profile?.verified_by_admin === true,
+    stripeCustomerId:  profile?.stripe_customer_id || null,
   };
 }
 
@@ -9546,6 +9569,7 @@ function _openRecruiterPortal(name) {
     portal.style.display = 'flex';
     var badgeEl = document.getElementById('rec-verified-name');
     if (badgeEl) badgeEl.textContent = 'Admin · ' + (t('rec.verified')||'Verified');
+    updateRecPlanBar();
     renderRecCandidateList();
   }
 }
@@ -9661,6 +9685,186 @@ async function restoreImpersonation() {
     try { localStorage.removeItem('erpth_impersonate'); } catch(_) {}
   }
 }
+
+// ═══════════════════════════════════════════════════════════════
+// STRIPE BILLING PORTAL — gestione abbonamento recruiter
+// ═══════════════════════════════════════════════════════════════
+
+/**
+ * Aggiorna la barra del piano nel sidebar del portale recruiter.
+ * Mostra il piano corrente e, se è pro o agency, il pulsante
+ * "Gestisci piano" per accedere al Stripe Billing Portal.
+ */
+function updateRecPlanBar() {
+  const bar      = document.getElementById('rec-plan-bar');
+  const label    = document.getElementById('rec-plan-label');
+  const btn      = document.getElementById('rec-manage-plan-btn');
+  if (!bar || !label || !btn) return;
+
+  const plan = getRecruiterPlan();   // 'free' | 'trial' | 'pro' | 'agency'
+  const isAdmin = currentUser && currentUser.role === 'admin';
+
+  if (isAdmin) {
+    bar.style.display = 'none';
+    return;
+  }
+
+  const planNames = { free: 'Piano Free', trial: 'Trial gratuito', pro: 'Pro €49/mese', agency: 'Agency €149/mese' };
+  const planColors = { free: '#64748B', trial: '#0891B2', pro: '#2563EB', agency: '#7C3AED' };
+
+  label.textContent  = planNames[plan] || 'Piano Free';
+  label.style.color  = planColors[plan] || '#64748B';
+  bar.style.display  = 'flex';
+
+  // Pulsante e avviso cancellazione visibili solo per piani a pagamento
+  const notice = document.getElementById('rec-cancel-notice');
+  if (plan === 'pro' || plan === 'agency') {
+    btn.style.display = 'block';
+    if (notice) notice.style.display = 'block';
+  } else {
+    btn.style.display = 'none';
+    if (notice) notice.style.display = 'none';
+  }
+}
+
+/**
+ * Apre il Stripe Billing Portal chiamando la Edge Function.
+ * Il recruiter viene reindirizzato a Stripe dove può
+ * annullare, modificare o consultare la propria sottoscrizione.
+ * Al ritorno da Stripe, se ha cancellato, il webhook imposta
+ * plan='free' nel DB; qui gestiamo anche il ritorno manuale
+ * controllando il parametro ?portal=cancelled nell'URL.
+ */
+async function openStripeBillingPortal() {
+  if (!currentUser || !SUPABASE_READY) {
+    showToast({ id: Date.now(), icon: '⚠️', title: 'Sessione scaduta', desc: 'Effettua di nuovo il login.', color: '#FEF3C7', iconColor: '#D97706' });
+    return;
+  }
+
+  const btn = document.getElementById('rec-manage-plan-btn');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="margin-right:4px"></i>Apertura…';
+  }
+
+  try {
+    // Ottieni il token di sessione Supabase corrente
+    const sessionRes = await sb().auth.getSession();
+    const accessToken = sessionRes?.data?.session?.access_token;
+    if (!accessToken) throw new Error('Sessione non valida — effettua il login.');
+
+    // URL di ritorno: aggiungiamo ?portal=cancelled così sappiamo che l'utente è tornato
+    const returnUrl = window.location.origin + window.location.pathname + '?portal=cancelled';
+
+    const resp = await fetch(`${SUPABASE_URL}/functions/v1/stripe-billing-portal`, {
+      method:  'POST',
+      headers: {
+        'Content-Type':  'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+        'apikey':        SUPABASE_ANON,
+      },
+      body: JSON.stringify({ returnUrl }),
+    });
+
+    const data = await resp.json();
+
+    if (!resp.ok || !data.url) {
+      throw new Error(data.error || 'Impossibile aprire il portale di gestione.');
+    }
+
+    // Reindirizza a Stripe
+    window.location.href = data.url;
+
+  } catch (err) {
+    console.error('[billingPortal]', err);
+    showToast({
+      id: Date.now(),
+      icon: '❌',
+      title: 'Errore portale',
+      desc: err.message || 'Riprova o contatta support@erptalenthub.com',
+      color: '#FEF2F2',
+      iconColor: '#DC2626',
+    });
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-gear" style="margin-right:4px"></i>Gestisci piano';
+    }
+  }
+}
+
+/**
+ * Gestisce il ritorno dall'Stripe Billing Portal.
+ * Se il param ?portal=cancelled è presente, rilegge il piano
+ * dal DB per riflettere eventuali modifiche (cancellazione).
+ * Se il piano è ora 'free', aggiorna la UI immediatamente.
+ */
+(async function handleBillingPortalReturn() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('portal') !== 'cancelled') return;
+
+  // Pulisci URL
+  window.history.replaceState({}, document.title, window.location.pathname);
+
+  // Aspetta che Supabase sia pronto e l'utente loggato
+  // (questo IIFE viene eseguito al caricamento, quindi potremmo
+  //  dover attendere l'inizializzazione dell'auth)
+  const waitForAuth = (resolve) => {
+    if (typeof currentUser !== 'undefined' && currentUser && SUPABASE_READY && sb()) {
+      resolve();
+    } else {
+      setTimeout(() => waitForAuth(resolve), 300);
+    }
+  };
+  await new Promise(waitForAuth);
+
+  try {
+    // Rileggi il profilo dal DB per avere il piano aggiornato
+    const { data: profile, error } = await sb()
+      .from('profiles')
+      .select('plan')
+      .eq('id', currentUser.id)
+      .single();
+
+    if (error) throw error;
+
+    const nuovoPiano = profile?.plan || 'free';
+    const pianoPrecedente = currentUser.plan;
+
+    // Aggiorna lo stato locale
+    currentUser.plan = nuovoPiano;
+
+    if (nuovoPiano === 'free' && pianoPrecedente !== 'free') {
+      // Il recruiter ha cancellato — mostra messaggio informativo
+      showToast({
+        id: Date.now(),
+        icon: '✅',
+        title: 'Abbonamento cancellato',
+        desc: 'Sei tornato al piano Free: vedi i primi 5 candidati. Puoi riabbonarti in qualsiasi momento.',
+        color: '#F0FDF4',
+        iconColor: '#16A34A',
+      });
+      // Aggiorna lista candidati (ora limitata a 5)
+      if (typeof renderRecCandidateList === 'function') renderRecCandidateList();
+    } else {
+      // Nessuna modifica o ha solo visitato il portale senza cambiare
+      showToast({
+        id: Date.now(),
+        icon: 'ℹ️',
+        title: 'Portale chiuso',
+        desc: `Piano corrente: ${nuovoPiano.toUpperCase()}`,
+        color: '#EFF6FF',
+        iconColor: '#2563EB',
+      });
+    }
+
+    // Aggiorna sempre la barra del piano
+    updateRecPlanBar();
+    if (typeof renderRecCandidateList === 'function') renderRecCandidateList();
+
+  } catch (err) {
+    console.error('[billingPortalReturn]', err);
+  }
+})();
 </script>
 </body>
 </html>
