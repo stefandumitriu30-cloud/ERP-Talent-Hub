@@ -2833,31 +2833,15 @@ function toggleCurrent(p) {
 const EMAILJS_CONFIGURED = true;
 
 // Helper: send email via authenticated Supabase Edge Function proxy.
-// Requires a valid Supabase session JWT — never sends credentials client-side.
+// Uses sb().functions.invoke() which handles the new sb_publishable_ API keys correctly.
 async function _sendEmailViaProxy(templateParams) {
   if (!SUPABASE_READY || !sb()) return { ok: false, err: 'Supabase unavailable' };
-  let accessToken = null;
   try {
-    const s = await sb().auth.getSession();
-    accessToken = s?.data?.session?.access_token || null;
-  } catch(e) { /* session unavailable */ }
-  // For registration confirmation emails, guest session is acceptable;
-  // use the anon key only for that specific non-privileged template.
-  const authHeader = accessToken ? `Bearer ${accessToken}` : `Bearer ${SUPABASE_ANON}`;
-  try {
-    const resp = await fetch(`${SUPABASE_URL}/functions/v1/send-email`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': SUPABASE_ANON,
-        'Authorization': authHeader,
-      },
-      body: JSON.stringify(templateParams),
+    const { data, error } = await sb().functions.invoke('send-email', {
+      body: templateParams,
     });
-    if (!resp.ok) {
-      const errText = await resp.text().catch(() => '');
-      return { ok: false, err: `Edge Function error ${resp.status}: ${errText.slice(0,200)}` };
-    }
+    if (error) return { ok: false, err: error.message || String(error) };
+    if (data && data.ok === false) return { ok: false, err: data.error || 'Send failed' };
     return { ok: true };
   } catch(e) {
     return { ok: false, err: e.message };
@@ -2961,6 +2945,7 @@ function handleSubmit() {
   const _et = _emailTr[currentLang] || _emailTr['en'];
 
   const templateParams = {
+    type:        'candidate_registration', // explicit type for send-email edge function
     to_email:    email,
     to_name:     firstName + ' ' + lastName,
     first_name:  firstName,
@@ -3932,7 +3917,7 @@ async function submitBusinessVerification() {
         body: JSON.stringify({
           recruiterName: name, recruiterEmail: email, recruiterCompany: company,
           plan: 'pro',
-          verificationPath: 'business',
+          type: 'business_verification', verificationPath: 'business',
           jobTitle: jobtitle,
           linkedin: linkedin ? 'linkedin.com/in/' + linkedin : '',
           vat: vat,
@@ -3987,7 +3972,7 @@ async function submitAgencyRequest() {
         body: JSON.stringify({
           recruiterName: name, recruiterEmail: email, recruiterCompany: agency,
           plan: 'agency',
-          verificationPath: 'agency',
+          type: 'agency_verification', verificationPath: 'agency',
           teamSize: size || 'Not specified',
           website: website || 'N/A',
         })
@@ -6323,7 +6308,7 @@ async function checkTrialExpiry(user) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + anonKey },
             body: JSON.stringify({
-              verificationPath: 'trial_expired',
+              type: 'trial_expired', verificationPath: 'trial_expired',
               recruiterName:    user.name,
               recruiterEmail:   user.email,
               recruiterCompany: user.recruiterData?.company || '',
@@ -6352,7 +6337,7 @@ async function checkTrialExpiry(user) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + anonKey },
             body: JSON.stringify({
-              verificationPath: 'trial_warning',
+              type: 'trial_warning', verificationPath: 'trial_warning',
               recruiterName:    user.name,
               recruiterEmail:   user.email,
               recruiterCompany: user.recruiterData?.company || '',
@@ -6508,7 +6493,7 @@ async function requestUpgrade(plan, btn) {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + anonKey },
           body: JSON.stringify({
-            verificationPath: 'upgrade',
+            type: 'upgrade', verificationPath: 'upgrade',
             recruiterName:  'Stripe Checkout Customer',
             recruiterEmail: 'erptalenthub@gmail.com',
             recruiterCompany: 'Stripe',
@@ -7629,6 +7614,7 @@ async function runEmailAutomation() {
 
     const tmpl = _NURTURE_TEMPLATES[templateKey];
     const { ok, err } = await _sendEmailViaProxy({
+      type:       'nurture',
       to_email:   profile.email,
       to_name:    profile.name,
       subject:    tmpl.subject,
