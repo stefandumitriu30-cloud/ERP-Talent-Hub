@@ -8823,6 +8823,32 @@ document.addEventListener('DOMContentLoaded', async () => {
   updateCookieBannerLang(currentLang);
   setTimeout(restoreImpersonation, 600);
 
+  // ── RESTORE VIEW AFTER RELOAD (auto-update or manual refresh) ───────────
+  // After session restore, navigate to the view the user was on before
+  // the page reloaded — instead of always landing on home.
+  // Security: role guards inside showView() still apply.
+  if (currentUser) {
+    let _startView = null;
+    try { _startView = sessionStorage.getItem('erpth_last_view'); } catch(_) {}
+    // Validate the saved view against the user's actual role
+    const _roleMap = {
+      admin:    ['admin','recruiter','candidate','myprofile','form'],
+      recruiter:['recruiter'],
+      candidate:['candidate','myprofile','form'],
+    };
+    const _permitted = _roleMap[currentUser.role] || [];
+    // admin view also requires adminAuthenticated
+    if (_startView === 'admin' && !adminAuthenticated) _startView = null;
+    if (_startView && !_permitted.includes(_startView)) _startView = null;
+    try { sessionStorage.removeItem('erpth_last_view'); } catch(_) {}
+    if (_startView) {
+      showView(_startView);
+    } else {
+      showView(defaultViewForRole(currentUser.role));
+    }
+  }
+  // ────────────────────────────────────────────────────────────────────────
+
   // A11y: mark all decorative icons as aria-hidden so screen readers skip them
   document.querySelectorAll('.section-header i, .feature-icon i, .nav-logo-icon i, .gate-icon i').forEach(function(el) {
     el.setAttribute('aria-hidden', 'true');
