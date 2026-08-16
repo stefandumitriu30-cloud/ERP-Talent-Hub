@@ -9824,7 +9824,7 @@ function adminImpersonate(role) {
     // If we already have the profile in memory, go straight there
     if (savedProfile) {
       showView('myprofile');
-      showToast({ id: Date.now(), icon: '&#128100;', title: 'Viewing as Candidate', desc: 'Previewing the candidate view.', color: '#EFF6FF', iconColor: '#2563EB' });
+      showToast({ id: Date.now(), icon: '👤', title: 'Viewing as Candidate', desc: 'Previewing the candidate view.', color: '#EFF6FF', iconColor: '#2563EB' });
       return;
     }
 
@@ -9838,15 +9838,15 @@ function adminImpersonate(role) {
             if (profile.photo) candPhotoBase64 = profile.photo;
           }
           showView(savedProfile ? 'myprofile' : 'form');
-          showToast({ id: Date.now(), icon: '&#128100;', title: 'Viewing as Candidate', desc: 'Previewing the candidate view.', color: '#EFF6FF', iconColor: '#2563EB' });
+          showToast({ id: Date.now(), icon: '👤', title: 'Viewing as Candidate', desc: 'Previewing the candidate view.', color: '#EFF6FF', iconColor: '#2563EB' });
         })
         .catch(function() {
           showView('form');
-          showToast({ id: Date.now(), icon: '&#128100;', title: 'Viewing as Candidate', desc: 'Previewing the candidate view.', color: '#EFF6FF', iconColor: '#2563EB' });
+          showToast({ id: Date.now(), icon: '👤', title: 'Viewing as Candidate', desc: 'Previewing the candidate view.', color: '#EFF6FF', iconColor: '#2563EB' });
         });
     } else {
       showView('form');
-      showToast({ id: Date.now(), icon: '&#128100;', title: 'Viewing as Candidate', desc: 'Previewing the candidate view.', color: '#EFF6FF', iconColor: '#2563EB' });
+      showToast({ id: Date.now(), icon: '👤', title: 'Viewing as Candidate', desc: 'Previewing the candidate view.', color: '#EFF6FF', iconColor: '#2563EB' });
     }
   } else {
     showView('recruiter');
