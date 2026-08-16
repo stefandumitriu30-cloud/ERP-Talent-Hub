@@ -2499,6 +2499,24 @@ function setLang(lang, suppressTip) {
   applyTranslations();
   rebuildDynamicParts();
   setMiaLang(lang);
+  // Re-fetch city province in new language if a city is already selected
+  if (geoSelectedCity && geoSelectedCity.name) {
+    const query = geoSelectedCity.name;
+    const countryCode = geoSelectedCity.countryCode || '';
+    const countryParam = countryCode ? `&countrycodes=${countryCode.toLowerCase()}` : '';
+    fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&addressdetails=1&limit=1${countryParam}&accept-language=${lang}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data && data[0]) {
+          const addr = data[0].address || {};
+          const province = addr.state || addr.region || addr.county || '';
+          const provEl = document.getElementById('f-province');
+          if (provEl && province) provEl.value = province;
+          geoSelectedCity = { ...geoSelectedCity, province };
+        }
+      })
+      .catch(() => {});
+  }
 
   updateCookieBannerLang(lang);
   if (document.getElementById('privacy-modal') && document.getElementById('privacy-modal').style.display === 'block') {
@@ -3113,7 +3131,7 @@ async function fetchCitySuggestions(query) {
 
   // Build Nominatim URL — free, no key, returns JSON
   const countryParam = geoCountryCode ? `&countrycodes=${geoCountryCode.toLowerCase()}` : '';
-  const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&addressdetails=1&limit=7&featuretype=city,town,village${countryParam}&accept-language=en`;
+  const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&addressdetails=1&limit=7&featuretype=city,town,village${countryParam}&accept-language=${currentLang}`;
 
   try {
     const res  = await fetch(url, { headers: { 'Accept-Language': 'en' } });
