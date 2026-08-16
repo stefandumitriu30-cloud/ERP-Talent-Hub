@@ -2833,7 +2833,7 @@ function rebuildAllEntries() {
 
 function toggleCurrent(p) {
   const checked = document.getElementById('exp-curr-' + p).checked;
-  const endField = document.querySelector('.exp-end-field-' + p);
+  const endField = document.querySelector('.exp-end-field-' + CSS.escape(p));
   if (endField) endField.style.display = checked ? 'none' : '';
 }
 
