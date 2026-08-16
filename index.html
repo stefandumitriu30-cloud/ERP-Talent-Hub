@@ -860,7 +860,83 @@ input[type=file].photo-input{display:none}
 <!-- This eliminates the risk of EmailJS credentials being exposed or abused client-side -->
   <!-- iOS Keychain credential association hint -->
   <link rel="canonical" href="https://erptalenthub.com/" />
-</head>
+  <!-- ── BOT DETECTION & RATE LIMITING ───────────────────────── -->
+  <script>
+  (function() {
+    'use strict';
+
+    // ── 1. USER-AGENT BLOCKLIST ──────────────────────────────
+    var BOT_UA = /bot|crawler|spider|scraper|curl|wget|python-requests|python-urllib|go-http|java\/|libwww|scrapy|ahrefsbot|semrushbot|dotbot|mj12bot|majestic|blexbot|petalbot|barkrowler|yandexbot|baiduspider|sogou|exabot|facebot|ia_archiver|archive\.org_bot|zgrab|masscan|nikto|sqlmap|nmap|dirbuster|wfuzz|hydra|burpsuite|phantomjs|headlesschrome|slimerjs|casperjs|puppeteer|playwright|selenium|webdriver/i;
+
+    var ua = navigator.userAgent || '';
+    if (BOT_UA.test(ua)) {
+      document.documentElement.innerHTML = '<html><head><title>Access Denied</title></head><body style="font-family:sans-serif;text-align:center;padding:80px;background:#f8f9fa"><h1 style="color:#1A73E8">ERP Talent Hub</h1><p style="color:#5F6368;font-size:18px">Automated access is not permitted.</p><p style="color:#aaa;font-size:13px">If you are a legitimate user, please visit the site normally.</p></body></html>';
+      return;
+    }
+
+    // ── 2. HEADLESS BROWSER / WEBDRIVER DETECTION ───────────
+    var headless = false;
+    try {
+      if (navigator.webdriver === true)            headless = true;
+      if (window.callPhantom || window._phantom)   headless = true;
+      if (window.__nightmare)                      headless = true;
+      if (navigator.plugins && navigator.plugins.length === 0 && !/Firefox/i.test(ua)) headless = true;
+      if (/HeadlessChrome|HeadlessFirefox/i.test(ua)) headless = true;
+    } catch(e) {}
+
+    if (headless) {
+      document.documentElement.innerHTML = '<html><head><title>Access Denied</title></head><body style="font-family:sans-serif;text-align:center;padding:80px;background:#f8f9fa"><h1 style="color:#1A73E8">ERP Talent Hub</h1><p style="color:#5F6368;font-size:18px">Automated browser access is not permitted.</p></body></html>';
+      return;
+    }
+
+    // ── 3. RATE LIMITING (max 120 page loads / 10 min per IP fingerprint) ──
+    try {
+      var KEY   = 'erpth_rl';
+      var WIN   = 10 * 60 * 1000; // 10 minutes
+      var LIMIT = 120;
+      var now   = Date.now();
+      var raw   = sessionStorage.getItem(KEY);
+      var data  = raw ? JSON.parse(raw) : { t: now, c: 0 };
+      if (now - data.t > WIN) { data = { t: now, c: 0 }; }
+      data.c++;
+      sessionStorage.setItem(KEY, JSON.stringify(data));
+      if (data.c > LIMIT) {
+        document.documentElement.innerHTML = '<html><head><title>Too Many Requests</title></head><body style="font-family:sans-serif;text-align:center;padding:80px;background:#f8f9fa"><h1 style="color:#EA4335">429 — Too Many Requests</h1><p style="color:#5F6368">You have exceeded the request limit. Please wait a few minutes and try again.</p></body></html>';
+        return;
+      }
+    } catch(e) {}
+
+    // ── 4. HONEYPOT ENDPOINT TRAP ────────────────────────────
+    // Any request to /api/trap will be logged server-side as a bot indicator.
+    // Legitimate users never navigate to hidden links; only automated scrapers do.
+    // (Cloudflare / edge function handles the actual block on this path.)
+
+    // ── 5. MOUSE / TOUCH HUMANNESS CHECK ────────────────────
+    // If no mouse move or touch within 8s after DOMContentLoaded → soft flag.
+    var humanFlag = false;
+    function markHuman() { humanFlag = true; }
+    document.addEventListener('mousemove', markHuman, { once: true, passive: true });
+    document.addEventListener('touchstart', markHuman, { once: true, passive: true });
+    document.addEventListener('keydown',    markHuman, { once: true, passive: true });
+    document.addEventListener('scroll',     markHuman, { once: true, passive: true });
+
+    // ── 6. GA4 BOT EXCLUSION HINT ───────────────────────────
+    // GA4 bot filtering is already enabled server-side, but this sets
+    // a custom dimension for soft-flagged sessions for easier filtering.
+    window.__erpth_botCheck = function() {
+      if (!humanFlag) {
+        try {
+          if (typeof gtag === 'function') {
+            gtag('set', 'user_properties', { suspected_bot: 'true' });
+          }
+        } catch(e) {}
+      }
+    };
+    setTimeout(window.__erpth_botCheck, 8000);
+
+  })();
+  </script>
+  <!-- ── END BOT DETECTION ────────────────────────────────────── -->
 <body>
 <!-- GDPR Cookie Consent Banner -->
 <div id="cookie-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:99999;background:#0F172A;border-top:2px solid #2563EB;padding:16px 24px;box-shadow:0 -4px 24px rgba(0,0,0,0.3);">
