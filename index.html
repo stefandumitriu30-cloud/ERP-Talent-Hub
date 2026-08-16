@@ -4248,8 +4248,8 @@ function pushNotification(type, payload = {}) {
   renderNotifList();
   showToast(notif);
   // Update stats for profile views and contacts
-  if (type === 'profile_view') { profileStats.views++; profileStats.thisWeek++; renderProfileStats(); try { const s=JSON.parse(localStorage.getItem('erpth_stats')||'{}'); s.views=(s.views||0)+1; s.thisWeek=(s.thisWeek||0)+1; localStorage.setItem('erpth_stats',JSON.stringify(s)); } catch(e){} }
-  if (type === 'connection') { profileStats.contacts++; try { const s=JSON.parse(localStorage.getItem('erpth_stats')||'{}'); s.contacts=(s.contacts||0)+1; localStorage.setItem('erpth_stats',JSON.stringify(s)); } catch(e){} }
+  // Stats are now updated via recordProfileView() (Supabase) and loadProfileStats()
+  // NOT via localStorage or pushNotification — avoids counting admin/self views
   if (document.hidden || !document.hasFocus()) sendNativeNotification(def.title, desc, '/ERP-Talent-Hub/');
 }
 
@@ -4716,13 +4716,66 @@ function openRecChat(candidateId) {
   // Mark cand messages as read
   conversations[candidateId].messages.forEach(m => { if(m.from==='cand') m.read = true; });
 
-  // Fire profile_view notification (simulates recruiter viewing candidate profile)
-  const recName = recruiterProfile?.name ? recruiterProfile.name.split(' ')[0] + ' (Recruiter)' : 'A recruiter';
-  pushNotification('profile_view', { recruiter: recName });
+  // ── FIXED: Only record a real profile view if the current user is a verified
+  // recruiter (not admin, not the candidate themselves).
+  // Write to Supabase so the candidate sees accurate view counts.
+  if (currentUser && currentUser.role === 'recruiter' && recruiterVerified) {
+    recordProfileView(candidateId);
+  }
 
   renderRecCandidateList();
   renderRecChatWindow(candidateId);
   setMiaContext('recruiter_chat');
+}
+
+// ── recordProfileView: writes to Supabase and notifies the candidate ──────────
+// Increments profile_views on the candidate's row and (if Realtime is active)
+// the candidate receives a live notification. Falls back gracefully if Supabase
+// is unavailable. De-duplicates: one view per recruiter per session via a
+// session-scoped Set so rapidly re-opening the chat doesn't spam the counter.
+const _viewedThisSession = new Set();
+async function recordProfileView(candidateId) {
+  if (!candidateId) return;
+  const sessionKey = (currentUser?.id || 'anon') + '_' + candidateId;
+  if (_viewedThisSession.has(sessionKey)) return; // already counted this session
+  _viewedThisSession.add(sessionKey);
+
+  const recName = recruiterProfile?.name
+    ? recruiterProfile.name.split(' ')[0] + ' (Recruiter)'
+    : 'A recruiter';
+
+  if (SUPABASE_READY && sb()) {
+    try {
+      // Increment profile_views counter on the candidate's profile row
+      await sb().rpc('increment_profile_views', { candidate_id: candidateId });
+    } catch(e) {
+      console.warn('[recordProfileView] Supabase RPC failed:', e);
+    }
+  }
+
+  // Push a real-time notification to the candidate's session (Supabase Realtime)
+  // This reuses the existing notification channel already set up in the app.
+  // If the candidate is online they'll see it immediately.
+  pushCandidateNotification(candidateId, 'profile_view', { recruiter: recName });
+}
+
+// ── pushCandidateNotification: sends a Supabase DB notification row ──────────
+// The candidate's client polls or listens via Realtime and calls pushNotification()
+// locally. This avoids the candidate counting their own views.
+async function pushCandidateNotification(candidateId, type, payload) {
+  if (!SUPABASE_READY || !sb()) return;
+  try {
+    await sb().from('notifications').insert({
+      user_id:  candidateId,
+      type:     type,
+      payload:  JSON.stringify(payload),
+      read:     false,
+      created_at: new Date().toISOString(),
+    });
+  } catch(e) {
+    // notifications table may not exist yet — fail silently
+    console.warn('[pushCandidateNotification]', e);
+  }
 }
 
 function renderRecChatWindow(candidateId) {
@@ -9223,22 +9276,39 @@ function skipOnboarding() {
 let profileStats = { views: 0, contacts: 0, thisWeek: 0 };
 
 function incrementProfileView() {
+  // This function is now only called for in-memory/UI updates during the session.
+  // The real persistent increment happens in recordProfileView() via Supabase RPC.
+  // It is NOT called from openRecChat anymore — avoids counting admin/self views.
   profileStats.views++;
   profileStats.thisWeek++;
   renderProfileStats();
-  try {
-    const saved = JSON.parse(localStorage.getItem('erpth_stats') || '{}');
-    saved.views = (saved.views || 0) + 1;
-    saved.thisWeek = (saved.thisWeek || 0) + 1;
-    saved.lastWeek = saved.lastWeekDate || new Date().toISOString().split('T')[0];
-    localStorage.setItem('erpth_stats', JSON.stringify(saved));
-  } catch(e) {}
 }
 
-function loadProfileStats() {
+async function loadProfileStats() {
+  // ── FIXED: Read profile_views from Supabase instead of localStorage.
+  // localStorage was counting admin views, self-views and bot traffic.
+  // Now only real recruiter views (written by recordProfileView) are counted.
+  if (SUPABASE_READY && sb() && currentUser?.id) {
+    try {
+      const { data, error } = await sb()
+        .from('profiles')
+        .select('profile_views, profile_views_week, profile_contacts')
+        .eq('id', currentUser.id)
+        .single();
+      if (!error && data) {
+        profileStats.views    = data.profile_views      || 0;
+        profileStats.thisWeek = data.profile_views_week || 0;
+        profileStats.contacts = data.profile_contacts   || 0;
+        renderProfileStats();
+        return;
+      }
+    } catch(e) {
+      console.warn('[loadProfileStats] Supabase read failed, falling back to localStorage:', e);
+    }
+  }
+  // Fallback: localStorage (used when Supabase is unreachable or columns don't exist yet)
   try {
     const saved = JSON.parse(localStorage.getItem('erpth_stats') || '{}');
-    // Reset weekly counter if new week
     const today = new Date();
     const savedDate = saved.lastWeekDate ? new Date(saved.lastWeekDate) : today;
     const daysDiff = Math.floor((today - savedDate) / (1000*60*60*24));
