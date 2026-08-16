@@ -1084,6 +1084,11 @@ input[type=file].photo-input{display:none}
         </div>
         <!-- Error — aria-live so screen readers announce it immediately -->
         <div class="auth-error" id="auth-error" role="alert" aria-live="assertive"></div>
+        <!-- AI Notice — shown only on register tab, for candidates (EU AI Act Art.50) -->
+        <div id="auth-ai-notice" style="display:none;background:#F5F3FF;border:1px solid #DDD6FE;border-radius:8px;padding:10px 13px;margin-bottom:12px;font-size:12px;color:#5B21B6;line-height:1.55">
+          <span style="font-size:14px;margin-right:5px">🤖</span>
+          <span id="auth-ai-notice-text">By registering as an ERP Professional, your profile data may be processed by AI systems (Mia Pro) to match you with verified recruiters. No automated decisions are made without human oversight. <a href="#" onclick="showPrivacyPolicy();return false;" style="color:#7C3AED;text-decoration:underline">Privacy Policy</a></span>
+        </div>
         <!-- Submit -->
         <button type="submit" class="auth-submit" id="auth-submit-btn">Login</button>
         <!-- Footer note -->
@@ -6674,6 +6679,29 @@ function switchAuthTab(mode) {
     const cfField = document.getElementById('auth-confirm');
     if (cfField) cfField.setAttribute('autocomplete', 'new-password');
     document.getElementById('auth-submit-btn').textContent      = isLogin ? t('auth.login') || 'Login' : t('auth.createAccount') || 'Create account';
+    // AI Act notice — show only on register tab, for candidate role
+    (function updateAiNotice() {
+      const notice = document.getElementById('auth-ai-notice');
+      const noticeText = document.getElementById('auth-ai-notice-text');
+      if (!notice) return;
+      const selectedRole = document.getElementById('role-btn-candidate')?.classList.contains('selected') ? 'candidate' : 'recruiter';
+      const show = isRegister && selectedRole === 'candidate';
+      notice.style.display = show ? 'block' : 'none';
+      if (!noticeText) return;
+      const lang = (document.documentElement.lang || 'en').slice(0,2);
+      const msgs = {
+        en: 'By registering as an ERP Professional, your profile data may be processed by AI systems (Mia Pro) to match you with verified recruiters. No automated decisions are made without human oversight.',
+        it: 'Registrandoti come Professionista ERP, i tuoi dati di profilo potranno essere elaborati da sistemi AI (Mia Pro) per abbinarti a recruiter verificati. Nessuna decisione automatizzata viene presa senza supervisione umana.',
+        es: 'Al registrarte como Profesional ERP, tus datos de perfil podrán ser procesados por sistemas de IA (Mia Pro) para conectarte con reclutadores verificados. Ninguna decisión automatizada se toma sin supervisión humana.',
+        de: 'Mit der Registrierung als ERP-Fachmann können Ihre Profildaten von KI-Systemen (Mia Pro) verarbeitet werden, um Sie mit verifizierten Recruitern zusammenzubringen. Es werden keine automatisierten Entscheidungen ohne menschliche Aufsicht getroffen.',
+        fr: 'En vous inscrivant en tant que Professionnel ERP, vos données de profil pourront être traitées par des systèmes IA (Mia Pro) pour vous mettre en relation avec des recruteurs vérifiés. Aucune décision automatisée n'est prise sans supervision humaine.',
+        pt: 'Ao registar-se como Profissional ERP, os seus dados de perfil poderão ser processados por sistemas de IA (Mia Pro) para o conectar com recrutadores verificados. Nenhuma decisão automatizada é tomada sem supervisão humana.'
+      };
+      const privacyLabel = {en:'Privacy Policy',it:'Privacy Policy',es:'Política de Privacidad',de:'Datenschutz',fr:'Politique de Confidentialité',pt:'Política de Privacidade'};
+      const msg = msgs[lang] || msgs.en;
+      const pl  = privacyLabel[lang] || 'Privacy Policy';
+      noticeText.innerHTML = `🤖 ${msg} <a href="#" onclick="showPrivacyPolicy();return false;" style="color:#7C3AED;text-decoration:underline">${pl}</a>`;
+    })();
     document.getElementById('auth-footer-note').innerHTML       = isLogin
       ? `${t('auth.noAccount') || 'No account yet?'} <a onclick="switchAuthTab('register')">${t('auth.registerNow') || 'Register now'}</a>`
       : `${t('auth.haveAccount') || 'Already have an account?'} <a onclick="switchAuthTab('login')">${t('auth.loginLink') || 'Login'}</a>`;
@@ -6701,6 +6729,9 @@ function selectAuthRole(role) {
   recBtn.classList.toggle('selected', role === 'recruiter');
   candBtn.setAttribute('aria-pressed', role === 'candidate' ? 'true' : 'false');
   recBtn.setAttribute('aria-pressed', role === 'recruiter'  ? 'true' : 'false');
+  // Update AI notice visibility when role changes
+  const notice = document.getElementById('auth-ai-notice');
+  if (notice) notice.style.display = (authModalMode === 'register' && role === 'candidate') ? 'block' : 'none';
 }
 
 function showAuthError(msg) {
