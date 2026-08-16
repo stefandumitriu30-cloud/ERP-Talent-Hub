@@ -1300,8 +1300,9 @@ input[type=file].photo-input{display:none}
 <div id="form-view" class="view">
   <div id="form-inner">
     <button class="back-btn" onclick="showView('home')"><i class="fa-solid fa-arrow-left"></i> <span>ERP Talent Hub</span></button>
-    <div class="form-header">
-      <h1 data-i18n="form.title">Create your ERP profile</h1>
+    <div class="form-header" style="display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px">
+      <h1 data-i18n="form.title" style="margin:0">Create your ERP profile</h1>
+      <span id="autosave-indicator" style="font-size:12px;color:var(--gray-400);font-weight:500;transition:color .3s"></span>
       <p data-i18n="form.sub">Your profile is visible to verified recruiters only. No spam, no cold calls.</p>
     </div>
 
@@ -5442,8 +5443,9 @@ function showView(name) {
       renderMyProfile(); loadProfileStats(); setTimeout(renderProfileScore, 200);
     }
   }
-  if (name === 'form' && savedProfile) {
-    setTimeout(() => populateFormFromProfile(savedProfile), 80);
+  if (name === 'form') {
+    const profileToLoad = savedProfile || currentUser?.profileData;
+    if (profileToLoad) setTimeout(() => populateFormFromProfile(profileToLoad), 80);
   }
   if (name === 'admin') initAdminPortal();
   if (name === 'recruiter') {
@@ -7327,6 +7329,56 @@ async function persistCandidateProfile() {
   await sb().from('profiles').update({ profile_data: savedProfile, photo: candPhotoBase64 }).eq('id', currentUser.id);
 }
 
+// ── AUTOSAVE DRAFT ────────────────────────────────────────────────────────────
+let _autoSaveTimer = null;
+let _autoSaveIndicator = null;
+
+function _showAutoSaveStatus(status) {
+  if (!_autoSaveIndicator) _autoSaveIndicator = document.getElementById('autosave-indicator');
+  if (!_autoSaveIndicator) return;
+  if (status === 'saving') {
+    _autoSaveIndicator.textContent = '⏳ ' + (currentLang === 'it' ? 'Salvataggio…' : currentLang === 'es' ? 'Guardando…' : currentLang === 'de' ? 'Speichern…' : currentLang === 'fr' ? 'Enregistrement…' : currentLang === 'pt' ? 'Guardando…' : 'Saving…');
+    _autoSaveIndicator.style.color = 'var(--gray-400)';
+  } else if (status === 'saved') {
+    _autoSaveIndicator.textContent = '✓ ' + (currentLang === 'it' ? 'Salvato' : currentLang === 'es' ? 'Guardado' : currentLang === 'de' ? 'Gespeichert' : currentLang === 'fr' ? 'Enregistré' : currentLang === 'pt' ? 'Guardado' : 'Draft saved');
+    _autoSaveIndicator.style.color = '#16A34A';
+    setTimeout(() => { if (_autoSaveIndicator) _autoSaveIndicator.textContent = ''; }, 3000);
+  } else if (status === 'error') {
+    _autoSaveIndicator.textContent = '⚠ ' + (currentLang === 'it' ? 'Salvataggio fallito' : 'Save failed');
+    _autoSaveIndicator.style.color = '#DC2626';
+  }
+}
+
+async function autoSaveDraft() {
+  if (!currentUser || currentUser.role !== 'candidate') return;
+  if (!SUPABASE_READY || !sb()) return;
+  const formView = document.getElementById('form-view');
+  if (!formView || formView.style.display === 'none') return;
+  _showAutoSaveStatus('saving');
+  try {
+    const draft = collectProfileData();
+    draft._isDraft = true;
+    await sb().from('profiles').update({ profile_data: draft }).eq('id', currentUser.id);
+    currentUser.profileData = draft;
+    saveSession(currentUser);
+    _showAutoSaveStatus('saved');
+  } catch (e) {
+    _showAutoSaveStatus('error');
+  }
+}
+
+function scheduleAutoSave() {
+  clearTimeout(_autoSaveTimer);
+  _autoSaveTimer = setTimeout(autoSaveDraft, 2000);
+}
+
+function initAutoSave() {
+  const formEl = document.getElementById('form-view');
+  if (!formEl) return;
+  formEl.addEventListener('input', scheduleAutoSave);
+  formEl.addEventListener('change', scheduleAutoSave);
+}
+
 // ─────────────────────────────────────────
 // SEO — PUBLIC PROFILE PAGES
 // ─────────────────────────────────────────
@@ -8741,6 +8793,7 @@ function populateFormFromProfile(p) {
 // INIT
 // ─────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
+  initAutoSave();
   // ── PASSWORD RECOVERY via onAuthStateChange (mobile/PKCE fix) ──────
   if (SUPABASE_READY && sb()) {
     sb().auth.onAuthStateChange((event, session) => {
