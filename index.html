@@ -5499,6 +5499,21 @@ function showView(name) {
     if (notice) notice.style.display = EMAILJS_CONFIGURED ? 'none' : 'block';
   }
   if (name === 'myprofile') {
+    // ── Show sticky "complete your profile" banner if no CV yet ──
+    let _incBanner = document.getElementById('incomplete-profile-banner');
+    if (currentUser?.role === 'candidate' && !savedProfile) {
+      if (!_incBanner) {
+        _incBanner = document.createElement('div');
+        _incBanner.id = 'incomplete-profile-banner';
+        _incBanner.style.cssText = 'background:#FFF7ED;border:1.5px solid #FDBA74;border-radius:12px;padding:14px 18px;margin:0 0 20px;display:flex;align-items:center;gap:14px;';
+        _incBanner.innerHTML = '<span style="font-size:22px">📋</span><div style="flex:1"><b style="color:#9A3412;font-size:14px">Your ERP profile is not complete yet</b><p style="color:#C2410C;font-size:13px;margin:2px 0 8px">Recruiters cannot find you until you fill in your CV. It takes only 5 minutes!</p><button onclick="showView(\'form\')" style="background:#EA580C;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:600;cursor:pointer">➡ Complete my profile now</button></div>';
+        const mvEl = document.getElementById('myprofile-view');
+        if (mvEl) mvEl.prepend(_incBanner);
+      }
+      _incBanner.style.display = 'flex';
+    } else if (_incBanner) {
+      _incBanner.style.display = 'none';
+    }
     // For admin (and candidate), ensure savedProfile is populated before rendering.
     // If it's null (e.g. session restored from cache), fetch fresh from Supabase.
     if (!savedProfile && currentUser) {
@@ -7191,6 +7206,24 @@ function loginSuccess(user) {
     savedProfile = user.profileData;
     if (user.photo) candPhotoBase64 = user.photo;
   }
+
+  // ── INCOMPLETE PROFILE GUARD ─────────────────────────────────
+  // If a candidate has no profile_data, force them to the form and
+  // show a persistent banner until they complete it.
+  if (user.role === 'candidate' && !user.profileData) {
+    setTimeout(() => {
+      showToast({
+        id: 'incomplete-profile',
+        icon: '📋',
+        title: 'Complete your ERP profile',
+        desc: 'Your account is ready! Fill in your ERP experience to become visible to recruiters.',
+        color: '#FFF7ED',
+        iconColor: '#EA580C',
+        duration: 8000,
+      });
+    }, 1500);
+  }
+  // ── END INCOMPLETE PROFILE GUARD ─────────────────────────────
   if (user.role === 'recruiter') {
     if (user.recruiterData) recruiterProfile = user.recruiterData;
     if (user.photo) recPhotoBase64 = user.photo;
