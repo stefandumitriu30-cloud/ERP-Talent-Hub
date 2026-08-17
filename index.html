@@ -1334,7 +1334,7 @@ input[type=file].photo-input{display:none}
     <h1 class="hero-title" data-i18n="hero.title">Your ERP expertise,<br><span>visible to the world.</span></h1>
     <p class="hero-subtitle" data-i18n="hero.sub">Join the dedicated platform where SAP, Oracle, Microsoft Dynamics, and other ERP professionals showcase their careers to leading recruiters.</p>
     <div class="hero-ctas">
-      <button class="btn-primary" style="padding:13px 30px;font-size:15px" onclick="authGatedNav('candidate')" data-i18n="hero.cta">Build your profile</button>
+      <button class="btn-primary" style="padding:13px 30px;font-size:15px" onclick="try{gtag('event','cta_click',{event_category:'engagement',event_label:'build_your_profile_hero_primary'})}catch(_){}; authGatedNav('candidate')" data-i18n="hero.cta">Build your profile</button>
       <button class="btn-outline" style="padding:13px 24px;font-size:15px" onclick="authGatedNav('recruiter')" data-i18n="hero.secondary">I'm a recruiter</button>
     </div>
   </section>
@@ -1374,7 +1374,7 @@ input[type=file].photo-input{display:none}
   <section class="cta-banner">
     <h2 data-i18n="cta.title">Ready to be discovered?</h2>
     <p data-i18n="cta.sub">It takes 5 minutes to build a profile that works for you around the clock.</p>
-    <button class="btn-white" onclick="authGatedNav('candidate')" data-i18n="hero.cta">Build your profile</button>
+    <button class="btn-white" onclick="try{gtag('event','cta_click',{event_category:'engagement',event_label:'build_your_profile_hero_secondary'})}catch(_){}; authGatedNav('candidate')" data-i18n="hero.cta">Build your profile</button>
   </section>
 
 </div><!-- /home-view -->
@@ -3108,6 +3108,14 @@ function handleSubmit() {
       document.getElementById('notif-bell').style.display = 'flex';
       // Start overdue checker (every 30s in demo; would be server-side in production)
       startOverdueChecker();
+      // ── GA4: profile_published event ──────────────────────────────────────
+      try {
+        gtag('event', 'profile_published', {
+          event_category: 'engagement',
+          event_label:    'candidate_profile',
+        });
+      } catch(_) {}
+      // ──────────────────────────────────────────────────────────────────────
       showView('success');
     } else {
       // Show visible error banner below the submit button
@@ -4951,6 +4959,14 @@ async function recSendMessage(candidateId) {
 
   // First message = connection request + message notification + Mia match alert
   if (isFirst) {
+    // ── GA4: recruiter_contact event (first message ever sent to this candidate) ──
+    try {
+      gtag('event', 'recruiter_contact', {
+        event_category: 'engagement',
+        event_label:    'first_contact',
+      });
+    } catch(_) {}
+    // ───────────────────────────────────────────────────────────────────────────
     pushNotification('connection', { recruiter: recName });
     setTimeout(() => pushNotification('message', { recruiter: recName }), 800);
     // Mia job match: notify candidate that a recruiter matched their profile
@@ -7029,6 +7045,15 @@ async function doRegister(email, password) {
     openAuthModal('login');
     return;
   }
+
+  // ── GA4: sign_up event ───────────────────────────────────────────────────
+  try {
+    gtag('event', 'sign_up', {
+      method:    'email',
+      user_type: safeRole, // 'candidate' or 'recruiter'
+    });
+  } catch(_) {}
+  // ────────────────────────────────────────────────────────────────────────
 
   loginSuccess(buildUserObject(data.user, { name, role: authRole, photo: null }));
 }
