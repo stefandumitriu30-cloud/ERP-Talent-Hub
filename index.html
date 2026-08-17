@@ -866,9 +866,18 @@ input[type=file].photo-input{display:none}
     'use strict';
 
     // ── 1. USER-AGENT BLOCKLIST ──────────────────────────────
-    var BOT_UA = /bot|crawler|spider|scraper|curl|wget|python-requests|python-urllib|go-http|java\/|libwww|scrapy|ahrefsbot|semrushbot|dotbot|mj12bot|majestic|blexbot|petalbot|barkrowler|yandexbot|baiduspider|sogou|exabot|facebot|ia_archiver|archive\.org_bot|zgrab|masscan|nikto|sqlmap|nmap|dirbuster|wfuzz|hydra|burpsuite|phantomjs|headlesschrome|slimerjs|casperjs|puppeteer|playwright|selenium|webdriver/i;
+    // Whitelist: legitimate social/search preview crawlers that read og: tags.
+    // Allowed through so link previews work on LinkedIn, Facebook, Twitter/X,
+    // WhatsApp, Telegram, Slack, Google, iMessage, Discord, Pinterest.
+    var SOCIAL_WHITELIST = /linkedinbot|facebookexternalhit|facebot|twitterbot|whatsapp|telegrambot|slackbot|discordbot|skypeuripreview|googlebot|google-structured-data-testing-tool|bingbot|applebot|pinterestbot|embedly|outbrain|rogerbot|vkshare|w3c_validator/i;
 
     var ua = navigator.userAgent || '';
+
+    // Allow whitelisted social bots before any other check
+    if (SOCIAL_WHITELIST.test(ua)) { return; }
+
+    var BOT_UA = /bot|crawler|spider|scraper|curl|wget|python-requests|python-urllib|go-http|java\/|libwww|scrapy|ahrefsbot|semrushbot|dotbot|mj12bot|majestic|blexbot|petalbot|barkrowler|yandexbot|baiduspider|sogou|exabot|facebot|ia_archiver|archive\.org_bot|zgrab|masscan|nikto|sqlmap|nmap|dirbuster|wfuzz|hydra|burpsuite|phantomjs|headlesschrome|slimerjs|casperjs|puppeteer|playwright|selenium|webdriver/i;
+
     if (BOT_UA.test(ua)) {
       document.documentElement.innerHTML = '<html><head><title>Access Denied</title></head><body style="font-family:sans-serif;text-align:center;padding:80px;background:#f8f9fa"><h1 style="color:#1A73E8">ERP Talent Hub</h1><p style="color:#5F6368;font-size:18px">Automated access is not permitted.</p><p style="color:#aaa;font-size:13px">If you are a legitimate user, please visit the site normally.</p></body></html>';
       return;
