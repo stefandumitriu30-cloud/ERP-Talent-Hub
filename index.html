@@ -10469,6 +10469,9 @@ async function openStripeBillingPortal() {
     }
 
     // Reindirizza a Stripe
+    if (!data.url.startsWith('https://billing.stripe.com')) {
+      throw new Error('URL di redirect non valido');
+    }
     window.location.href = data.url;
 
   } catch (err) {
