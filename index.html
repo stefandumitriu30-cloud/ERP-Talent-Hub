@@ -9513,7 +9513,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   buildPhonePrefix();
   buildErpToggles();
   buildHomeErpTags();
-  window.addEventListener('load', () => setTimeout(loadLiveStats, 500));
+  // Run after browser is fully idle — avoids network contention at page load
+  if ('requestIdleCallback' in window) {
+    requestIdleCallback(() => loadLiveStats(), { timeout: 4000 });
+  } else {
+    setTimeout(loadLiveStats, 2000);
+  }
   addEntry('exp');
   addEntry('edu');
   addEntry('cert');
