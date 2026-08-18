@@ -1,0 +1,69 @@
+# ERP Talent Hub
+
+> ERP Talent Hub is the only recruiting platform built exclusively for ERP professionals and the verified recruiters who hire them. No generalist noise — every profile is an ERP specialist, every recruiter is verified.
+
+## What it is
+
+ERP Talent Hub connects SAP, Oracle, Microsoft Dynamics, Infor, Sage, Workday, NetSuite and IFS professionals with verified ERP recruiters across Europe and beyond. Candidates create a free profile and get discovered. Recruiters verify their identity and access the talent pool.
+
+## Who it is for
+
+- **ERP professionals** (candidates): SAP, Oracle EBS, Oracle Fusion, Microsoft Dynamics 365, Microsoft AX, Infor LN, Infor M3, Sage X3, Workday, NetSuite, IFS consultants, functional analysts, project managers, architects and developers seeking new roles
+- **Recruiters**: verified LinkedIn Recruiter licence holders, HR professionals with a business email, and recruiting agencies hiring for ERP roles
+
+## How it works
+
+### For candidates
+1. Create a free profile in 5 minutes — add ERP systems, modules, experience, location
+2. Get discovered by verified ERP recruiters via targeted filters
+3. A recruiter contacts you first via platform chat — your email, phone and LinkedIn stay private until you choose to share them
+
+### For recruiters
+1. Verify identity via LinkedIn Recruiter (instant, free) or business email (reviewed within 24h)
+2. Search and filter the ERP talent pool by system, module, seniority, country
+3. Open conversations, track selection pipeline stage by stage
+
+## Pricing
+
+- **Candidates**: completely free, no premium tier
+- **Recruiters — LinkedIn Recruiter path**: free after one-time verification (LinkedIn Recruiter licence required)
+- **Recruiters — Pro plan**: €49/month, business email verification, no LinkedIn Recruiter required
+- **Recruiters — Agency plan**: €149/month, unlimited recruiters under the same company domain
+
+## Key features
+
+- ERP-only platform — no generalist candidates or recruiters
+- Verified recruiter gate — every recruiter passes identity verification before accessing profiles
+- Privacy-first — candidate contact details (email, phone, LinkedIn) are hidden by default
+- Live talent counter — real-time count of ERP professionals on the platform
+- Mia AI assistant — helps candidates and recruiters navigate the platform; Pro recruiter feature: AI candidate match (describe ideal candidate, Mia scans the pool and returns top matches)
+- Multilingual — English, Italian, Spanish, French, German, Portuguese
+- Pipeline tracking — recruiters track each candidate through: Contacted → Screening → Interviews → Assessment → Offer → Hired
+- Selection pipeline visible to both sides
+- Referral system — candidates can invite colleagues for a visibility boost
+
+## ERP systems covered
+
+SAP S/4HANA, SAP ECC, Oracle EBS, Oracle Fusion, Microsoft Dynamics 365, Microsoft AX, Infor LN, Infor M3, Sage X3, Workday, NetSuite, IFS
+
+## Privacy and security
+
+- Candidate contact details never shown to recruiters without explicit consent
+- All data stored in the EU (West EU — Ireland) via Supabase
+- Row Level Security enforced at database level
+- Recruiter verification required before any profile access
+
+## Geography
+
+Global platform. Particularly active in Europe — Italy, Germany, France, Spain, UK, Netherlands, Belgium. Available in 6 languages.
+
+## URLs
+
+- Homepage: https://erptalenthub.com
+- Login: https://erptalenthub.com (click Login in the top navigation)
+- GitHub (source): https://github.com/stefandumitriu30-cloud/ERP-Talent-Hub
+
+## Contact
+
+- General: erptalenthub@gmail.com
+- Support: support@erptalenthub.com
