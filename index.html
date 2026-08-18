@@ -184,6 +184,51 @@ button{font-family:'Inter',sans-serif;cursor:pointer;font-size:14px;border-radiu
 .hero-subtitle{font-size:17px;color:var(--gray-500);max-width:580px;margin:0 auto 36px;line-height:1.7}
 .hero-ctas{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
 
+/* HERO AUDIENCE TABS */
+.hero-audience-tabs{display:flex;gap:0;justify-content:center;margin-bottom:20px;border:1.5px solid var(--blue-mid);border-radius:24px;overflow:hidden;background:var(--white);box-shadow:var(--shadow-sm);width:fit-content;margin-left:auto;margin-right:auto}
+.hero-audience-tab{background:transparent;border:none;padding:8px 22px;font-size:13px;font-weight:500;color:var(--gray-500);cursor:pointer;transition:all .18s;border-radius:0}
+.hero-audience-tab.active{background:var(--blue);color:#fff}
+.hero-audience-tab:first-child{border-radius:22px 0 0 22px}
+.hero-audience-tab:last-child{border-radius:0 22px 22px 0}
+.hero-cta-meta{font-size:13px;color:var(--gray-400);margin-top:14px;letter-spacing:.01em}
+.hero-cta-meta i{margin-right:4px;color:var(--blue)}
+
+/* LIVE STATS BAR */
+.live-stats-bar{background:var(--white);border-top:1px solid var(--gray-100);border-bottom:1px solid var(--gray-100);padding:14px 24px}
+.live-stats-inner{max-width:900px;margin:0 auto;display:flex;align-items:center;justify-content:center;gap:32px;flex-wrap:wrap}
+.live-stat{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--gray-600)}
+.live-stat-num{font-size:20px;font-weight:700;color:var(--gray-900);font-variant-numeric:tabular-nums;min-width:2ch;display:inline-block}
+.live-stat-pulse{width:8px;height:8px;border-radius:50%;background:#22C55E;animation:mia-pulse 2s infinite;flex-shrink:0}
+.live-stat-divider{width:1px;height:28px;background:var(--gray-200)}
+@media(max-width:480px){.live-stats-inner{gap:16px}.live-stat-divider{display:none}}
+
+/* 3-STEP PROCESS */
+.steps-section{padding:56px 24px 52px;background:var(--white);border-top:1px solid var(--gray-100)}
+.steps-tabs{display:flex;gap:0;justify-content:center;margin-bottom:36px;border:1.5px solid var(--gray-200);border-radius:24px;overflow:hidden;background:var(--gray-50);width:fit-content;margin-left:auto;margin-right:auto}
+.steps-tab{background:transparent;border:none;padding:8px 24px;font-size:13px;font-weight:500;color:var(--gray-500);cursor:pointer;transition:all .18s}
+.steps-tab.active{background:var(--blue);color:#fff}
+.steps-tab:first-child{border-radius:22px 0 0 22px}
+.steps-tab:last-child{border-radius:0 22px 22px 0}
+.steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;max-width:780px;margin:0 auto;position:relative}
+.steps-grid::before{content:'';position:absolute;top:28px;left:calc(16.67% + 16px);right:calc(16.67% + 16px);height:2px;background:linear-gradient(90deg,var(--blue-mid),var(--blue-mid));z-index:0}
+.step-item{text-align:center;padding:0 20px;position:relative;z-index:1}
+.step-num{width:56px;height:56px;border-radius:50%;background:var(--blue);color:#fff;font-size:20px;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;border:3px solid var(--white);box-shadow:0 0 0 2px var(--blue-mid)}
+.step-title{font-size:14px;font-weight:600;color:var(--gray-900);margin-bottom:6px}
+.step-desc{font-size:13px;color:var(--gray-500);line-height:1.6}
+.steps-content{display:none}
+.steps-content.active{display:block}
+@media(max-width:600px){
+  .steps-grid{grid-template-columns:1fr;gap:28px}
+  .steps-grid::before{display:none}
+  .steps-section{padding:40px 16px}
+}
+
+/* MID-PAGE CTA REPEAT */
+.mid-cta{padding:48px 24px;background:var(--blue-light);border-top:1px solid var(--blue-mid);border-bottom:1px solid var(--blue-mid);text-align:center}
+.mid-cta h3{font-size:20px;font-weight:600;color:var(--gray-900);margin-bottom:8px}
+.mid-cta p{font-size:14px;color:var(--gray-500);margin-bottom:22px}
+.mid-cta-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+
 /* FEATURES */
 .features-section{background:var(--gray-50);padding:64px 24px;border-top:1px solid var(--gray-100)}
 .section-label{text-align:center;font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);margin-bottom:12px}
@@ -1340,11 +1385,99 @@ input[type=file].photo-input{display:none}
   <!-- HERO -->
   <section id="hero">
     <div class="hero-badge"><i class="fa-solid fa-bolt"></i> <span data-i18n="hero.badge">Dedicated ERP recruitment platform</span></div>
-    <h1 class="hero-title" data-i18n="hero.title">Your ERP expertise,<br><span>visible to the world.</span></h1>
-    <p class="hero-subtitle" data-i18n="hero.sub">Join the dedicated platform where SAP, Oracle, Microsoft Dynamics, and other ERP professionals showcase their careers to leading recruiters.</p>
-    <div class="hero-ctas">
-      <button class="btn-primary" style="padding:13px 30px;font-size:15px" onclick="try{gtag('event','cta_click',{event_category:'engagement',event_label:'build_your_profile_hero_primary'})}catch(_){}; authGatedNav('candidate')" data-i18n="hero.cta">Build your profile</button>
-      <button class="btn-outline" style="padding:13px 24px;font-size:15px" onclick="authGatedNav('recruiter')" data-i18n="hero.secondary">I'm a recruiter</button>
+
+    <!-- Audience tab switcher -->
+    <div class="hero-audience-tabs" role="tablist" aria-label="Who are you?">
+      <button class="hero-audience-tab active" id="hero-tab-cand" role="tab" aria-selected="true" aria-controls="hero-cand-content" onclick="switchHeroAudience('candidate')" data-i18n="hero.tabCandidate">I'm a candidate</button>
+      <button class="hero-audience-tab" id="hero-tab-rec" role="tab" aria-selected="false" aria-controls="hero-rec-content" onclick="switchHeroAudience('recruiter')" data-i18n="hero.tabRecruiter">I'm a recruiter</button>
+    </div>
+
+    <!-- Candidate content -->
+    <div id="hero-cand-content" role="tabpanel" aria-labelledby="hero-tab-cand">
+      <h1 class="hero-title" data-i18n="hero.title.cand">Stop being invisible<br><span>to ERP recruiters.</span></h1>
+      <p class="hero-subtitle" data-i18n="hero.sub.cand">Your SAP, Oracle or Dynamics expertise deserves to be found. Create a profile seen only by verified ERP recruiters — no spam, no noise.</p>
+      <div class="hero-ctas">
+        <button class="btn-primary" style="padding:13px 30px;font-size:15px" onclick="try{gtag('event','cta_click',{event_category:'engagement',event_label:'build_your_profile_hero_primary'})}catch(_){}; authGatedNav('candidate')" data-i18n="hero.cta">Build your profile</button>
+      </div>
+      <p class="hero-cta-meta"><i class="fa-solid fa-clock"></i><span data-i18n="hero.meta.cand">5 minutes to set up &nbsp;·&nbsp; Free forever</span></p>
+    </div>
+
+    <!-- Recruiter content -->
+    <div id="hero-rec-content" role="tabpanel" aria-labelledby="hero-tab-rec" style="display:none">
+      <h1 class="hero-title" data-i18n="hero.title.rec">Stop wasting hours<br><span>on non-ERP candidates.</span></h1>
+      <p class="hero-subtitle" data-i18n="hero.sub.rec">Every profile on ERP Talent Hub is an ERP professional. No generalist noise — filter by system, module, seniority, and country in seconds.</p>
+      <div class="hero-ctas">
+        <button class="btn-primary" style="padding:13px 30px;font-size:15px" onclick="authGatedNav('recruiter')" data-i18n="hero.secondary">I'm a recruiter</button>
+      </div>
+      <p class="hero-cta-meta"><i class="fa-solid fa-shield-halved"></i><span data-i18n="hero.meta.rec">Verified recruiters only &nbsp;·&nbsp; LinkedIn Recruiter required</span></p>
+    </div>
+  </section>
+
+  <!-- LIVE STATS BAR -->
+  <div class="live-stats-bar" id="live-stats-bar">
+    <div class="live-stats-inner">
+      <div class="live-stat">
+        <span class="live-stat-pulse"></span>
+        <span class="live-stat-num" id="stat-candidates">—</span>
+        <span data-i18n="stats.live.candidates">ERP professionals registered</span>
+      </div>
+      <div class="live-stat-divider"></div>
+      <div class="live-stat">
+        <i class="fa-solid fa-shield-halved" style="color:var(--blue);font-size:13px"></i>
+        <span class="live-stat-num" id="stat-recruiters">—</span>
+        <span data-i18n="stats.live.recruiters">verified recruiters</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3-STEP PROCESS -->
+  <section class="steps-section">
+    <p class="section-label" data-i18n="steps.label">How it works</p>
+    <div class="steps-tabs" role="tablist">
+      <button class="steps-tab active" id="steps-tab-cand" role="tab" onclick="switchStepsTab('candidate')" data-i18n="hero.tabCandidate">I'm a candidate</button>
+      <button class="steps-tab" id="steps-tab-rec" role="tab" onclick="switchStepsTab('recruiter')" data-i18n="hero.tabRecruiter">I'm a recruiter</button>
+    </div>
+
+    <!-- Candidate steps -->
+    <div class="steps-content active" id="steps-cand">
+      <div class="steps-grid">
+        <div class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-title" data-i18n="step.c1.t">Create your profile</div>
+          <p class="step-desc" data-i18n="step.c1.d">Add your ERP systems, modules, experience and location. Takes 5 minutes.</p>
+        </div>
+        <div class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-title" data-i18n="step.c2.t">Get discovered</div>
+          <p class="step-desc" data-i18n="step.c2.d">Verified ERP recruiters find you through targeted filters — your contact details stay private.</p>
+        </div>
+        <div class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-title" data-i18n="step.c3.t">Get hired</div>
+          <p class="step-desc" data-i18n="step.c3.d">A recruiter reaches out. You chat, interview, and land your next ERP role.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recruiter steps -->
+    <div class="steps-content" id="steps-rec">
+      <div class="steps-grid">
+        <div class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-title" data-i18n="step.r1.t">Get verified</div>
+          <p class="step-desc" data-i18n="step.r1.d">Connect your LinkedIn Recruiter account. One-time verification — no recurring forms.</p>
+        </div>
+        <div class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-title" data-i18n="step.r2.t">Search & filter</div>
+          <p class="step-desc" data-i18n="step.r2.d">Filter by ERP system, module, seniority, country. Every result is an ERP specialist.</p>
+        </div>
+        <div class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-title" data-i18n="step.r3.t">Connect & hire</div>
+          <p class="step-desc" data-i18n="step.r3.d">Open a conversation, track your pipeline, and mark the role as hired when done.</p>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -1355,20 +1488,30 @@ input[type=file].photo-input{display:none}
     <p class="section-sub" data-i18n="features.sub">No generalist noise. Every recruiter on this platform is actively hiring for ERP roles.</p>
     <div class="features-grid">
       <div class="feature-card">
-        <div class="feature-icon"></div>
+        <div class="feature-icon"><i class="fa-solid fa-lock" aria-hidden="true"></i></div>
         <div class="feature-title" data-i18n="feat1.t">Privacy first</div>
         <p class="feature-desc" data-i18n="feat1.d">Your contact details are hidden until a verified recruiter requests access.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon"></div>
+        <div class="feature-icon"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></div>
         <div class="feature-title" data-i18n="feat2.t">ERP-specific search</div>
         <p class="feature-desc" data-i18n="feat2.d">Recruiters filter by system, module, industry, and seniority — only relevant leads reach you.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon"></div>
+        <div class="feature-icon"><i class="fa-solid fa-bell" aria-hidden="true"></i></div>
         <div class="feature-title" data-i18n="feat3.t">Instant alerts</div>
         <p class="feature-desc" data-i18n="feat3.d">Get notified the moment a recruiter views your profile or sends a connection request.</p>
       </div>
+    </div>
+  </section>
+
+  <!-- MID-PAGE CTA REPEAT -->
+  <section class="mid-cta">
+    <h3 data-i18n="midcta.title">Ready to join the ERP-only talent network?</h3>
+    <p data-i18n="midcta.sub">Candidates and recruiters — set up in minutes, free to start.</p>
+    <div class="mid-cta-btns">
+      <button class="btn-primary" style="padding:11px 26px" onclick="try{gtag('event','cta_click',{event_category:'engagement',event_label:'build_your_profile_mid'})}catch(_){}; authGatedNav('candidate')" data-i18n="hero.cta">Build your profile</button>
+      <button class="btn-outline" style="padding:11px 22px" onclick="authGatedNav('recruiter')" data-i18n="hero.secondary">I'm a recruiter</button>
     </div>
   </section>
 
@@ -2372,6 +2515,22 @@ const TRANSLATIONS = {
     "hero.title":"Your ERP expertise,<br><span>visible to the world.</span>",
     "hero.sub":"Join the dedicated platform where SAP, Oracle, Microsoft Dynamics, and other ERP professionals showcase their careers to leading recruiters.",
     "hero.cta":"Build your profile","hero.secondary":"I'm a recruiter",
+    "hero.tabCandidate":"I'm a candidate","hero.tabRecruiter":"I'm a recruiter",
+    "hero.title.cand":"Stop being invisible<br><span>to ERP recruiters.</span>",
+    "hero.sub.cand":"Your SAP, Oracle or Dynamics expertise deserves to be found. Create a profile seen only by verified ERP recruiters — no spam, no noise.",
+    "hero.title.rec":"Stop wasting hours<br><span>on non-ERP candidates.</span>",
+    "hero.sub.rec":"Every profile on ERP Talent Hub is an ERP professional. No generalist noise — filter by system, module, seniority, and country in seconds.",
+    "hero.meta.cand":"5 minutes to set up \u00a0·\u00a0 Free forever",
+    "hero.meta.rec":"Verified recruiters only \u00a0·\u00a0 LinkedIn Recruiter required",
+    "stats.live.candidates":"ERP professionals registered","stats.live.recruiters":"verified recruiters",
+    "steps.label":"How it works",
+    "step.c1.t":"Create your profile","step.c1.d":"Add your ERP systems, modules, experience and location. Takes 5 minutes.",
+    "step.c2.t":"Get discovered","step.c2.d":"Verified ERP recruiters find you through targeted filters — your contact details stay private.",
+    "step.c3.t":"Get hired","step.c3.d":"A recruiter reaches out. You chat, interview, and land your next ERP role.",
+    "step.r1.t":"Get verified","step.r1.d":"Connect your LinkedIn Recruiter account. One-time verification — no recurring forms.",
+    "step.r2.t":"Search & filter","step.r2.d":"Filter by ERP system, module, seniority, country. Every result is an ERP specialist.",
+    "step.r3.t":"Connect & hire","step.r3.d":"Open a conversation, track your pipeline, and mark the role as hired when done.",
+    "midcta.title":"Ready to join the ERP-only talent network?","midcta.sub":"Candidates and recruiters — set up in minutes, free to start.",
     "features.why":"Why ERP Talent Hub","features.title":"Built for ERP professionals","features.sub":"No generalist noise. Every recruiter on this platform is actively hiring for ERP roles.",
     "feat1.t":"Privacy first","feat1.d":"Your contact details are hidden until a verified recruiter requests access.",
     "feat2.t":"ERP-specific search","feat2.d":"Recruiters filter by system, module, industry, and seniority — only relevant leads reach you.",
@@ -2413,6 +2572,22 @@ const TRANSLATIONS = {
     "hero.title":"La tua competenza ERP,<br><span>visibile al mondo.</span>",
     "hero.sub":"Unisciti alla piattaforma dedicata dove i professionisti di SAP, Oracle, Microsoft Dynamics e altri ERP mettono in mostra la propria carriera ai recruiter più qualificati.",
     "hero.cta":"Crea il tuo profilo","hero.secondary":"Sono un recruiter",
+    "hero.tabCandidate":"Sono un candidato","hero.tabRecruiter":"Sono un recruiter",
+    "hero.title.cand":"Smetti di essere invisibile<br><span>ai recruiter ERP.</span>",
+    "hero.sub.cand":"La tua competenza in SAP, Oracle o Dynamics merita di essere trovata. Crea un profilo visto solo da recruiter ERP verificati — niente spam.",
+    "hero.title.rec":"Smetti di perdere ore<br><span>su candidati non ERP.</span>",
+    "hero.sub.rec":"Ogni profilo su ERP Talent Hub è un professionista ERP. Niente rumore generalista — filtra per sistema, modulo, seniority e paese in pochi secondi.",
+    "hero.meta.cand":"5 minuti per configurarlo \u00a0·\u00a0 Gratuito per sempre",
+    "hero.meta.rec":"Solo recruiter verificati \u00a0·\u00a0 Richiede LinkedIn Recruiter",
+    "stats.live.candidates":"professionisti ERP registrati","stats.live.recruiters":"recruiter verificati",
+    "steps.label":"Come funziona",
+    "step.c1.t":"Crea il tuo profilo","step.c1.d":"Aggiungi i tuoi sistemi ERP, moduli, esperienza e posizione. Bastano 5 minuti.",
+    "step.c2.t":"Fatti trovare","step.c2.d":"I recruiter ERP verificati ti trovano tramite filtri mirati — i tuoi recapiti restano privati.",
+    "step.c3.t":"Ottieni il lavoro","step.c3.d":"Un recruiter ti contatta. Chatti, fai il colloquio e ottieni il tuo prossimo ruolo ERP.",
+    "step.r1.t":"Verifica il tuo account","step.r1.d":"Collega il tuo account LinkedIn Recruiter. Verifica una tantum — niente moduli ricorrenti.",
+    "step.r2.t":"Cerca e filtra","step.r2.d":"Filtra per sistema ERP, modulo, seniority, paese. Ogni risultato è uno specialista ERP.",
+    "step.r3.t":"Contatta e assumi","step.r3.d":"Avvia una conversazione, traccia il pipeline e segna il ruolo come assunto quando chiudi.",
+    "midcta.title":"Pronto a unirti alla rete di talenti ERP?","midcta.sub":"Candidati e recruiter — configurazione in minuti, gratuito per iniziare.",
     "features.why":"Perché ERP Talent Hub","features.title":"Costruita per i professionisti ERP","features.sub":"Niente rumore generalista. Ogni recruiter sulla piattaforma assume attivamente per ruoli ERP.",
     "feat1.t":"Privacy prima di tutto","feat1.d":"I tuoi recapiti sono nascosti finché un recruiter verificato non ne richiede l'accesso.",
     "feat2.t":"Ricerca specifica ERP","feat2.d":"I recruiter filtrano per sistema, modulo, settore e seniority — ricevi solo opportunità pertinenti.",
@@ -2454,6 +2629,22 @@ const TRANSLATIONS = {
     "hero.title":"Tu experiencia ERP,<br><span>visible para el mundo.</span>",
     "hero.sub":"Únete a la plataforma dedicada donde los profesionales de SAP, Oracle, Microsoft Dynamics y otros ERP muestran su carrera a los mejores recruiters.",
     "hero.cta":"Crea tu perfil","hero.secondary":"Soy recruiter",
+    "hero.tabCandidate":"Soy candidato","hero.tabRecruiter":"Soy recruiter",
+    "hero.title.cand":"Deja de ser invisible<br><span>para los recruiters ERP.</span>",
+    "hero.sub.cand":"Tu experiencia en SAP, Oracle o Dynamics merece ser encontrada. Crea un perfil visible solo para recruiters ERP verificados.",
+    "hero.title.rec":"Deja de perder horas<br><span>con candidatos no ERP.</span>",
+    "hero.sub.rec":"Cada perfil en ERP Talent Hub es un especialista ERP. Filtra por sistema, módulo, seniority y país en segundos.",
+    "hero.meta.cand":"5 minutos para configurar \u00a0·\u00a0 Gratis para siempre",
+    "hero.meta.rec":"Solo recruiters verificados \u00a0·\u00a0 Requiere LinkedIn Recruiter",
+    "stats.live.candidates":"profesionales ERP registrados","stats.live.recruiters":"recruiters verificados",
+    "steps.label":"Cómo funciona",
+    "step.c1.t":"Crea tu perfil","step.c1.d":"Añade tus sistemas ERP, módulos, experiencia y ubicación. Solo 5 minutos.",
+    "step.c2.t":"Hazte encontrar","step.c2.d":"Los recruiters ERP verificados te encuentran con filtros precisos — tus datos de contacto permanecen privados.",
+    "step.c3.t":"Consigue el trabajo","step.c3.d":"Un recruiter te contacta. Chateas, entrevistas y consigues tu próximo rol ERP.",
+    "step.r1.t":"Verifícate","step.r1.d":"Conecta tu cuenta LinkedIn Recruiter. Verificación única — sin formularios repetidos.",
+    "step.r2.t":"Busca y filtra","step.r2.d":"Filtra por sistema ERP, módulo, seniority, país. Cada resultado es un especialista ERP.",
+    "step.r3.t":"Conecta y contrata","step.r3.d":"Abre una conversación, gestiona tu pipeline y marca el rol como contratado cuando lo cierres.",
+    "midcta.title":"¿Listo para unirte a la red de talento ERP?","midcta.sub":"Candidatos y recruiters — configúrate en minutos, gratis para empezar.",
     "features.why":"Por qué ERP Talent Hub","features.title":"Creada para profesionales ERP","features.sub":"Sin ruido generalista. Cada recruiter en la plataforma contrata activamente para roles ERP.",
     "feat1.t":"Privacidad primero","feat1.d":"Tus datos de contacto están ocultos hasta que un recruiter verificado solicite acceso.",
     "feat2.t":"Búsqueda específica ERP","feat2.d":"Los recruiters filtran por sistema, módulo, sector y seniority — solo recibes oportunidades relevantes.",
@@ -2495,6 +2686,22 @@ const TRANSLATIONS = {
     "hero.title":"Ihr ERP-Know-how,<br><span>sichtbar für die Welt.</span>",
     "hero.sub":"Treten Sie der dedizierten Plattform bei, auf der SAP-, Oracle-, Microsoft-Dynamics- und andere ERP-Fachleute ihre Karriere führenden Recruitern präsentieren.",
     "hero.cta":"Profil erstellen","hero.secondary":"Ich bin Recruiter",
+    "hero.tabCandidate":"Ich bin Kandidat","hero.tabRecruiter":"Ich bin Recruiter",
+    "hero.title.cand":"Hören Sie auf, für ERP-Recruiter<br><span>unsichtbar zu sein.</span>",
+    "hero.sub.cand":"Ihre SAP-, Oracle- oder Dynamics-Expertise verdient es, gefunden zu werden. Erstellen Sie ein Profil, das nur von verifizierten ERP-Recruitern gesehen wird.",
+    "hero.title.rec":"Hören Sie auf, Stunden mit<br><span>Nicht-ERP-Kandidaten zu verschwenden.</span>",
+    "hero.sub.rec":"Jedes Profil auf ERP Talent Hub ist ein ERP-Spezialist. Filtern Sie nach System, Modul, Seniorität und Land in Sekunden.",
+    "hero.meta.cand":"5 Minuten zum Einrichten \u00a0·\u00a0 Dauerhaft kostenlos",
+    "hero.meta.rec":"Nur verifizierte Recruiter \u00a0·\u00a0 LinkedIn Recruiter erforderlich",
+    "stats.live.candidates":"ERP-Fachleute registriert","stats.live.recruiters":"verifizierte Recruiter",
+    "steps.label":"So funktioniert es",
+    "step.c1.t":"Profil erstellen","step.c1.d":"Fügen Sie Ihre ERP-Systeme, Module, Erfahrung und Standort hinzu. Dauert 5 Minuten.",
+    "step.c2.t":"Gefunden werden","step.c2.d":"Verifizierte ERP-Recruiter finden Sie über gezielte Filter — Ihre Kontaktdaten bleiben privat.",
+    "step.c3.t":"Eingestellt werden","step.c3.d":"Ein Recruiter meldet sich. Sie chatten, führen Interviews und erhalten Ihre nächste ERP-Stelle.",
+    "step.r1.t":"Verifizieren","step.r1.d":"Verbinden Sie Ihr LinkedIn-Recruiter-Konto. Einmalige Verifizierung — keine wiederkehrenden Formulare.",
+    "step.r2.t":"Suchen und filtern","step.r2.d":"Filtern Sie nach ERP-System, Modul, Seniorität, Land. Jedes Ergebnis ist ein ERP-Spezialist.",
+    "step.r3.t":"Verbinden und einstellen","step.r3.d":"Öffnen Sie ein Gespräch, verfolgen Sie Ihre Pipeline und markieren Sie die Stelle als besetzt.",
+    "midcta.title":"Bereit, dem ERP-Talentnetzwerk beizutreten?","midcta.sub":"Kandidaten und Recruiter — in Minuten eingerichtet, kostenlos zu starten.",
     "features.why":"Warum ERP Talent Hub","features.title":"Gebaut für ERP-Fachleute","features.sub":"Kein generalistisches Rauschen. Jeder Recruiter auf dieser Plattform stellt aktiv für ERP-Rollen ein.",
     "feat1.t":"Datenschutz zuerst","feat1.d":"Ihre Kontaktdaten bleiben verborgen, bis ein verifizierter Recruiter Zugang anfordert.",
     "feat2.t":"ERP-spezifische Suche","feat2.d":"Recruiter filtern nach System, Modul, Branche und Seniorität — nur relevante Anfragen erreichen Sie.",
@@ -2536,6 +2743,22 @@ const TRANSLATIONS = {
     "hero.title":"Votre expertise ERP,<br><span>visible dans le monde entier.</span>",
     "hero.sub":"Rejoignez la plateforme dédiée où les professionnels SAP, Oracle, Microsoft Dynamics et autres ERP présentent leur carrière aux meilleurs recruteurs.",
     "hero.cta":"Créer mon profil","hero.secondary":"Je suis recruteur",
+    "hero.tabCandidate":"Je suis candidat","hero.tabRecruiter":"Je suis recruteur",
+    "hero.title.cand":"Arrêtez d'être invisible<br><span>pour les recruteurs ERP.</span>",
+    "hero.sub.cand":"Votre expertise SAP, Oracle ou Dynamics mérite d'être trouvée. Créez un profil visible uniquement par des recruteurs ERP vérifiés — sans spam.",
+    "hero.title.rec":"Arrêtez de perdre des heures<br><span>sur des candidats non ERP.</span>",
+    "hero.sub.rec":"Chaque profil sur ERP Talent Hub est un spécialiste ERP. Filtrez par système, module, séniorité et pays en quelques secondes.",
+    "hero.meta.cand":"5 minutes pour configurer \u00a0·\u00a0 Gratuit pour toujours",
+    "hero.meta.rec":"Recruteurs vérifiés uniquement \u00a0·\u00a0 LinkedIn Recruiter requis",
+    "stats.live.candidates":"professionnels ERP inscrits","stats.live.recruiters":"recruteurs vérifiés",
+    "steps.label":"Comment ça marche",
+    "step.c1.t":"Créez votre profil","step.c1.d":"Ajoutez vos systèmes ERP, modules, expérience et localisation. 5 minutes suffisent.",
+    "step.c2.t":"Faites-vous trouver","step.c2.d":"Les recruteurs ERP vérifiés vous trouvent via des filtres ciblés — vos coordonnées restent privées.",
+    "step.c3.t":"Décrochez le poste","step.c3.d":"Un recruteur vous contacte. Vous échangez, passez des entretiens et obtenez votre prochain rôle ERP.",
+    "step.r1.t":"Faites-vous vérifier","step.r1.d":"Connectez votre compte LinkedIn Recruiter. Vérification unique — pas de formulaires répétés.",
+    "step.r2.t":"Recherchez et filtrez","step.r2.d":"Filtrez par système ERP, module, séniorité, pays. Chaque résultat est un spécialiste ERP.",
+    "step.r3.t":"Connectez et recrutez","step.r3.d":"Ouvrez une conversation, suivez votre pipeline et marquez le poste comme pourvu quand c'est fait.",
+    "midcta.title":"Prêt à rejoindre le réseau de talents ERP ?","midcta.sub":"Candidats et recruteurs — configuré en minutes, gratuit pour commencer.",
     "features.why":"Pourquoi ERP Talent Hub","features.title":"Conçue pour les professionnels ERP","features.sub":"Pas de bruit généraliste. Chaque recruteur sur cette plateforme recrute activement pour des postes ERP.",
     "feat1.t":"Confidentialité avant tout","feat1.d":"Vos coordonnées restent masquées jusqu'à ce qu'un recruteur vérifié en fasse la demande.",
     "feat2.t":"Recherche spécifique ERP","feat2.d":"Les recruteurs filtrent par système, module, secteur et séniorité — seules les opportunités pertinentes vous parviennent.",
@@ -2563,7 +2786,7 @@ const TRANSLATIONS = {
     "countries":["Autriche","Belgique","Canada","Danemark","Finlande","France","Allemagne","Italie","Pays-Bas","Norvège","Pologne","Portugal","Espagne","Suède","Suisse","Royaume-Uni","États-Unis","Autre"]
   },
   pt:{
-    "candidates":"Minhas mensagens","recruiters":"Para recrutadores","submit":"Enviar meu CV","nav.login":"Entrar","auth.emailNotFound":"Nenhuma conta encontrada.","dd.myprofile":"Meu perfil","dd.messages":"Minhas mensagens","dd.recruiter":"Portal recrutador","dd.admin":"Painel admin","dd.changePassword":"Alterar senha","dd.logout":"Sair","dd.deleteAccount":"Excluir conta","auth.welcome":"Bem-vindo ao ERP Talent Hub","auth.signinSub":"Entre para acessar seu perfil","auth.registerSub":"Crie sua conta gratuita","auth.tabLogin":"Entrar","auth.tabRegister":"Registrar","auth.submitLogin":"Entrar","auth.submitRegister":"Criar conta","auth.roleLabel":"Sou","auth.roleCandidate":"Profissional ERP","auth.roleRecruiter":"Recrutador","auth.nameLabel":"Nome completo","auth.passwordLabel":"Senha","auth.forgotTitle":"Redefinir senha","auth.forgotSub":"Enviaremos um link de redefinição.","auth.backToLogin":"Voltar ao login","cp.title":"Alterar senha","cp.sub":"Escolha uma nova senha","cp.current":"Senha atual","cp.new":"Nova senha","cp.confirm":"Confirmar nova senha","cp.submit":"Atualizar senha","cp.cancel":"Cancelar","da.title":"Excluir conta","da.sub":"Esta ação é permanente","da.warning":"Todos os seus dados serão removidos.","da.passLabel":"Digite sua senha para confirmar","da.confirmLabel":"Digite EXCLUIR para confirmar","da.submit":"Excluir minha conta permanentemente","da.cancel":"Cancelar","gate.title1":"Acesso de Recrutador Necessário","gate.sub1":"Exclusivo para titulares de conta LinkedIn Recruiter verificada.","gate.step1t":"Conectar LinkedIn","gate.step1d":"Insira o URL do seu perfil LinkedIn Recruiter","gate.step2t":"Verificar tipo de conta","gate.step2d":"Verificamos se sua conta tem licença Recruiter","gate.step3t":"Acesso concedido","gate.step3d":"Comece a conectar com profissionais ERP","gate.connectBtn":"Conectar com LinkedIn Recruiter","gate.title2":"Insira seu URL do LinkedIn Recruiter","gate.sub2":"Cole o URL do seu perfil.","gate.urlLabel":"URL do perfil LinkedIn Recruiter","gate.nameLabel":"Nome completo","gate.companyLabel":"Empresa / Agência","gate.verifyBtn":"Verificar conta LinkedIn Recruiter","score.title":"Completude do perfil","score.complete":"Perfil completo!","score.missing":"Faltando:","stats.views":"Visualizações","stats.contacts":"Contactos","stats.week":"Esta semana","ob.skip":"Ignorar","mp.downloadPdf":"Baixar PDF","admin.title":"Painel Admin","admin.tabCand":"Candidatos","admin.tabRec":"Recrutadores","admin.viewAsCandidate":"Ver como Candidato","admin.viewAsRecruiter":"Ver como Recrutador","admin.selectProfile":"Selecione um perfil para ver os detalhes.","admin.noCandidates":"Ainda não há candidatos.","admin.noRecruiters":"Ainda não há recrutadores.","admin.cvSubmitted":"CV enviado","admin.noCV":"Registado, sem CV","nav.register":"Registrar","auth.login":"Entrar","auth.createAccount":"Criar conta","auth.noAccount":"Não tem conta?","auth.registerNow":"Registre-se","auth.haveAccount":"Já tem uma conta?","auth.loginLink":"Entrar","auth.forgot":"Esqueceu a senha?","auth.forgotDesc":"Enviaremos um link para redefinir sua senha.","auth.emailLabel":"Endereço de e-mail","auth.fullName":"Nome completo","auth.passwordLabel":"Senha","auth.confirmLabel":"Confirmar senha","auth.sendReset":"Enviar link","auth.sending":"A enviar…","auth.resetSent":"Verifique a sua caixa de entrada!","auth.emailRequired":"Insira seu endereço de e-mail.","auth.emailInvalid":"Insira um endereço de e-mail válido.","mia.guide":"O seu guia no ERP Talent Hub","mia.placeholder":"Pergunte algo à Mia…","mia.hint":"Olá! Sou a Mia, sua guia!","myprofile":"Meu perfil","mp.live":"Perfil ativo","mp.edit":"Editar perfil","mp.invite":"Convidar colegas","mp.pipeline":"Progresso da seleção","referral.title":"Convide colegas ERP","referral.sub":"Compartilhe seu link de indicação com colegas. Quando eles se registrarem, você ganha mais visibilidade.","referral.cta":"Copiar meu link de indicação","rec.miaProTitle":"✨ Mia Pro — Correspondência de IA","rec.miaProSub":"Descreva o candidato ideal e Mia analisará todo o pool sugerindo os melhores perfis.","rec.miaProBtn":"Encontrar melhores perfis com Mia","mp.privacy":"Os seus dados de contacto estão ocultos dos recrutadores.","mp.present":"Presente","mp.nodata":"Não fornecido","success.viewprofile":"Ver meu perfil","footer.owned":"Propriedade de © 2026 Vantage Finance & Tech · NIF 13449530016","hero.badge":"Plataforma de recrutamento ERP","hero.title":"A sua expertise ERP visível para o mundo.","hero.sub":"Profissionais ERP conectados com recrutadores verificados.","hero.cta":"Criar meu perfil","hero.secondary":"Sou recrutador","features.why":"Porquê ERP Talent Hub","features.title":"Criado para profissionais ERP","features.sub":"Sem ruído generalista.","feat1.t":"Privacidade em primeiro lugar","feat1.d":"Os seus dados ficam ocultos.","feat2.t":"Pesquisa específica de ERP","feat2.d":"Filtros por sistema, módulo e senioridade.","feat3.t":"Alertas instantâneos","feat3.d":"Notificado quando um recrutador ver o seu perfil.","erp.covered":"Sistemas cobertos","erp.title":"Todas as grandes plataformas ERP","cta.title":"Pronto para ser descoberto?","cta.sub":"5 minutos para criar um perfil.","form.title":"Crie o seu perfil ERP","form.sub":"Visível apenas para recrutadores verificados.","sec.personal":"Informações pessoais","sec.contact":"Dados de contacto","sec.summary":"Resumo profissional","sec.erp":"Sistemas ERP","sec.experience":"Experiência profissional","sec.education":"Formação","sec.certs":"Certificações","sec.awards":"Prémios","sec.languages":"Idiomas","f.firstName":"Nome","f.lastName":"Apelido","f.city":"Cidade","f.country":"País","f.province":"Estado / Província","f.email":"E-mail","f.phone":"Telefone","f.linkedin":"LinkedIn","f.photoHint":"Adicione uma foto profissional.","f.uploadPhoto":"Carregar foto","f.removePhoto":"Remover","f.photoRules":"JPG ou PNG, máx 5 MB","f.summary":"Resumo","f.summaryPh":"Descreva a sua expertise ERP...","words":"palavras","f.jobTitle":"Cargo","f.company":"Empresa","f.startDate":"Início","f.endDate":"Fim","f.current":"Posição atual","f.description":"Responsabilidades","f.yearsExp":"Anos de experiência","f.addExp":"+ Adicionar função","f.degree":"Grau","f.institution":"Instituição","f.gradYear":"Ano","f.addEdu":"+ Adicionar formação","f.certName":"Certificação","f.issuer":"Emissor","f.certYear":"Ano","f.addCert":"+ Adicionar certificação","f.awardName":"Prémio","f.awardOrg":"Organização","f.awardYear":"Ano","f.addAward":"+ Adicionar prémio","f.langName":"Idioma","f.langSpoken":"Nível oral","f.langWritten":"Nível escrito","f.langSelect":"Selecionar","f.addLang":"+ Adicionar idioma","rec.pool":"ERP Talent Pool","rec.search":"Pesquisar candidatos…","rec.all":"Todos","rec.contacted":"Contactados","rec.new":"Ainda não contactados","rec.erp_filter":"Todos os sistemas ERP","rec.country_filter":"Todos os países","rec.exp_filter":"Qualquer experiência","rec.select_cand":"Selecione um candidato para iniciar uma conversa.","rec.only_recruiter":"Só tu — o recrutador — podes abrir um novo chat.","rec.browseHint":"Navega a lista à esquerda. Usa a barra de pesquisa e filtros por sistema ERP, país ou nível de experiência.","rec.howtoTitle":"Como funciona o portal","rec.verified":"Verificado","rec.verifiedRecruiter":"Recrutador Verificado","rec.statCandidates":"Candidatos","rec.statContacted":"Contactados","rec.statNew":"Não contactados","rec.howto1":"<strong>Encontrar</strong> — pesquisar e filtrar profissionais ERP por sistema, país e senioridade.","rec.howto2":"<strong>Contactar</strong> — clicar num candidato e abrir uma conversa. Só tu podes iniciar.","rec.howto3":"<strong>Acompanhar</strong> — mover candidatos pelas etapas do pipeline.","rec.howto4":"<strong>Contratar</strong> — marcar a conversa como Contratado quando fechar a posição.","rec.write":"Escrever uma mensagem…","rec.send":"Enviar","rec.contacted_badge":"Contactado","rec.not_contacted":"Não contactado","pipe.contacted":"Contactado","pipe.screening":"Screening","pipe.interview1":"1ª Entrevista","pipe.interview2":"2ª Entrevista","pipe.assessment":"Assessment","pipe.offer":"Oferta","pipe.hired":"Contratado","pipe.stage":"Etapa","pipe.of":"de","form.submit":"Publicar perfil","form.submitting":"A publicar...","success.title":"Perfil publicado!","success.sub":"Os recrutadores podem descobrir o seu perfil.","success.back":"Voltar à página inicial","rec.title":"Aceder ao pool de talentos ERP","rec.sub":"Solicite acesso verificado.","rec.back":"Voltar","candidates":"Minhas mensagens","recruiters":"Para recrutadores","submit":"Enviar meu CV","nav.login":"Entrar","nav.register":"Registrar","countries":["Austria","Belgica","Canada","Dinamarca","Finlandia","Franca","Alemanha","Italia","Paises Baixos","Noruega","Polonia","Portugal","Espanha","Suecia","Suica","Reino Unido","Estados Unidos","Outro"]
+    "candidates":"Minhas mensagens","recruiters":"Para recrutadores","submit":"Enviar meu CV","nav.login":"Entrar","auth.emailNotFound":"Nenhuma conta encontrada.","dd.myprofile":"Meu perfil","dd.messages":"Minhas mensagens","dd.recruiter":"Portal recrutador","dd.admin":"Painel admin","dd.changePassword":"Alterar senha","dd.logout":"Sair","dd.deleteAccount":"Excluir conta","auth.welcome":"Bem-vindo ao ERP Talent Hub","auth.signinSub":"Entre para acessar seu perfil","auth.registerSub":"Crie sua conta gratuita","auth.tabLogin":"Entrar","auth.tabRegister":"Registrar","auth.submitLogin":"Entrar","auth.submitRegister":"Criar conta","auth.roleLabel":"Sou","auth.roleCandidate":"Profissional ERP","auth.roleRecruiter":"Recrutador","auth.nameLabel":"Nome completo","auth.passwordLabel":"Senha","auth.forgotTitle":"Redefinir senha","auth.forgotSub":"Enviaremos um link de redefinição.","auth.backToLogin":"Voltar ao login","cp.title":"Alterar senha","cp.sub":"Escolha uma nova senha","cp.current":"Senha atual","cp.new":"Nova senha","cp.confirm":"Confirmar nova senha","cp.submit":"Atualizar senha","cp.cancel":"Cancelar","da.title":"Excluir conta","da.sub":"Esta ação é permanente","da.warning":"Todos os seus dados serão removidos.","da.passLabel":"Digite sua senha para confirmar","da.confirmLabel":"Digite EXCLUIR para confirmar","da.submit":"Excluir minha conta permanentemente","da.cancel":"Cancelar","gate.title1":"Acesso de Recrutador Necessário","gate.sub1":"Exclusivo para titulares de conta LinkedIn Recruiter verificada.","gate.step1t":"Conectar LinkedIn","gate.step1d":"Insira o URL do seu perfil LinkedIn Recruiter","gate.step2t":"Verificar tipo de conta","gate.step2d":"Verificamos se sua conta tem licença Recruiter","gate.step3t":"Acesso concedido","gate.step3d":"Comece a conectar com profissionais ERP","gate.connectBtn":"Conectar com LinkedIn Recruiter","gate.title2":"Insira seu URL do LinkedIn Recruiter","gate.sub2":"Cole o URL do seu perfil.","gate.urlLabel":"URL do perfil LinkedIn Recruiter","gate.nameLabel":"Nome completo","gate.companyLabel":"Empresa / Agência","gate.verifyBtn":"Verificar conta LinkedIn Recruiter","score.title":"Completude do perfil","score.complete":"Perfil completo!","score.missing":"Faltando:","stats.views":"Visualizações","stats.contacts":"Contactos","stats.week":"Esta semana","ob.skip":"Ignorar","mp.downloadPdf":"Baixar PDF","admin.title":"Painel Admin","admin.tabCand":"Candidatos","admin.tabRec":"Recrutadores","admin.viewAsCandidate":"Ver como Candidato","admin.viewAsRecruiter":"Ver como Recrutador","admin.selectProfile":"Selecione um perfil para ver os detalhes.","admin.noCandidates":"Ainda não há candidatos.","admin.noRecruiters":"Ainda não há recrutadores.","admin.cvSubmitted":"CV enviado","admin.noCV":"Registado, sem CV","nav.register":"Registrar","auth.login":"Entrar","auth.createAccount":"Criar conta","auth.noAccount":"Não tem conta?","auth.registerNow":"Registre-se","auth.haveAccount":"Já tem uma conta?","auth.loginLink":"Entrar","auth.forgot":"Esqueceu a senha?","auth.forgotDesc":"Enviaremos um link para redefinir sua senha.","auth.emailLabel":"Endereço de e-mail","auth.fullName":"Nome completo","auth.passwordLabel":"Senha","auth.confirmLabel":"Confirmar senha","auth.sendReset":"Enviar link","auth.sending":"A enviar…","auth.resetSent":"Verifique a sua caixa de entrada!","auth.emailRequired":"Insira seu endereço de e-mail.","auth.emailInvalid":"Insira um endereço de e-mail válido.","mia.guide":"O seu guia no ERP Talent Hub","mia.placeholder":"Pergunte algo à Mia…","mia.hint":"Olá! Sou a Mia, sua guia!","myprofile":"Meu perfil","mp.live":"Perfil ativo","mp.edit":"Editar perfil","mp.invite":"Convidar colegas","mp.pipeline":"Progresso da seleção","referral.title":"Convide colegas ERP","referral.sub":"Compartilhe seu link de indicação com colegas. Quando eles se registrarem, você ganha mais visibilidade.","referral.cta":"Copiar meu link de indicação","rec.miaProTitle":"✨ Mia Pro — Correspondência de IA","rec.miaProSub":"Descreva o candidato ideal e Mia analisará todo o pool sugerindo os melhores perfis.","rec.miaProBtn":"Encontrar melhores perfis com Mia","mp.privacy":"Os seus dados de contacto estão ocultos dos recrutadores.","mp.present":"Presente","mp.nodata":"Não fornecido","success.viewprofile":"Ver meu perfil","footer.owned":"Propriedade de © 2026 Vantage Finance & Tech · NIF 13449530016","hero.badge":"Plataforma de recrutamento ERP","hero.title":"A sua expertise ERP visível para o mundo.","hero.sub":"Profissionais ERP conectados com recrutadores verificados.","hero.cta":"Criar meu perfil","hero.secondary":"Sou recrutador","hero.tabCandidate":"Sou candidato","hero.tabRecruiter":"Sou recrutador","hero.title.cand":"Pare de ser invisível<br><span>para os recrutadores ERP.</span>","hero.sub.cand":"A sua experiência em SAP, Oracle ou Dynamics merece ser encontrada. Crie um perfil visto apenas por recrutadores ERP verificados — sem spam.","hero.title.rec":"Pare de perder horas<br><span>com candidatos não-ERP.</span>","hero.sub.rec":"Cada perfil no ERP Talent Hub é um especialista ERP. Filtre por sistema, módulo, senioridade e país em segundos.","hero.meta.cand":"5 minutos para configurar \u00a0·\u00a0 Gratuito para sempre","hero.meta.rec":"Apenas recrutadores verificados \u00a0·\u00a0 LinkedIn Recruiter obrigatório","stats.live.candidates":"profissionais ERP registados","stats.live.recruiters":"recrutadores verificados","steps.label":"Como funciona","step.c1.t":"Crie o seu perfil","step.c1.d":"Adicione os seus sistemas ERP, módulos, experiência e localização. Leva 5 minutos.","step.c2.t":"Seja encontrado","step.c2.d":"Recrutadores ERP verificados encontram-no através de filtros precisos — os seus contactos permanecem privados.","step.c3.t":"Seja contratado","step.c3.d":"Um recrutador entra em contacto. Conversa, faz entrevistas e obtém o seu próximo cargo ERP.","step.r1.t":"Verifique-se","step.r1.d":"Ligue a sua conta LinkedIn Recruiter. Verificação única — sem formulários repetidos.","step.r2.t":"Pesquise e filtre","step.r2.d":"Filtre por sistema ERP, módulo, senioridade, país. Cada resultado é um especialista ERP.","step.r3.t":"Contacte e contrate","step.r3.d":"Abra uma conversa, acompanhe o pipeline e marque a vaga como preenchida quando fechar.","midcta.title":"Pronto para se juntar à rede de talentos ERP?","midcta.sub":"Candidatos e recrutadores — configure em minutos, gratuito para começar.","features.why":"Porquê ERP Talent Hub","features.title":"Criado para profissionais ERP","features.sub":"Sem ruído generalista.","feat1.t":"Privacidade em primeiro lugar","feat1.d":"Os seus dados ficam ocultos.","feat2.t":"Pesquisa específica de ERP","feat2.d":"Filtros por sistema, módulo e senioridade.","feat3.t":"Alertas instantâneos","feat3.d":"Notificado quando um recrutador ver o seu perfil.","erp.covered":"Sistemas cobertos","erp.title":"Todas as grandes plataformas ERP","cta.title":"Pronto para ser descoberto?","cta.sub":"5 minutos para criar um perfil.","form.title":"Crie o seu perfil ERP","form.sub":"Visível apenas para recrutadores verificados.","sec.personal":"Informações pessoais","sec.contact":"Dados de contacto","sec.summary":"Resumo profissional","sec.erp":"Sistemas ERP","sec.experience":"Experiência profissional","sec.education":"Formação","sec.certs":"Certificações","sec.awards":"Prémios","sec.languages":"Idiomas","f.firstName":"Nome","f.lastName":"Apelido","f.city":"Cidade","f.country":"País","f.province":"Estado / Província","f.email":"E-mail","f.phone":"Telefone","f.linkedin":"LinkedIn","f.photoHint":"Adicione uma foto profissional.","f.uploadPhoto":"Carregar foto","f.removePhoto":"Remover","f.photoRules":"JPG ou PNG, máx 5 MB","f.summary":"Resumo","f.summaryPh":"Descreva a sua expertise ERP...","words":"palavras","f.jobTitle":"Cargo","f.company":"Empresa","f.startDate":"Início","f.endDate":"Fim","f.current":"Posição atual","f.description":"Responsabilidades","f.yearsExp":"Anos de experiência","f.addExp":"+ Adicionar função","f.degree":"Grau","f.institution":"Instituição","f.gradYear":"Ano","f.addEdu":"+ Adicionar formação","f.certName":"Certificação","f.issuer":"Emissor","f.certYear":"Ano","f.addCert":"+ Adicionar certificação","f.awardName":"Prémio","f.awardOrg":"Organização","f.awardYear":"Ano","f.addAward":"+ Adicionar prémio","f.langName":"Idioma","f.langSpoken":"Nível oral","f.langWritten":"Nível escrito","f.langSelect":"Selecionar","f.addLang":"+ Adicionar idioma","rec.pool":"ERP Talent Pool","rec.search":"Pesquisar candidatos…","rec.all":"Todos","rec.contacted":"Contactados","rec.new":"Ainda não contactados","rec.erp_filter":"Todos os sistemas ERP","rec.country_filter":"Todos os países","rec.exp_filter":"Qualquer experiência","rec.select_cand":"Selecione um candidato para iniciar uma conversa.","rec.only_recruiter":"Só tu — o recrutador — podes abrir um novo chat.","rec.browseHint":"Navega a lista à esquerda. Usa a barra de pesquisa e filtros por sistema ERP, país ou nível de experiência.","rec.howtoTitle":"Como funciona o portal","rec.verified":"Verificado","rec.verifiedRecruiter":"Recrutador Verificado","rec.statCandidates":"Candidatos","rec.statContacted":"Contactados","rec.statNew":"Não contactados","rec.howto1":"<strong>Encontrar</strong> — pesquisar e filtrar profissionais ERP por sistema, país e senioridade.","rec.howto2":"<strong>Contactar</strong> — clicar num candidato e abrir uma conversa. Só tu podes iniciar.","rec.howto3":"<strong>Acompanhar</strong> — mover candidatos pelas etapas do pipeline.","rec.howto4":"<strong>Contratar</strong> — marcar a conversa como Contratado quando fechar a posição.","rec.write":"Escrever uma mensagem…","rec.send":"Enviar","rec.contacted_badge":"Contactado","rec.not_contacted":"Não contactado","pipe.contacted":"Contactado","pipe.screening":"Screening","pipe.interview1":"1ª Entrevista","pipe.interview2":"2ª Entrevista","pipe.assessment":"Assessment","pipe.offer":"Oferta","pipe.hired":"Contratado","pipe.stage":"Etapa","pipe.of":"de","form.submit":"Publicar perfil","form.submitting":"A publicar...","success.title":"Perfil publicado!","success.sub":"Os recrutadores podem descobrir o seu perfil.","success.back":"Voltar à página inicial","rec.title":"Aceder ao pool de talentos ERP","rec.sub":"Solicite acesso verificado.","rec.back":"Voltar","candidates":"Minhas mensagens","recruiters":"Para recrutadores","submit":"Enviar meu CV","nav.login":"Entrar","nav.register":"Registrar","countries":["Austria","Belgica","Canada","Dinamarca","Finlandia","Franca","Alemanha","Italia","Paises Baixos","Noruega","Polonia","Portugal","Espanha","Suecia","Suica","Reino Unido","Estados Unidos","Outro"]
   }
 };
 
@@ -2614,6 +2837,98 @@ function setLang(lang, suppressTip) {
   updateCookieBannerLang(lang);
   if (document.getElementById('privacy-modal') && document.getElementById('privacy-modal').style.display === 'block') {
     renderPrivacyPolicy(lang);
+  }
+}
+
+/* ── Live stats counter — called after SUPABASE_URL is defined ── */
+async function loadLiveStats() {
+  const elCand = document.getElementById('stat-candidates');
+  const elRec  = document.getElementById('stat-recruiters');
+  if (!elCand || !elRec) return;
+
+  function countUp(el, target, duration) {
+    const start = Date.now();
+    const step = () => {
+      const progress = Math.min((Date.now() - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      el.textContent = Math.round(eased * target);
+      if (progress < 1) requestAnimationFrame(step);
+      else el.textContent = target;
+    };
+    requestAnimationFrame(step);
+  }
+
+  try {
+    const url = `${SUPABASE_URL}/rest/v1/rpc/get_platform_stats`;
+    console.log('[liveStats] fetching', url, 'anon starts with:', SUPABASE_ANON.slice(0,20));
+    const res = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'apikey':        SUPABASE_ANON,
+        'Authorization': `Bearer ${SUPABASE_ANON}`
+      }
+    });
+    console.log('[liveStats] response status:', res.status);
+
+    if (!res.ok) {
+      const txt = await res.text();
+      throw new Error(`HTTP ${res.status}: ${txt}`);
+    }
+
+    const data = await res.json();
+
+    const candCount = data?.candidates ?? null;
+    const recCount  = data?.recruiters  ?? null;
+
+    if (candCount !== null) countUp(elCand, Number(candCount), 1200);
+    else elCand.textContent = '—';
+
+    if (recCount !== null) countUp(elRec, Number(recCount), 900);
+    else elRec.textContent = '—';
+
+  } catch (e) {
+    console.warn('[liveStats]', e);
+  }
+
+  setTimeout(loadLiveStats, 5 * 60 * 1000);
+}
+
+/* ── Hero audience tab switcher ── */
+function switchHeroAudience(audience) {
+  const candContent = document.getElementById('hero-cand-content');
+  const recContent  = document.getElementById('hero-rec-content');
+  const tabCand     = document.getElementById('hero-tab-cand');
+  const tabRec      = document.getElementById('hero-tab-rec');
+  if (!candContent || !recContent) return;
+  if (audience === 'candidate') {
+    candContent.style.display = '';
+    recContent.style.display  = 'none';
+    tabCand?.classList.add('active');    tabCand?.setAttribute('aria-selected','true');
+    tabRec?.classList.remove('active'); tabRec?.setAttribute('aria-selected','false');
+    // Mirror steps tabs
+    switchStepsTab('candidate');
+  } else {
+    candContent.style.display = 'none';
+    recContent.style.display  = '';
+    tabRec?.classList.add('active');     tabRec?.setAttribute('aria-selected','true');
+    tabCand?.classList.remove('active'); tabCand?.setAttribute('aria-selected','false');
+    switchStepsTab('recruiter');
+  }
+}
+
+/* ── 3-step process tab switcher ── */
+function switchStepsTab(audience) {
+  const candSteps = document.getElementById('steps-cand');
+  const recSteps  = document.getElementById('steps-rec');
+  const tabCand   = document.getElementById('steps-tab-cand');
+  const tabRec    = document.getElementById('steps-tab-rec');
+  if (!candSteps || !recSteps) return;
+  if (audience === 'candidate') {
+    candSteps.classList.add('active');    recSteps.classList.remove('active');
+    tabCand?.classList.add('active');     tabRec?.classList.remove('active');
+  } else {
+    recSteps.classList.add('active');     candSteps.classList.remove('active');
+    tabRec?.classList.add('active');      tabCand?.classList.remove('active');
   }
 }
 
@@ -6278,7 +6593,7 @@ function showAdminRecruiterDetail(r) {
 // See supabase-setup-guide.html for step-by-step instructions
 
 const SUPABASE_URL  = 'https://qqcuipttgjhtbizplwtp.supabase.co';
-const SUPABASE_ANON = 'sb_publishable_I-7cYk3BWV27lIpOFJecbg_KGieD8-S';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxY3VpcHR0Z2podGJpenBsd3RwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU5Mzg4ODEsImV4cCI6MjEwMTUxNDg4MX0.crrDuQYGC0XBq5jfdeay1vehTCHJ9h31B_cxb7iDOZU';
 const SUPABASE_READY = SUPABASE_URL !== 'YOUR_SUPABASE_URL' && SUPABASE_ANON !== 'YOUR_SUPABASE_ANON_KEY';
 
 // ═══════════════════════════════════════════════════════════════
@@ -9198,6 +9513,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   buildPhonePrefix();
   buildErpToggles();
   buildHomeErpTags();
+  window.addEventListener('load', () => setTimeout(loadLiveStats, 500));
   addEntry('exp');
   addEntry('edu');
   addEntry('cert');
